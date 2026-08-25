@@ -1,0 +1,10 @@
+{
+    "git.ignoreLimitWarning": true,
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "chat.tools.terminal.autoApprove": {
+        "Rename-Item": true,
+        "flutter": true,
+        "Test-Path": true,
+        "&": true
+    }
+}
