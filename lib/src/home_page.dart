@@ -37,7 +37,7 @@ class HomePage extends StatelessWidget {
         'icon': Icons.school_rounded,
       },
       {
-        'title': 'ارتباط',
+        'title': 'ارتباط با ما',
         'subtitle': 'تماس و راه‌های ارتباطی',
         'icon': Icons.phone_in_talk_rounded,
       },
