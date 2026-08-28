@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.sahand_consortium"
-    compileSdk = 36
+    compileSdk = 35
     buildToolsVersion = "36.1.0"
     ndkVersion = flutter.ndkVersion
 
