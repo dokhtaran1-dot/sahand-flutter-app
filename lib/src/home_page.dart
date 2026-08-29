@@ -1,3 +1,6 @@
+import 'ettehad_page.dart';
+import 'consulting_page.dart';
+import 'royal_village_page.dart';
 import 'package:flutter/material.dart';
 import 'ettehad_page.dart';
 import 'consulting_page.dart';
@@ -175,7 +178,14 @@ class HomePage extends StatelessWidget {
                   'سفارش مراسم و سورپرایز',
                 ],
                 button: 'رزرو و مشاهده',
-                onTap: () => _comingSoon(context, 'Royal Village'),
+                onTap: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const RoyalVillagePage(),
+    ),
+  );
+},
               ),
 
               const SizedBox(height: 14),
