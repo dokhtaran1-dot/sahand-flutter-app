@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'salon_detail_page.dart';
 
 class RoyalVillagePage extends StatelessWidget {
   const RoyalVillagePage({super.key});
