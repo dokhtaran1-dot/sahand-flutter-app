@@ -135,8 +135,16 @@ class RoyalVillagePage extends StatelessWidget {
                 child: _RoomCard(
                   number: entry.key + 1,
                   name: entry.value,
-                  onReserve: () =>
-                      _soon(context, 'رزرو ${entry.value}'),
+                  onReserve: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => SalonDetailPage(
+        salonName: entry.value,
+      ),
+    ),
+  );
+},
                   onDesign: () =>
                       _soon(context, '۱۰ مدل دیزاین ${entry.value}'),
                   onCake: () =>
