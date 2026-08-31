@@ -118,7 +118,7 @@ class RoyalVillagePage extends StatelessWidget {
             const SizedBox(height: 18),
 
             const Text(
-              'اتاق‌های Royal Village',
+              'Salonهای اختصاصی Royal Village',
               style: TextStyle(
                 color: gold,
                 fontSize: 20,
