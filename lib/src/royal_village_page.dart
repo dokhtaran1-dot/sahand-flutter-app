@@ -28,7 +28,7 @@ class RoyalVillagePage extends StatelessWidget {
       'Salon Lumière',
       'Salon de l’Âme',
       'Salon Privé',
-      'Noir',
+      'salon Noir',
       'Salon Royale',
       'RV Lounge Impérial Classique',
     ];
