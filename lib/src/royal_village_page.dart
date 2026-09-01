@@ -135,6 +135,7 @@ class RoyalVillagePage extends StatelessWidget {
                 child: _RoomCard(
                   number: entry.key + 1,
                   name: entry.value,
+                  imagePath: roomImages[entry.key],
                   onReserve: () {
   Navigator.push(
     context,
@@ -192,6 +193,7 @@ class RoyalVillagePage extends StatelessWidget {
 class _RoomCard extends StatelessWidget {
   final int number;
   final String name;
+  final String imagePath;
   final VoidCallback onReserve;
   final VoidCallback onDesign;
   final VoidCallback onCake;
@@ -199,6 +201,7 @@ class _RoomCard extends StatelessWidget {
   const _RoomCard({
     required this.number,
     required this.name,
+    required this.imagePath,
     required this.onReserve,
     required this.onDesign,
     required this.onCake,
@@ -217,6 +220,16 @@ class _RoomCard extends StatelessWidget {
       ),
       child: Column(
         children: [
+          ClipRRect(
+  borderRadius: BorderRadius.circular(14),
+  child: Image.asset(
+    imagePath,
+    width: double.infinity,
+    height: 190,
+    fit: BoxFit.cover,
+  ),
+),
+const SizedBox(height: 14),
           Row(
             children: [
               CircleAvatar(
