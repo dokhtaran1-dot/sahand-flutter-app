@@ -16,7 +16,7 @@ class WelcomePage extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            'assets/image/welcome.png',
+            'assets/image/Welcome.png',
             fit: BoxFit.contain,
           ),
           Positioned(
