@@ -143,7 +143,7 @@ final roomImages = [
             ...rooms.asMap().entries.map(
               (entry) => Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: _RoomCard(
+                child: _RoomCard(              
                   number: entry.key + 1,
                   name: entry.value,
                   imagePath: roomImages[entry.key],
