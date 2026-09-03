@@ -22,7 +22,7 @@ class WelcomePage extends StatelessWidget {
           Positioned(
             left: 70,
             right: 70,
-            bottom: 115,
+            bottom: 180,
             height: 85,
             child: GestureDetector(
               onTap: onEnter,
