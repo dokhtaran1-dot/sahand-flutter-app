@@ -24,25 +24,25 @@ class RoyalVillagePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 final rooms = [
-  'Salon Jardin',
   'Salon Lumière',
+  'Salon Noir',
+  'Salon Jardin',
+  'Salon Privé',
+  'RV Lounge Impérial Classique',
   'Salon Doré',
   'Salon Âme du Poète',
-  'Salon de l’Âme',
-  'Salon Privé',
-  'Salon Noir',
-  'RV Lounge Impérial Classique',
+  'Salon Royal',
 ];
 
 final roomImages = [
-  'assets/image/salon_jardin.png',
   'assets/image/salon_lumiere.png',
+  'assets/image/salon_noir.png',
+  'assets/image/salon_jardin.png',
+  'assets/image/salon_prive.png',
+  'assets/image/rv_lounge_imperial_classique.png',
   'assets/image/salon_dore.png',
   'assets/image/salon_ame_du_poete.png',
   'assets/image/salon_de_lame.png',
-  'assets/image/salon_prive.png',
-  'assets/image/salon_noir.png',
-  'assets/image/rv_lounge_imperial_classique.png',
 ];
 
     return Directionality(
