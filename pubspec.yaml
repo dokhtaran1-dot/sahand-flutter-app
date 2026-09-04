@@ -28,11 +28,11 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions dependencies:
   dependencies:
+  dependencies:
   flutter:
     sdk: flutter
 
   shared_preferences: ^2.5.3
-
   flutter_localizations:
     sdk: flutter
 
