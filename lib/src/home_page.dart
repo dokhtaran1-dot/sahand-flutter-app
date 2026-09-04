@@ -75,8 +75,7 @@ class HomePage extends StatelessWidget {
             final double pageWidth =
                 constraints.maxWidth > 720 ? 720 : constraints.maxWidth;
 
-            // تصویر اصلی 1024 × 1536 است
-            final double pageHeight = pageWidth * 1.5;
+            // تصویر اصلی 1024 × 1536 استfinal double pageHeight = constraints.maxHeight;
 
             return SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
