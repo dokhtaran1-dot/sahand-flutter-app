@@ -532,185 +532,343 @@ class _SalonCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF06100D),
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(34),
+        color: const Color(0xFF030907),
         border: Border.all(
-          color: RoyalVillagePage.gold.withOpacity(.7),
+          color: RoyalVillagePage.gold.withOpacity(.70),
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(.4),
-            blurRadius: 25,
-            offset: const Offset(0, 15),
+            color: Colors.black.withOpacity(.65),
+            blurRadius: 30,
+            offset: const Offset(0, 18),
+          ),
+          BoxShadow(
+            color: RoyalVillagePage.gold.withOpacity(.06),
+            blurRadius: 22,
           ),
         ],
       ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(23),
-              child: AspectRatio(
-                aspectRatio: 1.25,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image.asset(
-                      data.image,
-                      fit: BoxFit.cover,
-                    ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(33),
+        child: Column(
+          children: [
 
-                    const DecoratedBox(
+            // ===============================
+            // FULL LUXURY IMAGE
+            // ===============================
+            AspectRatio(
+              aspectRatio: 1.20,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+
+                  Image.asset(
+                    data.image,
+                    fit: BoxFit.cover,
+                    filterQuality: FilterQuality.high,
+                  ),
+
+                  // DARK CINEMATIC GRADIENT
+                  const DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: [0, .48, 1],
+                        colors: [
+                          Color(0x05000000),
+                          Color(0x28000000),
+                          Color(0xF5000000),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // GOLD TOP LINE
+                  Positioned(
+                    left: 20,
+                    right: 20,
+                    top: 18,
+                    child: Container(
+                      height: 1,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            Color(0x22000000),
-                            Color(0xE6000000),
+                            RoyalVillagePage.gold.withOpacity(.9),
+                            Colors.transparent,
                           ],
                         ),
                       ),
                     ),
+                  ),
 
-                    Positioned(
-                      top: 14,
-                      right: 14,
-                      child: Container(
-                        width: 52,
-                        height: 52,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(0xCC063D30),
-                          border: Border.all(
-                            color: RoyalVillagePage.gold,
-                          ),
+                  // NUMBER
+                  Positioned(
+                    top: 30,
+                    right: 24,
+                    child: Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xD9063D30),
+                        border: Border.all(
+                          color: RoyalVillagePage.gold,
+                          width: 1.2,
                         ),
-                        child: Center(
-                          child: Text(
-                            number.toString().padLeft(2, '0'),
-                            style: const TextStyle(
-                              color:
-                                  RoyalVillagePage.goldLight,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    Positioned(
-                      left: 18,
-                      right: 18,
-                      bottom: 18,
-                      child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            data.name,
-                            textDirection: TextDirection.ltr,
-                            style: const TextStyle(
-                              color:
-                                  RoyalVillagePage.goldLight,
-                              fontSize: 25,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            data.subtitle,
-                            textDirection: TextDirection.ltr,
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 11,
-                            ),
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                RoyalVillagePage.gold.withOpacity(.14),
+                            blurRadius: 20,
                           ),
                         ],
                       ),
+                      child: Center(
+                        child: Text(
+                          number.toString().padLeft(2, '0'),
+                          style: const TextStyle(
+                            color: RoyalVillagePage.goldLight,
+                            fontSize: 21,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ),
                     ),
+                  ),
+
+                  // EXCLUSIVE LABEL
+                  Positioned(
+                    top: 34,
+                    left: 23,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(.48),
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(
+                          color:
+                              RoyalVillagePage.gold.withOpacity(.55),
+                        ),
+                      ),
+                      child: const Text(
+                        'ROYAL COLLECTION',
+                        textDirection: TextDirection.ltr,
+                        style: TextStyle(
+                          color: RoyalVillagePage.goldLight,
+                          fontSize: 9,
+                          letterSpacing: 1.8,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // SALON TITLE
+                  Positioned(
+                    left: 22,
+                    right: 22,
+                    bottom: 25,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          data.name,
+                          textDirection: TextDirection.ltr,
+                          style: const TextStyle(
+                            color: RoyalVillagePage.goldLight,
+                            fontSize: 28,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: .2,
+                            height: 1.1,
+                          ),
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        Text(
+                          data.subtitle,
+                          textDirection: TextDirection.ltr,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                            letterSpacing: .2,
+                          ),
+                        ),
+
+                        const SizedBox(height: 13),
+
+                        Row(
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 1,
+                              color: RoyalVillagePage.gold,
+                            ),
+                            const SizedBox(width: 10),
+                            const Text(
+                              'ROYAL VILLAGE',
+                              textDirection: TextDirection.ltr,
+                              style: TextStyle(
+                                color: Colors.white54,
+                                fontSize: 9,
+                                letterSpacing: 2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // ===============================
+            // GLASS ACTION AREA
+            // ===============================
+            Container(
+              padding: const EdgeInsets.fromLTRB(
+                14,
+                16,
+                14,
+                17,
+              ),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF07130F),
+                    Color(0xFF020706),
                   ],
                 ),
               ),
-            ),
-          ),
+              child: Row(
+                children: [
 
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              12,
-              4,
-              12,
-              14,
+                  Expanded(
+                    child: _luxuryAction(
+                      icon: Icons.calendar_month_outlined,
+                      title: 'رزرو',
+                      subtitle: 'BOOK',
+                      onTap: onReserve,
+                      featured: true,
+                    ),
+                  ),
+
+                  const SizedBox(width: 9),
+
+                  Expanded(
+                    child: _luxuryAction(
+                      icon: Icons.auto_awesome_outlined,
+                      title: 'دیزاین',
+                      subtitle: 'DESIGN',
+                      onTap: onDesign,
+                    ),
+                  ),
+
+                  const SizedBox(width: 9),
+
+                  Expanded(
+                    child: _luxuryAction(
+                      icon: Icons.cake_outlined,
+                      title: 'کیک',
+                      subtitle: 'CAKE',
+                      onTap: onCake,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _button(
-                    Icons.calendar_month_outlined,
-                    'رزرو',
-                    onReserve,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _button(
-                    Icons.auto_awesome_outlined,
-                    'دیزاین',
-                    onDesign,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _button(
-                    Icons.cake_outlined,
-                    'کیک',
-                    onCake,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _button(
-    IconData icon,
-    String title,
-    VoidCallback onTap,
-  ) {
+  Widget _luxuryAction({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+    bool featured = false,
+  }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(22),
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          vertical: 13,
-        ),
+        height: 92,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(22),
+          gradient: featured
+              ? const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF105B46),
+                    Color(0xFF063D30),
+                  ],
+                )
+              : LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.white.withOpacity(.055),
+                    Colors.white.withOpacity(.015),
+                  ],
+                ),
           border: Border.all(
-            color:
-                RoyalVillagePage.gold.withOpacity(.55),
+            color: featured
+                ? RoyalVillagePage.gold
+                : RoyalVillagePage.gold.withOpacity(.48),
           ),
-          color: Colors.white.withOpacity(.025),
+          boxShadow: featured
+              ? [
+                  BoxShadow(
+                    color:
+                        RoyalVillagePage.emeraldLight.withOpacity(.20),
+                    blurRadius: 15,
+                  ),
+                ]
+              : null,
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+
             Icon(
               icon,
+              size: 24,
               color: RoyalVillagePage.goldLight,
-              size: 21,
             ),
-            const SizedBox(height: 6),
+
+            const SizedBox(height: 7),
+
             Text(
               title,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 12,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+
+            const SizedBox(height: 3),
+
+            Text(
+              subtitle,
+              textDirection: TextDirection.ltr,
+              style: TextStyle(
+                color: RoyalVillagePage.gold.withOpacity(.70),
+                fontSize: 7,
+                letterSpacing: 1.3,
               ),
             ),
           ],
