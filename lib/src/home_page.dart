@@ -398,20 +398,16 @@ class HomePage extends StatelessWidget {
                     _openRoyalSazeh(context);
                   },
                 ),
+_menuItem(
+  icon: Icons.auto_graph_rounded,
+  title: 'Strategy & Management',
+  onTap: () {
+    Navigator.pop(sheetContext);
+    _openConsulting(context);
+  },
+),
 
-                _menuItem(
-                  icon: Icons.auto_graph_rounded,
-                  title: 'Strategy & Management',
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    _openConsulting(context);
-                  },
-                ),
-
-                _menuItem(
-                  icon: Icons.person_outline_rounded,
-                  title: 'پروفایل من',
-                  _menuItem(
+_menuItem(
   icon: Icons.calendar_month_outlined,
   title: 'رزروهای من',
   onTap: () {
@@ -424,9 +420,15 @@ class HomePage extends StatelessWidget {
     );
   },
 ),
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    _comingSoon(context, 'پروفایل من');
+
+_menuItem(
+  icon: Icons.person_outline_rounded,
+  title: 'پروفایل من',
+  onTap: () {
+    Navigator.pop(sheetContext);
+    _comingSoon(context, 'پروفایل من');
+  },
+),
                   },
                 ),
               ],
