@@ -427,7 +427,6 @@ class RoyalVillagePage extends StatelessWidget {
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: () =>
                       onPressed: () {
   Navigator.push(
     context,
