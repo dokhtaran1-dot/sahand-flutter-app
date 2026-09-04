@@ -27,7 +27,6 @@ environment:
 # dependencies can be manually updated by changing the version numbers below to
 # the latest version available on pub.dev. To see which dependencies have newer
 dependencies:
-dependencies:
   flutter:
     sdk: flutter
 
@@ -41,6 +40,8 @@ dependencies:
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
     sdk: flutter
   flutter_lints: ^4.0.0
   flutter_lints: ^4.0.0
