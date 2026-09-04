@@ -171,10 +171,16 @@ class RoyalVillagePage extends StatelessWidget {
                       return _SalonCard(
                         number: index + 1,
                         data: salons[index],
-                        onReserve: () => _soon(
-                          context,
-                          'رزرو ${salons[index].name}',
-                        ),
+                        onReserve: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => ReservationPage(
+        salonName: salons[index].name,
+      ),
+    ),
+  );
+},
                         onDesign: () => _soon(
                           context,
                           'دیزاین ${salons[index].name}',
