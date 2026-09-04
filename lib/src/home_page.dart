@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'my_reservations_page.dart';
 import 'royal_village_page.dart';
 import 'ettehad_page.dart';
 import 'consulting_page.dart';
@@ -411,6 +411,19 @@ class HomePage extends StatelessWidget {
                 _menuItem(
                   icon: Icons.person_outline_rounded,
                   title: 'پروفایل من',
+                  _menuItem(
+  icon: Icons.calendar_month_outlined,
+  title: 'رزروهای من',
+  onTap: () {
+    Navigator.pop(sheetContext);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const MyReservationsPage(),
+      ),
+    );
+  },
+),
                   onTap: () {
                     Navigator.pop(sheetContext);
                     _comingSoon(context, 'پروفایل من');
