@@ -428,7 +428,16 @@ class RoyalVillagePage extends StatelessWidget {
                 height: 55,
                 child: ElevatedButton(
                   onPressed: () =>
-                      _soon(context, 'رزرو VIP'),
+                      onPressed: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const ReservationPage(
+        salonName: 'ROYAL VIP',
+      ),
+    ),
+  );
+},
                   style: ElevatedButton.styleFrom(
                     elevation: 0,
                     backgroundColor: emerald,
