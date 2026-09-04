@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'reservation_store.dart';
 
 class ReservationPage extends StatefulWidget {
   final String salonName;
@@ -67,7 +68,20 @@ class _ReservationPageState extends State<ReservationPage> {
       );
       return;
     }
-
+ReservationStore.instance.add(
+  ReservationRecord(
+    salonName: widget.salonName,
+    customerName: nameController.text.trim(),
+    phone: phoneController.text.trim(),
+    date:
+        '${selectedDate!.year}/${selectedDate!.month}/${selectedDate!.day}',
+    time: selectedTime!.format(context),
+    guests: guests,
+    design: design,
+    cake: cake,
+    note: noteController.text.trim(),
+  ),
+);
     showDialog(
       context: context,
       builder: (_) {
