@@ -92,7 +92,7 @@ class HomePage extends StatelessWidget {
                       // =========================
                       Positioned.fill(
                         child: Image.asset(
-                          'assets/images/sc_home.png',
+                          'assets/image/sc_home.png',
                           fit: BoxFit.fill,
                           filterQuality: FilterQuality.high,
                         ),
