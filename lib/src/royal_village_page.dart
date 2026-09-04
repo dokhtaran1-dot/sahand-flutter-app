@@ -1,218 +1,528 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'salon_detail_page.dart';
 
 class RoyalVillagePage extends StatelessWidget {
   const RoyalVillagePage({super.key});
 
-  static const bg = Color(0xFF050807);
-  static const panel = Color(0xFF0C1210);
-  static const gold = Color(0xFFD6B15E);
-  static const emerald = Color(0xFF0B3A2A);
+  static const bg = Color(0xFF020706);
+  static const emerald = Color(0xFF063D30);
+  static const emeraldLight = Color(0xFF0B7256);
+  static const gold = Color(0xFFD5AD57);
+  static const goldLight = Color(0xFFF0D58C);
 
   void _soon(BuildContext context, String title) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: const Color(0xFF132019),
-        content: Text(
-          '$title در حال تکمیل است',
-          textDirection: TextDirection.rtl,
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: const Color(0xFF0A1210),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+            side: const BorderSide(color: gold),
+          ),
+          content: Text(
+            '$title در حال تکمیل است',
+            textAlign: TextAlign.center,
+            textDirection: TextDirection.rtl,
+            style: const TextStyle(color: Colors.white),
+          ),
         ),
-      ),
-    );
+      );
   }
 
   @override
   Widget build(BuildContext context) {
-final rooms = [
-  'Salon Lumière',
-  'Salon Noir',
-  'Salon Jardin',
-  'Salon Privé',
-  'RV Lounge Impérial Classique',
-  'Salon Doré',
-  'Salon Âme du Poète',
-  'Salon Royal',
-];
+    final salons = [
+      const SalonData(
+        name: 'Salon Lumière',
+        subtitle: 'Elegant, bright and refined',
+        image: 'assets/image/salon_lumiere.png',
+      ),
+      const SalonData(
+        name: 'Salon Noir',
+        subtitle: 'Dramatic, intimate and unforgettable',
+        image: 'assets/image/salon_noir.png',
+      ),
+      const SalonData(
+        name: 'Salon Jardin',
+        subtitle: 'A dreamy floral garden atmosphere',
+        image: 'assets/image/salon_jardin.png',
+      ),
+      const SalonData(
+        name: 'Salon Privé',
+        subtitle: 'Private moments, elevated',
+        image: 'assets/image/salon_prive.png',
+      ),
+      const SalonData(
+        name: 'RV Lounge Impérial Classique',
+        subtitle: 'The signature VIP experience',
+        image: 'assets/image/rv_lounge_imperial_classique.png',
+      ),
+      const SalonData(
+        name: 'Salon Doré',
+        subtitle: 'Modern luxury in golden light',
+        image: 'assets/image/salon_dore.png',
+      ),
+      const SalonData(
+        name: 'Salon Âme du Poète',
+        subtitle: 'Poetic, nostalgic and soulful',
+        image: 'assets/image/salon_ame_du_poete.png',
+      ),
+      const SalonData(
+        name: 'Salon Royal',
+        subtitle: 'Classic royal ambience',
+        image: 'assets/image/salon_royal.png',
+      ),
+    ];
 
-final roomImages = [
-  'assets/image/salon_lumiere.png',
-  'assets/image/salon_noir.png',
-  'assets/image/salon_jardin.png',
-  'assets/image/salon_prive.png',
-  'assets/image/rv_lounge_imperial_classique.png',
-  'assets/image/salon_dore.png',
-  'assets/image/salon_ame_du_poete.png',
-  'assets/image/salon_de_lame.png',
-];
+    return Scaffold(
+      backgroundColor: bg,
+      body: Stack(
+        children: [
+          Positioned(
+            top: -160,
+            right: -110,
+            child: _glow(330, emeraldLight.withOpacity(.18)),
+          ),
+          Positioned(
+            top: 430,
+            left: -160,
+            child: _glow(330, gold.withOpacity(.07)),
+          ),
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: bg,
-        appBar: AppBar(
-          backgroundColor: bg,
-          foregroundColor: gold,
-          centerTitle: true,
-          title: const Column(
+          SafeArea(
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 12, 18, 0),
+                    child: Column(
+                      children: [
+                        _topBar(context),
+
+                        const SizedBox(height: 24),
+
+                        _hero(context),
+
+                        const SizedBox(height: 18),
+
+                        _vipCard(context),
+
+                        const SizedBox(height: 30),
+
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'THE COLLECTION',
+                            textDirection: TextDirection.ltr,
+                            style: TextStyle(
+                              color: gold,
+                              fontSize: 12,
+                              letterSpacing: 4,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 7),
+
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Royal Salons',
+                            textDirection: TextDirection.ltr,
+                            style: TextStyle(
+                              color: goldLight,
+                              fontSize: 32,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 5),
+
+                        const Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            '۸ فضای اختصاصی برای تجربه‌ای متفاوت',
+                            textDirection: TextDirection.rtl,
+                            style: TextStyle(
+                              color: Colors.white54,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 18),
+                      ],
+                    ),
+                  ),
+                ),
+
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  sliver: SliverList.separated(
+                    itemCount: salons.length,
+                    separatorBuilder: (_, __) =>
+                        const SizedBox(height: 22),
+                    itemBuilder: (context, index) {
+                      return _SalonCard(
+                        number: index + 1,
+                        data: salons[index],
+                        onReserve: () => _soon(
+                          context,
+                          'رزرو ${salons[index].name}',
+                        ),
+                        onDesign: () => _soon(
+                          context,
+                          'دیزاین ${salons[index].name}',
+                        ),
+                        onCake: () => _soon(
+                          context,
+                          'کیک ${salons[index].name}',
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 45),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _topBar(BuildContext context) {
+    return Row(
+      children: [
+        _glassIcon(
+          Icons.arrow_back_ios_new_rounded,
+          () => Navigator.pop(context),
+        ),
+
+        const Expanded(
+          child: Column(
             children: [
               Text(
                 'ROYAL VILLAGE',
+                textDirection: TextDirection.ltr,
                 style: TextStyle(
-                  color: gold,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.5,
+                  color: goldLight,
+                  fontSize: 25,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 2,
                 ),
               ),
+              SizedBox(height: 5),
               Text(
-                'رزرو • مراسم • تجربه VIP',
+                'PRIVATE DINING • EVENTS • VIP',
+                textDirection: TextDirection.ltr,
                 style: TextStyle(
-                  color: Colors.white60,
-                  fontSize: 10,
+                  color: Colors.white38,
+                  fontSize: 8,
+                  letterSpacing: 2.1,
                 ),
               ),
             ],
           ),
         ),
-        body: ListView(
-          padding: const EdgeInsets.all(14),
-          children: [
-            Container(
-              padding: const EdgeInsets.all(22),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [
-                    Color(0xFF123C2C),
-                    Color(0xFF10130F),
-                  ],
+
+        _glassIcon(
+          Icons.notifications_none_rounded,
+          () => _soon(context, 'اعلان‌ها'),
+        ),
+      ],
+    );
+  }
+
+  Widget _hero(BuildContext context) {
+    return Container(
+      height: 285,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(34),
+        border: Border.all(color: gold.withOpacity(.85)),
+        image: const DecorationImage(
+          image: AssetImage(
+            'assets/image/royal_village.png',
+          ),
+          fit: BoxFit.cover,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: emeraldLight.withOpacity(.15),
+            blurRadius: 40,
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(33),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withOpacity(.12),
+                Colors.black.withOpacity(.55),
+                const Color(0xFF03130F).withOpacity(.95),
+              ],
+            ),
+          ),
+          padding: const EdgeInsets.all(22),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'RV',
+                textDirection: TextDirection.ltr,
+                style: TextStyle(
+                  color: goldLight,
+                  fontSize: 52,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 3,
                 ),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: gold),
               ),
-              child: const Column(
+
+              const Text(
+                'ROYAL VILLAGE',
+                textDirection: TextDirection.ltr,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1.5,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              const Text(
+                'رزرو اختصاصی سالن، مراسم، دیزاین، کیک و خدمات VIP',
+                textDirection: TextDirection.rtl,
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13,
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              Row(
                 children: [
-                  Icon(
-                    Icons.restaurant_menu,
+                  _miniTag('8 SALONS'),
+                  const SizedBox(width: 8),
+                  _miniTag('VIP'),
+                  const SizedBox(width: 8),
+                  _miniTag('PRIVATE'),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _vipCard(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(30),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(
+          sigmaX: 14,
+          sigmaY: 14,
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(.035),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(
+              color: gold.withOpacity(.65),
+            ),
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 65,
+                    height: 65,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        colors: [
+                          goldLight,
+                          Color(0xFF8A641F),
+                        ],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: gold.withOpacity(.2),
+                          blurRadius: 18,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.workspace_premium_outlined,
+                      color: Colors.black,
+                      size: 34,
+                    ),
+                  ),
+
+                  const SizedBox(width: 15),
+
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'ROYAL VIP',
+                          textDirection: TextDirection.ltr,
+                          style: TextStyle(
+                            color: goldLight,
+                            fontSize: 23,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          'تجربه اختصاصی رویال ویلاژ',
+                          textDirection: TextDirection.rtl,
+                          style: TextStyle(
+                            color: Colors.white60,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const Icon(
+                    Icons.diamond_outlined,
                     color: gold,
-                    size: 48,
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'RV • ROYAL VILLAGE',
-                    style: TextStyle(
-                      color: gold,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'اتاق اختصاصی، دیزاین تولد، کیک، مراسم خصوصی و خدمات VIP',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      height: 1.7,
-                    ),
+                    size: 27,
                   ),
                 ],
               ),
-            ),
 
-            const SizedBox(height: 18),
+              const SizedBox(height: 18),
 
-            _ActionCard(
-              icon: Icons.workspace_premium_outlined,
-              title: 'VIP RV',
-              subtitle: 'رزرو اختصاصی خدمات VIP رویال ویلیج',
-              button: 'رزرو VIP',
-              onTap: () => _soon(context, 'رزرو VIP RV'),
-            ),
-
-            const SizedBox(height: 18),
-
-            const Text(
-              'Salonهای اختصاصی Royal Village',
-              style: TextStyle(
-                color: gold,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            ...rooms.asMap().entries.map(
-              (entry) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _RoomCard(              
-                  number: entry.key + 1,
-                  name: entry.value,
-                  imagePath: roomImages[entry.key],
-                  onReserve: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => SalonDetailPage(
-        salonName: entry.value,
-      ),
-    ),
-  );
-},
-                  onDesign: () =>
-                      _soon(context, '۱۰ مدل دیزاین ${entry.value}'),
-                  onCake: () =>
-                      _soon(context, '۱۰ مدل کیک ${entry.value}'),
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: () =>
+                      _soon(context, 'رزرو VIP'),
+                  style: ElevatedButton.styleFrom(
+                    elevation: 0,
+                    backgroundColor: emerald,
+                    foregroundColor: goldLight,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      side: const BorderSide(
+                        color: gold,
+                      ),
+                    ),
+                  ),
+                  child: const Text(
+                    'رزرو اختصاصی VIP',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
-            ),
-
-            const SizedBox(height: 10),
-
-            _ActionCard(
-              icon: Icons.cake_outlined,
-              title: 'سفارش کیک اختصاصی',
-              subtitle: 'انتخاب کیک متناسب با اتاق و مراسم',
-              button: 'مشاهده کیک‌ها',
-              onTap: () => _soon(context, 'کیک‌های Royal Village'),
-            ),
-
-            const SizedBox(height: 12),
-
-            _ActionCard(
-              icon: Icons.celebration_outlined,
-              title: 'دیزاین تولد و مراسم',
-              subtitle: 'برای هر اتاق ۱۰ مدل دیزاین اختصاصی',
-              button: 'مشاهده دیزاین‌ها',
-              onTap: () => _soon(context, 'دیزاین مراسم'),
-            ),
-
-            const SizedBox(height: 12),
-
-            _ActionCard(
-              icon: Icons.calendar_month_outlined,
-              title: 'تاریخ و ساعت رزرو',
-              subtitle: 'انتخاب روز، ساعت و نوع مراسم',
-              button: 'انتخاب زمان',
-              onTap: () => _soon(context, 'تقویم رزرو'),
-            ),
-          ],
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _glassIcon(
+    IconData icon,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(.035),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: gold.withOpacity(.5),
+          ),
+        ),
+        child: Icon(
+          icon,
+          color: goldLight,
+          size: 21,
+        ),
+      ),
+    );
+  }
+
+  Widget _miniTag(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 11,
+        vertical: 7,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(.35),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: gold.withOpacity(.5),
+        ),
+      ),
+      child: Text(
+        text,
+        textDirection: TextDirection.ltr,
+        style: const TextStyle(
+          color: goldLight,
+          fontSize: 9,
+          letterSpacing: 1,
+        ),
+      ),
+    );
+  }
+
+  Widget _glow(double size, Color color) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: color,
       ),
     );
   }
 }
 
-class _RoomCard extends StatelessWidget {
+class _SalonCard extends StatelessWidget {
   final int number;
-  final String name;
-  final String imagePath;
+  final SalonData data;
   final VoidCallback onReserve;
   final VoidCallback onDesign;
   final VoidCallback onCake;
 
-  const _RoomCard({
+  const _SalonCard({
     required this.number,
-    required this.name,
-    required this.imagePath,
+    required this.data,
     required this.onReserve,
     required this.onDesign,
     required this.onCake,
@@ -221,212 +531,203 @@ class _RoomCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: RoyalVillagePage.panel,
-        borderRadius: BorderRadius.circular(20),
+        color: const Color(0xFF06100D),
+        borderRadius: BorderRadius.circular(30),
         border: Border.all(
-          color: RoyalVillagePage.gold,
+          color: RoyalVillagePage.gold.withOpacity(.7),
         ),
-      ),
-      child: Column(
-        children: [
-          ClipRRect(
-  borderRadius: BorderRadius.circular(14),
-  child: Image.asset(
-    imagePath,
-    width: double.infinity,
-    height: 190,
-    fit: BoxFit.cover,
-  ),
-),
-const SizedBox(height: 14),
-          Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: RoyalVillagePage.emerald,
-                child: Text(
-                  '$number',
-                  style: const TextStyle(
-                    color: RoyalVillagePage.gold,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  name,
-                  style: const TextStyle(
-                    color: RoyalVillagePage.gold,
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const Icon(
-                Icons.arrow_forward_ios,
-                size: 14,
-                color: RoyalVillagePage.gold,
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 14),
-
-          Row(
-            children: [
-              Expanded(
-                child: _SmallButton(
-                  text: 'رزرو',
-                  icon: Icons.calendar_month,
-                  onTap: onReserve,
-                ),
-              ),
-              const SizedBox(width: 7),
-              Expanded(
-                child: _SmallButton(
-                  text: '۱۰ دیزاین',
-                  icon: Icons.celebration,
-                  onTap: onDesign,
-                ),
-              ),
-              const SizedBox(width: 7),
-              Expanded(
-                child: _SmallButton(
-                  text: '۱۰ کیک',
-                  icon: Icons.cake,
-                  onTap: onCake,
-                ),
-              ),
-            ],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(.4),
+            blurRadius: 25,
+            offset: const Offset(0, 15),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _SmallButton extends StatelessWidget {
-  final String text;
-  final IconData icon;
-  final VoidCallback onTap;
-
-  const _SmallButton({
-    required this.text,
-    required this.icon,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton(
-      onPressed: onTap,
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(
-          vertical: 10,
-          horizontal: 4,
-        ),
-        side: const BorderSide(
-          color: RoyalVillagePage.gold,
-        ),
-      ),
       child: Column(
         children: [
-          Icon(
-            icon,
-            color: RoyalVillagePage.gold,
-            size: 18,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            text,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 10,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ActionCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final String button;
-  final VoidCallback onTap;
-
-  const _ActionCard({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.button,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(17),
-      decoration: BoxDecoration(
-        color: RoyalVillagePage.panel,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: RoyalVillagePage.gold,
-        ),
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Icon(
-                icon,
-                color: RoyalVillagePage.gold,
-                size: 32,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(23),
+              child: AspectRatio(
+                aspectRatio: 1.25,
+                child: Stack(
+                  fit: StackFit.expand,
                   children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        color: RoyalVillagePage.gold,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    Image.asset(
+                      data.image,
+                      fit: BoxFit.cover,
+                    ),
+
+                    const DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Color(0x22000000),
+                            Color(0xE6000000),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 3),
-                    Text(
-                      subtitle,
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 11,
+
+                    Positioned(
+                      top: 14,
+                      right: 14,
+                      child: Container(
+                        width: 52,
+                        height: 52,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xCC063D30),
+                          border: Border.all(
+                            color: RoyalVillagePage.gold,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            number.toString().padLeft(2, '0'),
+                            style: const TextStyle(
+                              color:
+                                  RoyalVillagePage.goldLight,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    Positioned(
+                      left: 18,
+                      right: 18,
+                      bottom: 18,
+                      child: Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            data.name,
+                            textDirection: TextDirection.ltr,
+                            style: const TextStyle(
+                              color:
+                                  RoyalVillagePage.goldLight,
+                              fontSize: 25,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            data.subtitle,
+                            textDirection: TextDirection.ltr,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
-          const SizedBox(height: 13),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: onTap,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: RoyalVillagePage.emerald,
-                foregroundColor: RoyalVillagePage.gold,
-              ),
-              child: Text(button),
+
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              12,
+              4,
+              12,
+              14,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _button(
+                    Icons.calendar_month_outlined,
+                    'رزرو',
+                    onReserve,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _button(
+                    Icons.auto_awesome_outlined,
+                    'دیزاین',
+                    onDesign,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _button(
+                    Icons.cake_outlined,
+                    'کیک',
+                    onCake,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
   }
+
+  Widget _button(
+    IconData icon,
+    String title,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          vertical: 13,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color:
+                RoyalVillagePage.gold.withOpacity(.55),
+          ),
+          color: Colors.white.withOpacity(.025),
+        ),
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              color: RoyalVillagePage.goldLight,
+              size: 21,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SalonData {
+  final String name;
+  final String subtitle;
+  final String image;
+
+  const SalonData({
+    required this.name,
+    required this.subtitle,
+    required this.image,
+  });
 }
