@@ -430,22 +430,12 @@ _menuItem(
   },
 ),
 
-_menuItem(
-  icon: Icons.person_outline_rounded,
-  title: 'پروفایل من',
-  onTap: () {
-    Navigator.pop(sheetContext);
-    _comingSoon(context, 'پروفایل من');
-  },
-),
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+      ],
+      ),
+    ),
+  );
+},
+);
   }
 
   Widget _menuItem({
