@@ -97,7 +97,7 @@ class HomePage extends StatelessWidget {
                           filterQuality: FilterQuality.high,
                         ),
                       ),
-
+nnn
                       // =========================
                       // NOTIFICATION
                       // =========================
@@ -418,6 +418,15 @@ _menuItem(
         builder: (_) => const MyReservationsPage(),
       ),
     );
+  },
+),
+
+_menuItem(
+  icon: Icons.person_outline_rounded,
+  title: 'پروفایل من',
+  onTap: () {
+    Navigator.pop(sheetContext);
+    _comingSoon(context, 'پروفایل من');
   },
 ),
 
