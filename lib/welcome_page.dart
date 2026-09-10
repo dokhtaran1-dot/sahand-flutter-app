@@ -23,9 +23,10 @@ class _WelcomePageState extends State<WelcomePage> {
   ];
 
   int _currentSlide = 0;
-  late Timer _slideTimer;
-  late Timer _clockTimer;
   DateTime _now = DateTime.now();
+
+  Timer? _slideTimer;
+  Timer? _clockTimer;
 
   @override
   void initState() {
@@ -39,17 +40,17 @@ class _WelcomePageState extends State<WelcomePage> {
     _clockTimer = Timer.periodic(
       const Duration(seconds: 1),
       (_) {
-        if (mounted) {
-          setState(() {
-            _now = DateTime.now();
-          });
-        }
+        if (!mounted) return;
+        setState(() {
+          _now = DateTime.now();
+        });
       },
     );
   }
 
   void _nextSlide() {
     if (!mounted) return;
+
     setState(() {
       _currentSlide = (_currentSlide + 1) % _slides.length;
     });
@@ -57,22 +58,19 @@ class _WelcomePageState extends State<WelcomePage> {
 
   void _previousSlide() {
     if (!mounted) return;
+
     setState(() {
       _currentSlide =
           (_currentSlide - 1 + _slides.length) % _slides.length;
     });
   }
 
-  String get _timeText {
-    final hour = _now.hour.toString().padLeft(2, '0');
-    final minute = _now.minute.toString().padLeft(2, '0');
-    return '$hour:$minute';
-  }
+  String _two(int n) => n.toString().padLeft(2, '0');
 
   @override
   void dispose() {
-    _slideTimer.cancel();
-    _clockTimer.cancel();
+    _slideTimer?.cancel();
+    _clockTimer?.cancel();
     super.dispose();
   }
 
@@ -80,30 +78,32 @@ class _WelcomePageState extends State<WelcomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            'assets/image/Welcome.png',
-            fit: BoxFit.fill,
-            filterQuality: FilterQuality.high,
-          ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final w = constraints.maxWidth;
+          final h = constraints.maxHeight;
 
-          // ساعت واقعی
-          Positioned(
-            top: 28,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              child: Center(
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(
+                'assets/image/Welcome.png',
+                fit: BoxFit.fill,
+                filterQuality: FilterQuality.high,
+              ),
+
+              // ساعت واقعی - بالا سمت چپ
+              Positioned(
+                top: h * 0.032,
+                left: w * 0.075,
                 child: Text(
-                  _timeText,
-                  style: const TextStyle(
-                    color: Color(0xFFFFD979),
-                    fontSize: 24,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 2,
-                    shadows: [
+                  '${_two(_now.hour)}:${_two(_now.minute)}',
+                  style: TextStyle(
+                    color: const Color(0xFFFFE3A1),
+                    fontSize: w * 0.038,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 1,
+                    shadows: const [
                       Shadow(
                         blurRadius: 8,
                         color: Colors.black,
@@ -112,77 +112,68 @@ class _WelcomePageState extends State<WelcomePage> {
                   ),
                 ),
               ),
-            ),
-          ),
 
-          // تلویزیون / اسلایدشو
-          Positioned(
-            left: 38,
-            right: 38,
-            top: MediaQuery.of(context).size.height * 0.50,
-            height: MediaQuery.of(context).size.height * 0.16,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 500),
-                transitionBuilder: (child, animation) {
-                  return FadeTransition(
-                    opacity: animation,
-                    child: child,
-                  );
-                },
-                child: Image.asset(
-                  _slides[_currentSlide],
-                  key: ValueKey(_currentSlide),
-                  fit: BoxFit.cover,
-                  width: double.infinity,
+              // TV - فقط داخل قاب
+              Positioned(
+                left: w * 0.245,
+                width: w * 0.51,
+                top: h * 0.474,
+                height: h * 0.105,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 500),
+                    child: Image.asset(
+                      _slides[_currentSlide],
+                      key: ValueKey(_currentSlide),
+                      fit: BoxFit.cover,
+                      alignment: Alignment.center,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
 
-          // فلش چپ
-          Positioned(
-            left: 8,
-            top: MediaQuery.of(context).size.height * 0.54,
-            child: IconButton(
-              onPressed: _previousSlide,
-              icon: const Icon(
-                Icons.chevron_left,
-                size: 38,
-                color: Color(0xFFFFD979),
+              // فلش چپ - ناحیه لمس نامرئی
+              Positioned(
+                left: w * 0.16,
+                top: h * 0.49,
+                width: w * 0.09,
+                height: h * 0.08,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: _previousSlide,
+                  child: const SizedBox.expand(),
+                ),
               ),
-            ),
-          ),
 
-          // فلش راست
-          Positioned(
-            right: 8,
-            top: MediaQuery.of(context).size.height * 0.54,
-            child: IconButton(
-              onPressed: _nextSlide,
-              icon: const Icon(
-                Icons.chevron_right,
-                size: 38,
-                color: Color(0xFFFFD979),
+              // فلش راست - ناحیه لمس نامرئی
+              Positioned(
+                right: w * 0.16,
+                top: h * 0.49,
+                width: w * 0.09,
+                height: h * 0.08,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: _nextSlide,
+                  child: const SizedBox.expand(),
+                ),
               ),
-            ),
-          ),
 
-          // دکمه ENTER روی همان محل تصویر
-          Positioned(
-            left: 55,
-            right: 55,
-            bottom: 95,
-            height: 78,
-            child: GestureDetector(
-              onTap: widget.onEnter,
-              child: Container(
-                color: Colors.transparent,
+              // ENTER
+              Positioned(
+                left: w * 0.235,
+                right: w * 0.235,
+                bottom: h * 0.105,
+                height: h * 0.065,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: widget.onEnter,
+                  child: const SizedBox.expand(),
+                ),
               ),
-            ),
-          ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }
