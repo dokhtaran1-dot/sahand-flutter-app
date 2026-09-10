@@ -23,10 +23,7 @@ class _WelcomePageState extends State<WelcomePage> {
   ];
 
   int _currentSlide = 0;
-  DateTime _now = DateTime.now();
-
   Timer? _slideTimer;
-  Timer? _clockTimer;
 
   @override
   void initState() {
@@ -35,16 +32,6 @@ class _WelcomePageState extends State<WelcomePage> {
     _slideTimer = Timer.periodic(
       const Duration(seconds: 2),
       (_) => _nextSlide(),
-    );
-
-    _clockTimer = Timer.periodic(
-      const Duration(seconds: 1),
-      (_) {
-        if (!mounted) return;
-        setState(() {
-          _now = DateTime.now();
-        });
-      },
     );
   }
 
@@ -65,12 +52,9 @@ class _WelcomePageState extends State<WelcomePage> {
     });
   }
 
-  String _two(int n) => n.toString().padLeft(2, '0');
-
   @override
   void dispose() {
     _slideTimer?.cancel();
-    _clockTimer?.cancel();
     super.dispose();
   }
 
@@ -92,52 +76,38 @@ class _WelcomePageState extends State<WelcomePage> {
                 filterQuality: FilterQuality.high,
               ),
 
-              // ساعت واقعی - بالا سمت چپ
+              // TV / SLIDER
               Positioned(
-                top: h * 0.032,
-                left: w * 0.075,
-                child: Text(
-                  '${_two(_now.hour)}:${_two(_now.minute)}',
-                  style: TextStyle(
-                    color: const Color(0xFFFFE3A1),
-                    fontSize: w * 0.038,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1,
-                    shadows: const [
-                      Shadow(
-                        blurRadius: 8,
-                        color: Colors.black,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // TV - فقط داخل قاب
-              Positioned(
-                left: w * 0.245,
-                width: w * 0.51,
-                top: h * 0.474,
-                height: h * 0.105,
+                left: w * 0.22,
+                width: w * 0.56,
+                top: h * 0.47,
+                height: h * 0.11,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 500),
+                    transitionBuilder: (child, animation) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      );
+                    },
                     child: Image.asset(
                       _slides[_currentSlide],
                       key: ValueKey(_currentSlide),
                       fit: BoxFit.cover,
                       alignment: Alignment.center,
+                      filterQuality: FilterQuality.high,
                     ),
                   ),
                 ),
               ),
 
-              // فلش چپ - ناحیه لمس نامرئی
+              // LEFT ARROW - نامرئی
               Positioned(
-                left: w * 0.16,
+                left: w * 0.14,
                 top: h * 0.49,
-                width: w * 0.09,
+                width: w * 0.10,
                 height: h * 0.08,
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
@@ -146,11 +116,11 @@ class _WelcomePageState extends State<WelcomePage> {
                 ),
               ),
 
-              // فلش راست - ناحیه لمس نامرئی
+              // RIGHT ARROW - نامرئی
               Positioned(
-                right: w * 0.16,
+                right: w * 0.14,
                 top: h * 0.49,
-                width: w * 0.09,
+                width: w * 0.10,
                 height: h * 0.08,
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
@@ -159,7 +129,7 @@ class _WelcomePageState extends State<WelcomePage> {
                 ),
               ),
 
-              // ENTER
+              // ENTER BUTTON
               Positioned(
                 left: w * 0.235,
                 right: w * 0.235,
