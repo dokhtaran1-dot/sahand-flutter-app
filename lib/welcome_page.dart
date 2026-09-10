@@ -70,6 +70,7 @@ class _WelcomePageState extends State<WelcomePage> {
           return Stack(
             fit: StackFit.expand,
             children: [
+              // BACKGROUND
               Image.asset(
                 'assets/image/Welcome.png',
                 fit: BoxFit.fill,
@@ -86,24 +87,40 @@ class _WelcomePageState extends State<WelcomePage> {
                   borderRadius: BorderRadius.circular(8),
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 500),
+
+                    layoutBuilder: (currentChild, previousChildren) {
+                      return Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          ...previousChildren,
+                          if (currentChild != null) currentChild,
+                        ],
+                      );
+                    },
+
                     transitionBuilder: (child, animation) {
                       return FadeTransition(
                         opacity: animation,
                         child: child,
                       );
                     },
-                    child: Image.asset(
-                      _slides[_currentSlide],
+
+                    child: SizedBox.expand(
                       key: ValueKey(_currentSlide),
-                      fit: BoxFit.cover,
-                      alignment: Alignment.center,
-                      filterQuality: FilterQuality.high,
+                      child: Image.asset(
+                        _slides[_currentSlide],
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                        alignment: Alignment.center,
+                        filterQuality: FilterQuality.high,
+                      ),
                     ),
                   ),
                 ),
               ),
 
-              // LEFT ARROW - نامرئی
+              // LEFT ARROW - ناحیه لمس نامرئی
               Positioned(
                 left: w * 0.14,
                 top: h * 0.49,
@@ -116,7 +133,7 @@ class _WelcomePageState extends State<WelcomePage> {
                 ),
               ),
 
-              // RIGHT ARROW - نامرئی
+              // RIGHT ARROW - ناحیه لمس نامرئی
               Positioned(
                 right: w * 0.14,
                 top: h * 0.49,
