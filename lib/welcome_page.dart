@@ -92,7 +92,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       filterQuality: FilterQuality.high,
                     ),
 
-                    // TV / SLIDER — full image, centered, with a gold frame.
+                    // TV / SLIDER — enlarged inside the fixed gold frame.
                     Positioned(
                       left: canvasWidth * 0.19,
                       width: canvasWidth * 0.62,
@@ -132,7 +132,7 @@ class _WelcomePageState extends State<WelcomePage> {
                                 );
                               },
                               child: Transform.scale(
-                                scale: 1.34,
+                                scale: 1.80,
                                 child: Image.asset(
                                   _slides[_currentSlide],
                                   key: ValueKey<int>(_currentSlide),
