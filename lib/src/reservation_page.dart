@@ -159,7 +159,7 @@ ReservationStore.instance.add(
               const SizedBox(height: 10),
 
               const Text(
-                'رزرو اختصاصی رویال ویلاژ',
+                'رزرو اختصاصی رویال ویلیج',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,
