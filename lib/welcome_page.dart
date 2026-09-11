@@ -131,12 +131,15 @@ class _WelcomePageState extends State<WelcomePage> {
                                   ],
                                 );
                               },
-                              child: Image.asset(
-                                _slides[_currentSlide],
-                                key: ValueKey<int>(_currentSlide),
-                                fit: BoxFit.contain,
-                                alignment: Alignment.center,
-                                filterQuality: FilterQuality.high,
+                              child: Transform.scale(
+                                scale: 1.34,
+                                child: Image.asset(
+                                  _slides[_currentSlide],
+                                  key: ValueKey<int>(_currentSlide),
+                                  fit: BoxFit.contain,
+                                  alignment: Alignment.center,
+                                  filterQuality: FilterQuality.high,
+                                ),
                               ),
                             ),
                           ),
