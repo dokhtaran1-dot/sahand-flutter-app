@@ -76,12 +76,12 @@ class _WelcomePageState extends State<WelcomePage> {
                 filterQuality: FilterQuality.high,
               ),
 
-              // TV
+              // TV - کل قاب را می‌پوشاند
               Positioned(
-                left: w * 0.235,
-                width: w * 0.53,
-                top: h * 0.468,
-                height: h * 0.125,
+                left: w * 0.225,
+                width: w * 0.55,
+                top: h * 0.465,
+                height: h * 0.145,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: AnimatedSwitcher(
@@ -118,7 +118,7 @@ class _WelcomePageState extends State<WelcomePage> {
               // فلش چپ
               Positioned(
                 left: w * 0.14,
-                top: h * 0.49,
+                top: h * 0.50,
                 width: w * 0.10,
                 height: h * 0.09,
                 child: GestureDetector(
@@ -131,7 +131,7 @@ class _WelcomePageState extends State<WelcomePage> {
               // فلش راست
               Positioned(
                 right: w * 0.14,
-                top: h * 0.49,
+                top: h * 0.50,
                 width: w * 0.10,
                 height: h * 0.09,
                 child: GestureDetector(
