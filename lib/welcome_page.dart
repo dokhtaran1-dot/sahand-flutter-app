@@ -108,7 +108,7 @@ class _WelcomePageState extends State<WelcomePage> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFFFFD76A).withValues(alpha: 0.35),
+                              color: const Color(0xFFFFD76A).withOpacity(0.35),
                               blurRadius: 10 * scale,
                               spreadRadius: 1 * scale,
                             ),
