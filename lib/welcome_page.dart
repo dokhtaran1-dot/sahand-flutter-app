@@ -55,10 +55,41 @@ class _WelcomePageState extends State<WelcomePage> {
   }
 
   Widget _buildSlide() {
+    final path = _slides[_currentSlide];
+
+    // The Royal Mall promo is portrait. Use the same artwork as a full-bleed
+    // backdrop so there are no empty black side bars, while keeping the full
+    // poster readable in the center.
+    if (_currentSlide == 0) {
+      return Stack(
+        key: const ValueKey<String>('royal-mall-slide'),
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            path,
+            fit: BoxFit.cover,
+            alignment: Alignment.center,
+            filterQuality: FilterQuality.high,
+          ),
+          Container(color: Colors.black.withOpacity(0.42)),
+          Transform.scale(
+            scale: 1.38,
+            child: Image.asset(
+              path,
+              fit: BoxFit.contain,
+              alignment: Alignment.center,
+              filterQuality: FilterQuality.high,
+              gaplessPlayback: true,
+            ),
+          ),
+        ],
+      );
+    }
+
     return Image.asset(
-      _slides[_currentSlide],
+      path,
       key: ValueKey<int>(_currentSlide),
-      fit: BoxFit.contain,
+      fit: BoxFit.cover,
       alignment: Alignment.center,
       filterQuality: FilterQuality.high,
       gaplessPlayback: true,
