@@ -67,9 +67,6 @@ class _WelcomePageState extends State<WelcomePage> {
       body: ClipRect(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            // Scale the complete 1024 x 1536 design uniformly. This removes
-            // distortion while keeping every interactive layer locked to the
-            // same coordinates as the background artwork.
             final scale = math.max(
               constraints.maxWidth / _designWidth,
               constraints.maxHeight / _designHeight,
@@ -95,12 +92,12 @@ class _WelcomePageState extends State<WelcomePage> {
                       filterQuality: FilterQuality.high,
                     ),
 
-                    // TV / SLIDER
+                    // TV / SLIDER — enlarged to match the visual reference.
                     Positioned(
-                      left: canvasWidth * 0.235,
-                      width: canvasWidth * 0.53,
-                      top: canvasHeight * 0.477,
-                      height: canvasHeight * 0.170,
+                      left: canvasWidth * 0.19,
+                      width: canvasWidth * 0.62,
+                      top: canvasHeight * 0.465,
+                      height: canvasHeight * 0.19,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8 * scale),
                         child: AnimatedSwitcher(
