@@ -80,18 +80,20 @@ class _WelcomePageState extends State<WelcomePage> {
               Positioned(
                 left: w * 0.235,
                 width: w * 0.53,
-                top: h * 0.485,
+                top: h * 0.500,
                 height: h * 0.132,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 500),
+
                     transitionBuilder: (child, animation) {
                       return FadeTransition(
                         opacity: animation,
                         child: child,
                       );
                     },
+
                     layoutBuilder: (currentChild, previousChildren) {
                       return Stack(
                         fit: StackFit.expand,
@@ -101,6 +103,7 @@ class _WelcomePageState extends State<WelcomePage> {
                         ],
                       );
                     },
+
                     child: SizedBox.expand(
                       key: ValueKey<int>(_currentSlide),
                       child: Image.asset(
@@ -117,7 +120,7 @@ class _WelcomePageState extends State<WelcomePage> {
               // LEFT ARROW
               Positioned(
                 left: w * 0.145,
-                top: h * 0.495,
+                top: h * 0.505,
                 width: w * 0.10,
                 height: h * 0.09,
                 child: GestureDetector(
@@ -130,7 +133,7 @@ class _WelcomePageState extends State<WelcomePage> {
               // RIGHT ARROW
               Positioned(
                 right: w * 0.145,
-                top: h * 0.495,
+                top: h * 0.505,
                 width: w * 0.10,
                 height: h * 0.09,
                 child: GestureDetector(
