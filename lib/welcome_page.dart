@@ -99,8 +99,8 @@ class _WelcomePageState extends State<WelcomePage> {
                     Positioned(
                       left: canvasWidth * 0.235,
                       width: canvasWidth * 0.53,
-                      top: canvasHeight * 0.515,
-                      height: canvasHeight * 0.132,
+                      top: canvasHeight * 0.477,
+                      height: canvasHeight * 0.170,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8 * scale),
                         child: AnimatedSwitcher(
