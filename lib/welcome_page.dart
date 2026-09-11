@@ -92,33 +92,53 @@ class _WelcomePageState extends State<WelcomePage> {
                       filterQuality: FilterQuality.high,
                     ),
 
-                    // TV / SLIDER — enlarged to match the visual reference.
+                    // TV / SLIDER — full image, centered, with a gold frame.
                     Positioned(
                       left: canvasWidth * 0.19,
                       width: canvasWidth * 0.62,
                       top: canvasHeight * 0.465,
                       height: canvasHeight * 0.19,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8 * scale),
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 500),
-                          transitionBuilder: (child, animation) =>
-                              FadeTransition(opacity: animation, child: child),
-                          layoutBuilder: (currentChild, previousChildren) {
-                            return Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                ...previousChildren,
-                                if (currentChild != null) currentChild,
-                              ],
-                            );
-                          },
-                          child: Image.asset(
-                            _slides[_currentSlide],
-                            key: ValueKey<int>(_currentSlide),
-                            fit: BoxFit.cover,
-                            alignment: Alignment.center,
-                            filterQuality: FilterQuality.high,
+                      child: Container(
+                        padding: EdgeInsets.all(4 * scale),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14 * scale),
+                          border: Border.all(
+                            color: const Color(0xFFD6A64B),
+                            width: 3 * scale,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFFFFD76A).withValues(alpha: 0.35),
+                              blurRadius: 10 * scale,
+                              spreadRadius: 1 * scale,
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(9 * scale),
+                          child: Container(
+                            color: Colors.black,
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 500),
+                              transitionBuilder: (child, animation) =>
+                                  FadeTransition(opacity: animation, child: child),
+                              layoutBuilder: (currentChild, previousChildren) {
+                                return Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    ...previousChildren,
+                                    if (currentChild != null) currentChild,
+                                  ],
+                                );
+                              },
+                              child: Image.asset(
+                                _slides[_currentSlide],
+                                key: ValueKey<int>(_currentSlide),
+                                fit: BoxFit.contain,
+                                alignment: Alignment.center,
+                                filterQuality: FilterQuality.high,
+                              ),
+                            ),
                           ),
                         ),
                       ),
