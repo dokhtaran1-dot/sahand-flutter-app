@@ -1,10 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-
-import 'embedded_royal_mall_slide.dart';
 
 class WelcomePage extends StatefulWidget {
   final VoidCallback onEnter;
@@ -58,21 +55,10 @@ class _WelcomePageState extends State<WelcomePage> {
   }
 
   Widget _buildSlide() {
-    if (_currentSlide == 0) {
-      return Image.memory(
-        base64Decode(royalMallSlideBase64),
-        key: const ValueKey<String>('royal-mall-promo'),
-        fit: BoxFit.cover,
-        alignment: Alignment.center,
-        filterQuality: FilterQuality.high,
-        gaplessPlayback: true,
-      );
-    }
-
     return Image.asset(
       _slides[_currentSlide],
       key: ValueKey<int>(_currentSlide),
-      fit: BoxFit.cover,
+      fit: BoxFit.contain,
       alignment: Alignment.center,
       filterQuality: FilterQuality.high,
       gaplessPlayback: true,
@@ -117,7 +103,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       filterQuality: FilterQuality.high,
                     ),
 
-                    // TV / SLIDER — artwork fills the fixed gold frame.
+                    // TV / SLIDER — full image, centered, with a gold frame.
                     Positioned(
                       left: canvasWidth * 0.19,
                       width: canvasWidth * 0.62,
