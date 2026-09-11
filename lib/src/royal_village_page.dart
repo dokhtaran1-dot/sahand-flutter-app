@@ -402,7 +402,7 @@ class RoyalVillagePage extends StatelessWidget {
                         ),
                         SizedBox(height: 5),
                         Text(
-                          'تجربه اختصاصی رویال ویلاژ',
+                          'تجربه اختصاصی رویال ویلیج',
                           textDirection: TextDirection.rtl,
                           style: TextStyle(
                             color: Colors.white60,
