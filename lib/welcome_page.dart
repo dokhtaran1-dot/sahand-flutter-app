@@ -70,24 +70,22 @@ class _WelcomePageState extends State<WelcomePage> {
           return Stack(
             fit: StackFit.expand,
             children: [
-              // BACKGROUND
               Image.asset(
                 'assets/image/Welcome.png',
                 fit: BoxFit.fill,
                 filterQuality: FilterQuality.high,
               ),
 
-              // TV / SLIDER
+              // TV
               Positioned(
-                left: w * 0.22,
-                width: w * 0.56,
-                top: h * 0.47,
-                height: h * 0.11,
+                left: w * 0.235,
+                width: w * 0.53,
+                top: h * 0.468,
+                height: h * 0.125,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 500),
-
                     layoutBuilder: (currentChild, previousChildren) {
                       return Stack(
                         fit: StackFit.expand,
@@ -97,22 +95,19 @@ class _WelcomePageState extends State<WelcomePage> {
                         ],
                       );
                     },
-
                     transitionBuilder: (child, animation) {
                       return FadeTransition(
                         opacity: animation,
                         child: child,
                       );
                     },
-
                     child: SizedBox.expand(
                       key: ValueKey(_currentSlide),
                       child: Image.asset(
                         _slides[_currentSlide],
                         width: double.infinity,
                         height: double.infinity,
-                        fit: BoxFit.cover,
-                        alignment: Alignment.center,
+                        fit: BoxFit.fill,
                         filterQuality: FilterQuality.high,
                       ),
                     ),
@@ -120,12 +115,12 @@ class _WelcomePageState extends State<WelcomePage> {
                 ),
               ),
 
-              // LEFT ARROW - ناحیه لمس نامرئی
+              // فلش چپ
               Positioned(
                 left: w * 0.14,
                 top: h * 0.49,
                 width: w * 0.10,
-                height: h * 0.08,
+                height: h * 0.09,
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onTap: _previousSlide,
@@ -133,12 +128,12 @@ class _WelcomePageState extends State<WelcomePage> {
                 ),
               ),
 
-              // RIGHT ARROW - ناحیه لمس نامرئی
+              // فلش راست
               Positioned(
                 right: w * 0.14,
                 top: h * 0.49,
                 width: w * 0.10,
-                height: h * 0.08,
+                height: h * 0.09,
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onTap: _nextSlide,
@@ -146,7 +141,7 @@ class _WelcomePageState extends State<WelcomePage> {
                 ),
               ),
 
-              // ENTER BUTTON
+              // ENTER
               Positioned(
                 left: w * 0.235,
                 right: w * 0.235,
