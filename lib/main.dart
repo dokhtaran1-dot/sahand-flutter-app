@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 import 'welcome_page.dart';
 import 'src/home_page.dart';
 
@@ -22,12 +21,14 @@ class _EntryAppState extends State<EntryApp> {
   Widget build(BuildContext context) {
     if (_entered) {
       return const MaterialApp(
+        title: 'ROYAL 1',
         debugShowCheckedModeBanner: false,
         home: HomePage(),
       );
     }
 
     return MaterialApp(
+      title: 'ROYAL 1',
       debugShowCheckedModeBanner: false,
       home: WelcomePage(
         onEnter: () {
