@@ -19,6 +19,18 @@ jobs:
         with:
           flutter-version: '3.24.5'
 
+      - name: Install Royal 1 launcher icon
+        run: |
+          base64 --decode tooling/royal1_icon.b64 > /tmp/royal1_icon.png
+          for dir in \
+            android/app/src/main/res/mipmap-mdpi \
+            android/app/src/main/res/mipmap-hdpi \
+            android/app/src/main/res/mipmap-xhdpi \
+            android/app/src/main/res/mipmap-xxhdpi \
+            android/app/src/main/res/mipmap-xxxhdpi; do
+            cp /tmp/royal1_icon.png "$dir/ic_launcher.png"
+          done
+
       - name: Get packages
         run: flutter pub get
 
