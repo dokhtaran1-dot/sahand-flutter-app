@@ -19,7 +19,7 @@ class _WelcomePageState extends State<WelcomePage> {
   static const double _designWidth = 1024;
   static const double _designHeight = 1536;
 
-  final List<String> _slides = const [
+  static const List<String> _slides = [
     'assets/image/screen_01.png',
     'assets/image/screen_02.png',
     'assets/image/screen_03.png',
@@ -33,17 +33,23 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   void initState() {
     super.initState();
+    _startSlider();
+  }
+
+  void _startSlider() {
+    _slideTimer?.cancel();
     _slideTimer = Timer.periodic(
-      const Duration(seconds: 2),
-      (_) => _nextSlide(),
+      const Duration(milliseconds: 2500),
+      (_) => _nextSlide(restartTimer: false),
     );
   }
 
-  void _nextSlide() {
+  void _nextSlide({bool restartTimer = true}) {
     if (!mounted) return;
     setState(() {
       _currentSlide = (_currentSlide + 1) % _slides.length;
     });
+    if (restartTimer) _startSlider();
   }
 
   void _previousSlide() {
@@ -52,48 +58,7 @@ class _WelcomePageState extends State<WelcomePage> {
       _currentSlide =
           (_currentSlide - 1 + _slides.length) % _slides.length;
     });
-  }
-
-  Widget _buildSlide() {
-    final path = _slides[_currentSlide];
-
-    // The Royal Mall promo is portrait. Use the same artwork as a full-bleed
-    // backdrop so there are no empty black side bars, while keeping the full
-    // poster readable in the center.
-    if (_currentSlide == 0) {
-      return Stack(
-        key: const ValueKey<String>('royal-mall-slide'),
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            path,
-            fit: BoxFit.cover,
-            alignment: Alignment.center,
-            filterQuality: FilterQuality.high,
-          ),
-          Container(color: Colors.black.withOpacity(0.42)),
-          Transform.scale(
-            scale: 1.38,
-            child: Image.asset(
-              path,
-              fit: BoxFit.contain,
-              alignment: Alignment.center,
-              filterQuality: FilterQuality.high,
-              gaplessPlayback: true,
-            ),
-          ),
-        ],
-      );
-    }
-
-    return Image.asset(
-      path,
-      key: ValueKey<int>(_currentSlide),
-      fit: BoxFit.cover,
-      alignment: Alignment.center,
-      filterQuality: FilterQuality.high,
-      gaplessPlayback: true,
-    );
+    _startSlider();
   }
 
   @override
@@ -109,6 +74,9 @@ class _WelcomePageState extends State<WelcomePage> {
       body: ClipRect(
         child: LayoutBuilder(
           builder: (context, constraints) {
+            // Keep the artwork proportional and fill the full screen without
+            // stretching. This is the same 1024x1536 master layout used for
+            // the final Royal 1 welcome artwork.
             final scale = math.max(
               constraints.maxWidth / _designWidth,
               constraints.maxHeight / _designHeight,
@@ -128,90 +96,111 @@ class _WelcomePageState extends State<WelcomePage> {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
+                    // FINAL FIRST-PAGE ARTWORK.
+                    // Replace only assets/image/Welcome.png when artwork changes;
+                    // the live carousel and button stay aligned automatically.
                     Image.asset(
                       'assets/image/Welcome.png',
-                      fit: BoxFit.contain,
+                      fit: BoxFit.cover,
+                      alignment: Alignment.center,
                       filterQuality: FilterQuality.high,
                     ),
 
-                    // TV / SLIDER — full image, centered, with a gold frame.
+                    // LIVE TV: five images, each shown for exactly 2.5 seconds.
                     Positioned(
-                      left: canvasWidth * 0.19,
-                      width: canvasWidth * 0.62,
-                      top: canvasHeight * 0.465,
-                      height: canvasHeight * 0.19,
-                      child: Container(
-                        padding: EdgeInsets.all(4 * scale),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(14 * scale),
-                          border: Border.all(
-                            color: const Color(0xFFD6A64B),
-                            width: 3 * scale,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFFFFD76A).withOpacity(0.35),
-                              blurRadius: 10 * scale,
-                              spreadRadius: 1 * scale,
-                            ),
-                          ],
-                        ),
+                      left: canvasWidth * 0.066,
+                      right: canvasWidth * 0.066,
+                      top: canvasHeight * 0.322,
+                      height: canvasHeight * 0.270,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onHorizontalDragEnd: (details) {
+                          final velocity = details.primaryVelocity ?? 0;
+                          if (velocity < -120) {
+                            _nextSlide();
+                          } else if (velocity > 120) {
+                            _previousSlide();
+                          }
+                        },
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(9 * scale),
-                          child: Container(
-                            color: Colors.black,
-                            child: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 350),
-                              transitionBuilder: (child, animation) =>
-                                  FadeTransition(opacity: animation, child: child),
-                              layoutBuilder: (currentChild, previousChildren) {
-                                return Stack(
-                                  fit: StackFit.expand,
-                                  children: [
-                                    ...previousChildren,
-                                    if (currentChild != null) currentChild,
-                                  ],
-                                );
-                              },
-                              child: _buildSlide(),
-                            ),
+                          borderRadius: BorderRadius.circular(8 * scale),
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              Container(color: Colors.black),
+                              AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 420),
+                                switchInCurve: Curves.easeOut,
+                                switchOutCurve: Curves.easeIn,
+                                transitionBuilder: (child, animation) =>
+                                    FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                ),
+                                layoutBuilder: (currentChild, previousChildren) {
+                                  return Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      ...previousChildren,
+                                      if (currentChild != null) currentChild,
+                                    ],
+                                  );
+                                },
+                                child: Image.asset(
+                                  _slides[_currentSlide],
+                                  key: ValueKey<int>(_currentSlide),
+                                  fit: BoxFit.cover,
+                                  alignment: Alignment.center,
+                                  filterQuality: FilterQuality.high,
+                                  gaplessPlayback: true,
+                                ),
+                              ),
+
+                              // Five clean carousel indicators.
+                              Positioned(
+                                left: 0,
+                                right: 0,
+                                bottom: 10 * scale,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List.generate(
+                                    _slides.length,
+                                    (index) => AnimatedContainer(
+                                      duration:
+                                          const Duration(milliseconds: 220),
+                                      width: 8 * scale,
+                                      height: 8 * scale,
+                                      margin: EdgeInsets.symmetric(
+                                        horizontal: 5 * scale,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: index == _currentSlide
+                                            ? const Color(0xFFE00020)
+                                            : Colors.white.withOpacity(0.88),
+                                        boxShadow: const [
+                                          BoxShadow(
+                                            color: Colors.black54,
+                                            blurRadius: 4,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
 
-                    // LEFT ARROW
+                    // ENTER THE ROYAL WORD / ورود button hit area.
                     Positioned(
-                      left: canvasWidth * 0.145,
-                      top: canvasHeight * 0.520,
-                      width: canvasWidth * 0.10,
-                      height: canvasHeight * 0.09,
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: _previousSlide,
-                        child: const SizedBox.expand(),
-                      ),
-                    ),
-
-                    // RIGHT ARROW
-                    Positioned(
-                      right: canvasWidth * 0.145,
-                      top: canvasHeight * 0.520,
-                      width: canvasWidth * 0.10,
-                      height: canvasHeight * 0.09,
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: _nextSlide,
-                        child: const SizedBox.expand(),
-                      ),
-                    ),
-
-                    // ENTER BUTTON
-                    Positioned(
-                      left: canvasWidth * 0.235,
-                      right: canvasWidth * 0.235,
-                      bottom: canvasHeight * 0.055,
-                      height: canvasHeight * 0.075,
+                      left: canvasWidth * 0.195,
+                      right: canvasWidth * 0.195,
+                      top: canvasHeight * 0.855,
+                      height: canvasHeight * 0.095,
                       child: GestureDetector(
                         behavior: HitTestBehavior.translucent,
                         onTap: widget.onEnter,
