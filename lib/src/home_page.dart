@@ -1,37 +1,29 @@
 import 'package:flutter/material.dart';
-import 'my_reservations_page.dart';
 import 'royal_village_page.dart';
-import 'ettehad_page.dart';
-import 'consulting_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  static const Color gold = Color(0xFFD7A83D);
-  static const Color dark = Color(0xFF030609);
+  static const Color bg = Color(0xFF030506);
+  static const Color gold = Color(0xFFD9B45B);
+  static const Color goldLight = Color(0xFFFFE3A0);
 
   void _comingSoon(BuildContext context, String title) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          backgroundColor: const Color(0xFF111315),
           behavior: SnackBarBehavior.floating,
+          backgroundColor: const Color(0xFF0A0C0D),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(
-              color: gold,
-              width: .7,
-            ),
+            borderRadius: BorderRadius.circular(18),
+            side: const BorderSide(color: gold),
           ),
           content: Text(
             '$title در حال تکمیل است',
-            textAlign: TextAlign.center,
             textDirection: TextDirection.rtl,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-            ),
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white),
           ),
         ),
       );
@@ -46,238 +38,129 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  void _openRoyalSazeh(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const EttehadPage(),
-      ),
-    );
-  }
-
-  void _openConsulting(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const ConsultingPage(),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: dark,
+      backgroundColor: bg,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            // برای اینکه روی Fold و موبایل‌های مختلف خراب نشود
-            final double pageWidth =
-                constraints.maxWidth > 720 ? 720 : constraints.maxWidth;
+            final maxWidth = constraints.maxWidth > 720
+                ? 720.0
+                : constraints.maxWidth;
 
-            // تصویر اصلی 1024 × 1536 است
-            final double pageHeight = constraints.maxHeight;
-
-            return SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Center(
-                child: SizedBox(
-                  width: pageWidth,
-                  height: pageHeight,
-                  child: Stack(
-                    children: [
-
-                      // =========================
-                      // BACKGROUND DESIGN
-                      // =========================
-                      Positioned.fill(
-                        child: Image.asset(
-                          'assets/image/Home.png',
-                          fit: BoxFit.fill,
-                          filterQuality: FilterQuality.high,
+            return Center(
+              child: SizedBox(
+                width: maxWidth,
+                height: constraints.maxHeight,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          gradient: RadialGradient(
+                            center: Alignment(0, -0.15),
+                            radius: 1.15,
+                            colors: [
+                              Color(0xFF16120E),
+                              Color(0xFF070809),
+                              Color(0xFF020303),
+                            ],
+                          ),
                         ),
                       ),
-
-                      // =========================
-                      // NOTIFICATION
-                      // =========================
-                      _hotspot(
-                        left: .855,
-                        top: .020,
-                        width: .120,
-                        height: .095,
-                        onTap: () =>
-                            _comingSoon(context, 'اعلان‌ها'),
+                    ),
+                    Positioned(
+                      top: -110,
+                      left: -80,
+                      child: _glow(260, const Color(0xFF1D4F8E)),
+                    ),
+                    Positioned(
+                      top: 210,
+                      right: -110,
+                      child: _glow(300, const Color(0xFF0D5F3A)),
+                    ),
+                    Positioned(
+                      bottom: -100,
+                      left: 20,
+                      child: _glow(300, const Color(0xFF8A1824)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(22, 20, 22, 24),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 8),
+                          const Text(
+                            'ROYAL 1',
+                            textDirection: TextDirection.ltr,
+                            style: TextStyle(
+                              color: goldLight,
+                              fontSize: 34,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 3.5,
+                            ),
+                          ),
+                          const SizedBox(height: 9),
+                          const Text(
+                            'WELCOME TO ROYAL FAMILY',
+                            textDirection: TextDirection.ltr,
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                              letterSpacing: 2.1,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Container(
+                            width: 86,
+                            height: 1,
+                            color: gold.withOpacity(.75),
+                          ),
+                          const Spacer(),
+                          _RoyalEntryCard(
+                            shortName: 'RM',
+                            title: 'ROYAL MALL',
+                            persianTitle: 'رویال مال',
+                            enterText: 'ورود به رویال مال',
+                            accent: const Color(0xFF165FA7),
+                            icon: Icons.apartment_rounded,
+                            onTap: () => _comingSoon(context, 'Royal Mall'),
+                          ),
+                          const SizedBox(height: 18),
+                          _RoyalEntryCard(
+                            shortName: 'RV',
+                            title: 'ROYAL VILLAGE',
+                            persianTitle: 'رویال ویلیج',
+                            enterText: 'ورود به رویال ویلیج',
+                            accent: const Color(0xFF08764F),
+                            icon: Icons.restaurant_rounded,
+                            onTap: () => _openRoyalVillage(context),
+                          ),
+                          const SizedBox(height: 18),
+                          _RoyalEntryCard(
+                            shortName: 'RC',
+                            title: 'ROYAL CLUB',
+                            persianTitle: 'رویال کلاب',
+                            enterText: 'ورود به رویال کلاب',
+                            accent: const Color(0xFFA31324),
+                            icon: Icons.workspace_premium_rounded,
+                            onTap: () => _comingSoon(context, 'Royal Club'),
+                          ),
+                          const Spacer(),
+                          const Text(
+                            'یک ورود، یک دنیای کامل',
+                            textDirection: TextDirection.rtl,
+                            style: TextStyle(
+                              color: goldLight,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
                       ),
-
-                      // =========================
-                      // ROYAL MALL
-                      // =========================
-                      _hotspot(
-                        left: .025,
-                        top: .162,
-                        width: .225,
-                        height: .355,
-                        onTap: () =>
-                            _comingSoon(context, 'Royal Mall'),
-                      ),
-
-                      // =========================
-                      // ROYAL VILLAGE
-                      // =========================
-                      _hotspot(
-                        left: .266,
-                        top: .162,
-                        width: .225,
-                        height: .355,
-                        onTap: () => _openRoyalVillage(context),
-                      ),
-
-                      // =========================
-                      // ROYAL HARMONIA
-                      // =========================
-                      _hotspot(
-                        left: .507,
-                        top: .162,
-                        width: .225,
-                        height: .355,
-                        onTap: () =>
-                            _comingSoon(context, 'Royal Harmonia'),
-                      ),
-
-                      // =========================
-                      // ROYAL SAZEH
-                      // =========================
-                      _hotspot(
-                        left: .747,
-                        top: .162,
-                        width: .225,
-                        height: .355,
-                        onTap: () => _openRoyalSazeh(context),
-                      ),
-
-                      // =========================
-                      // ROYAL CLUB
-                      // =========================
-                      _hotspot(
-                        left: .028,
-                        top: .527,
-                        width: .944,
-                        height: .173,
-                        onTap: () =>
-                            _comingSoon(context, 'Royal Club'),
-                      ),
-
-                      // =========================
-                      // DISCOUNTS
-                      // =========================
-                      _hotspot(
-                        left: .025,
-                        top: .709,
-                        width: .225,
-                        height: .145,
-                        onTap: () => _comingSoon(
-                          context,
-                          'تخفیف‌ها و پیشنهادها',
-                        ),
-                      ),
-
-                      // =========================
-                      // RESERVATION
-                      // =========================
-                      _hotspot(
-                        left: .266,
-                        top: .709,
-                        width: .225,
-                        height: .145,
-                        onTap: () => _openRoyalVillage(context),
-                      ),
-
-                      // =========================
-                      // ORDERS
-                      // =========================
-                      _hotspot(
-                        left: .507,
-                        top: .709,
-                        width: .225,
-                        height: .145,
-                        onTap: () =>
-                            _comingSoon(context, 'سفارش‌ها'),
-                      ),
-
-                      // =========================
-                      // PROFILE
-                      // =========================
-                      _hotspot(
-                        left: .747,
-                        top: .709,
-                        width: .225,
-                        height: .145,
-                        onTap: () =>
-                            _comingSoon(context, 'پروفایل من'),
-                      ),
-
-                      // =========================
-                      // BOTTOM NAV - HOME
-                      // =========================
-                      _hotspot(
-                        left: .015,
-                        top: .866,
-                        width: .190,
-                        height: .082,
-                        onTap: () {
-                          // همین صفحه هستیم
-                        },
-                      ),
-
-                      // =========================
-                      // BOTTOM NAV - SC NETWORK
-                      // =========================
-                      _hotspot(
-                        left: .215,
-                        top: .866,
-                        width: .190,
-                        height: .082,
-                        onTap: () => _openConsulting(context),
-                      ),
-
-                      // =========================
-                      // CENTER SC LOGO
-                      // =========================
-                      _hotspot(
-                        left: .412,
-                        top: .850,
-                        width: .178,
-                        height: .102,
-                        onTap: () =>
-                            _comingSoon(context, 'SC Network'),
-                      ),
-
-                      // =========================
-                      // FAVORITES
-                      // =========================
-                      _hotspot(
-                        left: .605,
-                        top: .866,
-                        width: .190,
-                        height: .082,
-                        onTap: () =>
-                            _comingSoon(context, 'علاقه‌مندی‌ها'),
-                      ),
-
-                      // =========================
-                      // MENU
-                      // =========================
-                      _hotspot(
-                        left: .805,
-                        top: .866,
-                        width: .185,
-                        height: .082,
-                        onTap: () =>
-                            _showLuxuryMenu(context),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -287,188 +170,164 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _hotspot({
-    required double left,
-    required double top,
-    required double width,
-    required double height,
-    required VoidCallback onTap,
-  }) {
-    return Positioned.fill(
-      child: LayoutBuilder(
-        builder: (context, box) {
-          return Stack(
-            children: [
-              Positioned(
-                left: box.maxWidth * left,
-                top: box.maxHeight * top,
-                width: box.maxWidth * width,
-                height: box.maxHeight * height,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: onTap,
-                  child: Container(
-                    color: Colors.transparent,
-                  ),
-                ),
+  Widget _glow(double size, Color color) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(.14),
+              blurRadius: 90,
+              spreadRadius: 26,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RoyalEntryCard extends StatelessWidget {
+  final String shortName;
+  final String title;
+  final String persianTitle;
+  final String enterText;
+  final Color accent;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _RoyalEntryCard({
+    required this.shortName,
+    required this.title,
+    required this.persianTitle,
+    required this.enterText,
+    required this.accent,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(30),
+        child: Ink(
+          height: 150,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                accent.withOpacity(.84),
+                accent.withOpacity(.32),
+                const Color(0xFF080A0B),
+              ],
+            ),
+            border: Border.all(
+              color: HomePage.gold.withOpacity(.86),
+              width: 1.15,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: accent.withOpacity(.24),
+                blurRadius: 30,
+                spreadRadius: 1,
+              ),
+              const BoxShadow(
+                color: Colors.black54,
+                blurRadius: 18,
+                offset: Offset(0, 10),
               ),
             ],
-          );
-        },
-      ),
-    );
-  }
-
-  void _showLuxuryMenu(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (sheetContext) {
-        return Container(
-          padding: const EdgeInsets.fromLTRB(
-            20,
-            18,
-            20,
-            30,
           ),
-          decoration: const BoxDecoration(
-            color: Color(0xFF080B0E),
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(30),
-            ),
-            border: Border(
-              top: BorderSide(
-                color: gold,
-                width: 1,
-              ),
-            ),
-          ),
-          child: SafeArea(
-            top: false,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Row(
               children: [
                 Container(
-                  width: 55,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 22),
+                  width: 78,
+                  height: 78,
                   decoration: BoxDecoration(
-                    color: gold,
-                    borderRadius: BorderRadius.circular(20),
+                    shape: BoxShape.circle,
+                    color: Colors.black.withOpacity(.30),
+                    border: Border.all(
+                      color: HomePage.gold.withOpacity(.82),
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    shortName,
+                    textDirection: TextDirection.ltr,
+                    style: const TextStyle(
+                      color: HomePage.goldLight,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.5,
+                    ),
                   ),
                 ),
-
-                const Text(
-                  'SAHAND CONSORTIUM',
-                  textDirection: TextDirection.ltr,
-                  style: TextStyle(
-                    color: gold,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.8,
+                const SizedBox(width: 17),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        textDirection: TextDirection.ltr,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        persianTitle,
+                        textDirection: TextDirection.rtl,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 13),
+                      Row(
+                        children: [
+                          Text(
+                            enterText,
+                            textDirection: TextDirection.rtl,
+                            style: const TextStyle(
+                              color: HomePage.goldLight,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          const Icon(
+                            Icons.arrow_forward_rounded,
+                            color: HomePage.goldLight,
+                            size: 19,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-
-                const SizedBox(height: 20),
-
-                _menuItem(
-                  icon: Icons.restaurant_rounded,
-                  title: 'Royal Village',
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    _openRoyalVillage(context);
-                  },
+                Icon(
+                  icon,
+                  color: HomePage.goldLight.withOpacity(.95),
+                  size: 32,
                 ),
-
-                _menuItem(
-                  icon: Icons.apartment_rounded,
-                  title: 'Royal Mall',
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    _comingSoon(context, 'Royal Mall');
-                  },
-                ),
-
-                _menuItem(
-                  icon: Icons.architecture_rounded,
-                  title: 'Royal Sazeh',
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    _openRoyalSazeh(context);
-                  },
-                ),
-_menuItem(
-  icon: Icons.auto_graph_rounded,
-  title: 'Strategy & Management',
-  onTap: () {
-    Navigator.pop(sheetContext);
-    _openConsulting(context);
-  },
-),
-
-_menuItem(
-  icon: Icons.calendar_month_outlined,
-  title: 'رزروهای من',
-  onTap: () {
-    Navigator.pop(sheetContext);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const MyReservationsPage(),
-      ),
-    );
-  },
-),
-
-_menuItem(
-  icon: Icons.person_outline_rounded,
-  title: 'پروفایل من',
-  onTap: () {
-    Navigator.pop(sheetContext);
-    _comingSoon(context, 'پروفایل من');
-  },
-),
-
-      ],
-      ),
-    ),
-  );
-},
-);
-  }
-
-  Widget _menuItem({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0D1114),
-        borderRadius: BorderRadius.circular(17),
-        border: Border.all(
-          color: gold.withOpacity(.35),
-        ),
-      ),
-      child: ListTile(
-        onTap: onTap,
-        leading: Icon(
-          icon,
-          color: gold,
-        ),
-        title: Text(
-          title,
-          textDirection: TextDirection.rtl,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
+              ],
+            ),
           ),
-        ),
-        trailing: const Icon(
-          Icons.chevron_left_rounded,
-          color: gold,
         ),
       ),
     );
