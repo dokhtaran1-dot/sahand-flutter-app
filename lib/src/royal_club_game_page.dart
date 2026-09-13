@@ -75,6 +75,7 @@ class _RoyalClubGamePageState extends State<RoyalClubGamePage> {
               itemCount: 9,
               itemBuilder: (_, i) => AnimatedOpacity(duration: const Duration(milliseconds: 120), opacity: playing && i == crown ? 1 : .08,
                 child: InkWell(onTap: i == crown ? hit : null, borderRadius: BorderRadius.circular(20), child: Container(alignment: Alignment.center, decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), border: Border.all(color: gold.withOpacity(.5))), child: const Text('👑', style: TextStyle(fontSize: 46)))),
+              ),
             ),
           )),
           const SizedBox(height: 14),
