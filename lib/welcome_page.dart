@@ -86,7 +86,6 @@ class _WelcomePageState extends State<WelcomePage> {
           return Stack(
             fit: StackFit.expand,
             children: [
-              // Exact approved ROYAL 1 artwork.
               Image.memory(
                 _backgroundBytes,
                 fit: BoxFit.fill,
@@ -94,7 +93,7 @@ class _WelcomePageState extends State<WelcomePage> {
                 filterQuality: FilterQuality.high,
               ),
 
-              // Only the TV screen changes. The gold TV frame stays untouched.
+              // TV content: every slide is shown completely. Nothing is cropped.
               Positioned(
                 left: w * 0.067,
                 right: w * 0.070,
@@ -129,13 +128,17 @@ class _WelcomePageState extends State<WelcomePage> {
                               if (currentChild != null) currentChild,
                             ],
                           ),
-                          child: Image.asset(
-                            _slides[_current],
-                            key: ValueKey(_current),
-                            fit: BoxFit.cover,
-                            alignment: Alignment.center,
-                            filterQuality: FilterQuality.high,
-                            gaplessPlayback: true,
+                          child: Center(
+                            child: Image.asset(
+                              _slides[_current],
+                              key: ValueKey(_current),
+                              width: double.infinity,
+                              height: double.infinity,
+                              fit: BoxFit.contain,
+                              alignment: Alignment.center,
+                              filterQuality: FilterQuality.high,
+                              gaplessPlayback: true,
+                            ),
                           ),
                         ),
                         Positioned(
@@ -173,7 +176,6 @@ class _WelcomePageState extends State<WelcomePage> {
                 ),
               ),
 
-              // Invisible tap area exactly over ENTER THE ROYAL WORD / ورود.
               Positioned(
                 left: w * 0.175,
                 right: w * 0.175,
