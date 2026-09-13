@@ -19,6 +19,28 @@ jobs:
         with:
           flutter-version: '3.24.5'
 
+      - name: Rebuild Royal 1 page two artwork
+        run: |
+          python3 - <<'PY'
+          import base64, pathlib, re
+          root = pathlib.Path('.')
+          parts = []
+          for i in range(1, 6):
+              text = (root / f'lib/src/page2_data_{i}.dart').read_text()
+              match = re.search(r"=\s*'([^']*)';", text, re.S)
+              if not match:
+                  raise SystemExit(f'Could not read page2_data_{i}.dart')
+              parts.append(match.group(1))
+          raw = base64.b64decode(''.join(parts), validate=True)
+          if not raw.startswith(b'\xff\xd8') or not raw.endswith(b'\xff\xd9'):
+              raise SystemExit('Royal 1 page image is not a valid complete JPEG')
+          out = root / 'assets/image/royal1_page2_final.jpg'
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_bytes(raw)
+          print(f'Created {out} ({len(raw)} bytes)')
+          PY
+          file assets/image/royal1_page2_final.jpg
+
       - name: Install Royal 1 launcher icon
         run: |
           base64 --decode tooling/royal1_icon.b64 > /tmp/royal1_icon.png
