@@ -35,7 +35,7 @@ jobs:
           import base64, pathlib, re
           root = pathlib.Path('.')
           parts = []
-          for i in range(1, 6):
+          for i in range(1, 13):
               text = (root / f'lib/src/page2_data_{i}.dart').read_text()
               match = re.search(r"=\s*'([^']*)';", text, re.S)
               if not match:
