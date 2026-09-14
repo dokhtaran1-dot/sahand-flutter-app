@@ -1,0 +1,19 @@
+name: Inspect Assets
+
+on:
+  push:
+    branches:
+      - fix-entry-home-ultra
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Upload original image assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-image-assets
+          path: |
+            assets/image/Welcome.png
+            assets/image/Home.png
