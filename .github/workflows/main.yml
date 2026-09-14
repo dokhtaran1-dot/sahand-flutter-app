@@ -19,12 +19,6 @@ jobs:
         with:
           flutter-version: '3.24.5'
 
-      - name: Install full-resolution Royal 1 page two artwork
-        run: |
-          base64 --decode tooling/royal1_page2_hd.b64 > assets/image/royal1_page2_final.jpg
-          file assets/image/royal1_page2_final.jpg
-          identify assets/image/royal1_page2_final.jpg || true
-
       - name: Install Royal 1 launcher icon
         run: |
           base64 --decode tooling/royal1_icon.b64 > /tmp/royal1_icon.png
