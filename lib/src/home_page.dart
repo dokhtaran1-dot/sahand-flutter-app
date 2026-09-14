@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'royal_village_page.dart';
 import 'royal_club_game_page.dart';
+import 'royal_deal_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -36,6 +37,12 @@ class HomePage extends StatelessWidget {
   void _openRoyalClub(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const RoyalClubGamePage()),
+    );
+  }
+
+  void _openRoyalDeal(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RoyalDealPage()),
     );
   }
 
@@ -86,7 +93,7 @@ class HomePage extends StatelessWidget {
               Positioned.fromRect(
                 rect: deal,
                 child: GestureDetector(
-                  onTap: () => _comingSoon(context, 'Royal Deal'),
+                  onTap: () => _openRoyalDeal(context),
                   child: Container(
                     margin: EdgeInsets.symmetric(horizontal: w * .008, vertical: h * .006),
                     decoration: BoxDecoration(
