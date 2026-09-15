@@ -65,7 +65,7 @@ class HomePage extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 Image.asset(
-                  'assets/image/royal1_home_exact.jpg',
+                  'assets/image/Home.png',
                   width: _designWidth,
                   height: _designHeight,
                   fit: BoxFit.fill,
