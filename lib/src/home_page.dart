@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 
 import 'royal_village_page.dart';
@@ -7,8 +9,9 @@ import 'royal_deal_page.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  static const double _artWidth = 941;
-  static const double _artHeight = 1672;
+  static const double _artWidth = 960;
+  static const double _artHeight = 1707;
+  static const String _art = 'assets/image/royal1_home_ultra.webp';
 
   void _comingSoon(BuildContext context, String title) {
     ScaffoldMessenger.of(context)
@@ -53,113 +56,63 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          // The approved artwork is 9:16-ish. Keep its original aspect ratio on
-          // every device. On very tall Fold screens the remaining space stays
-          // black instead of stretching/blurring the design.
-          final maxW = constraints.maxWidth;
-          final maxH = constraints.maxHeight;
-          final artAspect = _artWidth / _artHeight;
-
-          double artW = maxW;
-          double artH = artW / artAspect;
-          if (artH > maxH) {
-            artH = maxH;
-            artW = artH * artAspect;
-          }
-
-          Rect zone(double l, double t, double r, double b) => Rect.fromLTRB(
-                l * artW,
-                t * artH,
-                r * artW,
-                b * artH,
-              );
-
-          final rm = zone(0.015, 0.188, 0.315, 0.706);
-          final rc = zone(0.325, 0.245, 0.665, 0.706);
-          final rv = zone(0.675, 0.188, 0.985, 0.706);
-          final deal = zone(0.020, 0.716, 0.980, 0.884);
-          final more = zone(0.340, 0.895, 0.660, 0.965);
-          final menu = zone(0.000, 0.000, 0.140, 0.115);
-          final bell = zone(0.860, 0.000, 1.000, 0.115);
-
-          return ColoredBox(
-            color: Colors.black,
-            child: Center(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Fills very tall Fold screens so there are no empty black bands.
+          ImageFiltered(
+            imageFilter: ui.ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+            child: ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(0.42),
+                BlendMode.darken,
+              ),
+              child: Image.asset(
+                _art,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.high,
+                isAntiAlias: true,
+              ),
+            ),
+          ),
+          Center(
+            child: FittedBox(
+              fit: BoxFit.contain,
               child: SizedBox(
-                width: artW,
-                height: artH,
+                width: _artWidth,
+                height: _artHeight,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
                     Image.asset(
-                      'assets/image/Welcome.png',
-                      fit: BoxFit.contain,
-                      alignment: Alignment.center,
+                      _art,
+                      width: _artWidth,
+                      height: _artHeight,
+                      fit: BoxFit.fill,
                       filterQuality: FilterQuality.high,
                       isAntiAlias: true,
                       gaplessPlayback: true,
-                      errorBuilder: (_, __, ___) => const ColoredBox(
-                        color: Colors.black,
-                        child: Center(
-                          child: Text(
-                            'ROYAL 1',
-                            style: TextStyle(
-                              color: Color(0xFFE8C36A),
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 4,
-                            ),
-                          ),
-                        ),
-                      ),
                     ),
-
-                    // Only invisible hit areas sit above the approved artwork.
-                    // No extra cards, text or effects are drawn over the image.
-                    Positioned.fromRect(
-                      rect: rm,
-                      child: _TapZone(
-                        onTap: () => _comingSoon(context, 'Royal Mall'),
-                      ),
-                    ),
-                    Positioned.fromRect(
-                      rect: rc,
-                      child: _TapZone(onTap: () => _openRoyalClub(context)),
-                    ),
-                    Positioned.fromRect(
-                      rect: rv,
-                      child: _TapZone(onTap: () => _openRoyalVillage(context)),
-                    ),
-                    Positioned.fromRect(
-                      rect: deal,
-                      child: _TapZone(onTap: () => _openRoyalDeal(context)),
-                    ),
-                    Positioned.fromRect(
-                      rect: more,
-                      child: _TapZone(
-                        onTap: () => _comingSoon(context, 'More'),
-                      ),
-                    ),
-                    Positioned.fromRect(
-                      rect: menu,
-                      child: _TapZone(
-                        onTap: () => _comingSoon(context, 'Menu'),
-                      ),
-                    ),
-                    Positioned.fromRect(
-                      rect: bell,
-                      child: _TapZone(
-                        onTap: () => _comingSoon(context, 'Notifications'),
-                      ),
-                    ),
+                    Positioned(left: 0, top: 0, width: 135, height: 150,
+                      child: _TapZone(onTap: () => _comingSoon(context, 'Menu'))),
+                    Positioned(left: 825, top: 0, width: 135, height: 150,
+                      child: _TapZone(onTap: () => _comingSoon(context, 'Notifications'))),
+                    Positioned(left: 0, top: 300, width: 310, height: 875,
+                      child: _TapZone(onTap: () => _comingSoon(context, 'Royal Mall'))),
+                    Positioned(left: 305, top: 385, width: 350, height: 790,
+                      child: _TapZone(onTap: () => _openRoyalClub(context))),
+                    Positioned(left: 650, top: 300, width: 310, height: 875,
+                      child: _TapZone(onTap: () => _openRoyalVillage(context))),
+                    Positioned(left: 10, top: 1160, width: 940, height: 285,
+                      child: _TapZone(onTap: () => _openRoyalDeal(context))),
+                    Positioned(left: 330, top: 1450, width: 300, height: 180,
+                      child: _TapZone(onTap: () => _comingSoon(context, 'More'))),
                   ],
                 ),
               ),
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
