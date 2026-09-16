@@ -1,15 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-
-import 'generated/final420_0.dart';
-import 'generated/final420_1.dart';
-import 'generated/final420_2.dart';
-import 'generated/final420_3.dart';
-import 'generated/final420_4.dart';
-import 'generated/final420_5.dart';
 
 class WelcomePage extends StatefulWidget {
   final VoidCallback onEnter;
@@ -32,21 +23,12 @@ class _WelcomePageState extends State<WelcomePage> {
     'assets/image/screen_05.png',
   ];
 
-  late final Uint8List _backgroundBytes;
   Timer? _timer;
   int _current = 0;
 
   @override
   void initState() {
     super.initState();
-    _backgroundBytes = base64Decode(
-      final420_0 +
-          final420_1 +
-          final420_2 +
-          final420_3 +
-          final420_4 +
-          final420_5,
-    );
     _startTimer();
   }
 
@@ -86,14 +68,13 @@ class _WelcomePageState extends State<WelcomePage> {
           return Stack(
             fit: StackFit.expand,
             children: [
-              Image.memory(
-                _backgroundBytes,
+              Image.asset(
+                'assets/image/Welcome.png',
                 fit: BoxFit.fill,
-                gaplessPlayback: true,
                 filterQuality: FilterQuality.high,
+                isAntiAlias: true,
+                gaplessPlayback: true,
               ),
-
-              // TV content: every slide is shown completely. Nothing is cropped.
               Positioned(
                 left: w * 0.067,
                 right: w * 0.070,
@@ -175,7 +156,6 @@ class _WelcomePageState extends State<WelcomePage> {
                   ),
                 ),
               ),
-
               Positioned(
                 left: w * 0.175,
                 right: w * 0.175,
