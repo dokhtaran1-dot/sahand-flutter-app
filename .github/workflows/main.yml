@@ -30,7 +30,10 @@ jobs:
           test -s assets/image/screen_03.png
           test -s assets/image/screen_04.png
           test -s assets/image/screen_05.png
-          test -s assets/image/royal_village.png
+          test -s assets/image/rv_entry_part_0.bin
+          test -s assets/image/rv_entry_part_1.bin
+          test -s assets/image/rv_entry_part_2.bin
+          test -s assets/image/rv_entry_part_3.bin
           file assets/image/Welcome.png
           file assets/image/Home.png
 
@@ -50,10 +53,10 @@ jobs:
         run: flutter pub get
 
       - name: Build APK
-        run: flutter build apk --debug --build-name 1.0.9 --build-number 11
+        run: flutter build apk --debug --build-name 1.0.10 --build-number 12
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Royal1-v1.0.9-apk
+          name: Royal1-v1.0.10-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
