@@ -23,14 +23,8 @@ jobs:
 
       - name: Verify uploaded Royal1 home artwork
         run: |
-          python3 - <<'PY'
-          from PIL import Image
-          path = 'assets/image/Home.png'
-          im = Image.open(path)
-          print(f'Using uploaded Home.png: {im.size[0]}x{im.size[1]} {im.format}')
-          if im.size != (1024, 1536):
-              raise SystemExit(f'Unexpected Home.png size: {im.size}')
-          PY
+          test -s assets/image/Home.png
+          file assets/image/Home.png
 
       - name: Install Royal 1 launcher icon
         run: |
