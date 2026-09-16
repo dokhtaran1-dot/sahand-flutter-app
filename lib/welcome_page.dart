@@ -1,6 +1,9 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
-class WelcomePage extends StatelessWidget {
+class WelcomePage extends StatefulWidget {
   final VoidCallback onEnter;
 
   const WelcomePage({
@@ -9,41 +12,168 @@ class WelcomePage extends StatelessWidget {
   });
 
   @override
+  State<WelcomePage> createState() => _WelcomePageState();
+}
+
+class _WelcomePageState extends State<WelcomePage> {
+  static const double _designWidth = 1024;
+  static const double _designHeight = 1536;
+
+  final List<String> _slides = const [
+    'assets/image/screen_01.png',
+    'assets/image/screen_02.png',
+    'assets/image/screen_03.png',
+    'assets/image/screen_04.png',
+    'assets/image/screen_05.png',
+  ];
+
+  int _currentSlide = 0;
+  Timer? _slideTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _slideTimer = Timer.periodic(
+      const Duration(milliseconds: 2500),
+      (_) => _nextSlide(),
+    );
+  }
+
+  void _nextSlide() {
+    if (!mounted) return;
+    setState(() {
+      _currentSlide = (_currentSlide + 1) % _slides.length;
+    });
+  }
+
+  void _previousSlide() {
+    if (!mounted) return;
+    setState(() {
+      _currentSlide =
+          (_currentSlide - 1 + _slides.length) % _slides.length;
+    });
+  }
+
+  @override
+  void dispose() {
+    _slideTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final w = constraints.maxWidth;
-          final h = constraints.maxHeight;
+      body: ClipRect(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final scale = math.max(
+              constraints.maxWidth / _designWidth,
+              constraints.maxHeight / _designHeight,
+            );
+            final canvasWidth = _designWidth * scale;
+            final canvasHeight = _designHeight * scale;
 
-          return Stack(
-            fit: StackFit.expand,
-            children: [
-              Image.asset(
-                'assets/image/Welcome.png',
-                width: w,
-                height: h,
-                fit: BoxFit.fill,
-                filterQuality: FilterQuality.high,
-                gaplessPlayback: true,
-              ),
+            return OverflowBox(
+              alignment: Alignment.center,
+              minWidth: canvasWidth,
+              maxWidth: canvasWidth,
+              minHeight: canvasHeight,
+              maxHeight: canvasHeight,
+              child: SizedBox(
+                width: canvasWidth,
+                height: canvasHeight,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.asset(
+                      'assets/image/Welcome.png',
+                      fit: BoxFit.contain,
+                      filterQuality: FilterQuality.high,
+                    ),
 
-              // ENTER THE ROYAL WORLD
-              Positioned(
-                left: w * 0.20,
-                right: w * 0.20,
-                top: h * 0.81,
-                height: h * 0.105,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: onEnter,
-                  child: const SizedBox.expand(),
+                    Positioned(
+                      left: canvasWidth * 0.19,
+                      width: canvasWidth * 0.62,
+                      top: canvasHeight * 0.465,
+                      height: canvasHeight * 0.19,
+                      child: GestureDetector(
+                        onHorizontalDragEnd: (details) {
+                          final velocity = details.primaryVelocity ?? 0;
+                          if (velocity < -120) {
+                            _nextSlide();
+                          } else if (velocity > 120) {
+                            _previousSlide();
+                          }
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8 * scale),
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 500),
+                            transitionBuilder: (child, animation) =>
+                                FadeTransition(opacity: animation, child: child),
+                            layoutBuilder: (currentChild, previousChildren) {
+                              return Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  ...previousChildren,
+                                  if (currentChild != null) currentChild,
+                                ],
+                              );
+                            },
+                            child: Image.asset(
+                              _slides[_currentSlide],
+                              key: ValueKey<int>(_currentSlide),
+                              fit: BoxFit.cover,
+                              alignment: Alignment.center,
+                              filterQuality: FilterQuality.high,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    Positioned(
+                      left: canvasWidth * 0.145,
+                      top: canvasHeight * 0.520,
+                      width: canvasWidth * 0.10,
+                      height: canvasHeight * 0.09,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: _previousSlide,
+                        child: const SizedBox.expand(),
+                      ),
+                    ),
+
+                    Positioned(
+                      right: canvasWidth * 0.145,
+                      top: canvasHeight * 0.520,
+                      width: canvasWidth * 0.10,
+                      height: canvasHeight * 0.09,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: _nextSlide,
+                        child: const SizedBox.expand(),
+                      ),
+                    ),
+
+                    Positioned(
+                      left: canvasWidth * 0.235,
+                      right: canvasWidth * 0.235,
+                      bottom: canvasHeight * 0.055,
+                      height: canvasHeight * 0.075,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: widget.onEnter,
+                        child: const SizedBox.expand(),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
