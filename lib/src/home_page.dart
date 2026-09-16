@@ -7,7 +7,7 @@ import 'royal_deal_page.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  static const double _designWidth = 864;
+  static const double _designWidth = 1024;
   static const double _designHeight = 1536;
 
   void _comingSoon(BuildContext context, String title) {
@@ -55,9 +55,8 @@ class HomePage extends StatelessWidget {
       backgroundColor: Colors.black,
       body: SizedBox.expand(
         child: FittedBox(
-          fit: BoxFit.cover,
+          fit: BoxFit.fill,
           alignment: Alignment.center,
-          clipBehavior: Clip.hardEdge,
           child: SizedBox(
             width: _designWidth,
             height: _designHeight,
@@ -73,13 +72,13 @@ class HomePage extends StatelessWidget {
                   isAntiAlias: true,
                   gaplessPlayback: true,
                 ),
-                Positioned(left: 0, top: 0, width: 120, height: 155, child: _TapZone(onTap: () => _comingSoon(context, 'Menu'))),
-                Positioned(left: 745, top: 0, width: 119, height: 155, child: _TapZone(onTap: () => _comingSoon(context, 'Notifications'))),
-                Positioned(left: 0, top: 280, width: 286, height: 815, child: _TapZone(onTap: () => _comingSoon(context, 'Royal Mall'))),
-                Positioned(left: 280, top: 350, width: 300, height: 745, child: _TapZone(onTap: () => _openRoyalClub(context))),
-                Positioned(left: 575, top: 280, width: 289, height: 815, child: _TapZone(onTap: () => _openRoyalVillage(context))),
-                Positioned(left: 10, top: 1090, width: 845, height: 270, child: _TapZone(onTap: () => _openRoyalDeal(context))),
-                Positioned(left: 295, top: 1360, width: 280, height: 155, child: _TapZone(onTap: () => _comingSoon(context, 'More'))),
+                Positioned(left: 0, top: 0, width: 145, height: 155, child: _TapZone(onTap: () => _comingSoon(context, 'Menu'))),
+                Positioned(left: 875, top: 0, width: 149, height: 155, child: _TapZone(onTap: () => _comingSoon(context, 'Notifications'))),
+                Positioned(left: 0, top: 280, width: 340, height: 815, child: _TapZone(onTap: () => _comingSoon(context, 'Royal Mall'))),
+                Positioned(left: 332, top: 350, width: 356, height: 745, child: _TapZone(onTap: () => _openRoyalClub(context))),
+                Positioned(left: 681, top: 280, width: 343, height: 815, child: _TapZone(onTap: () => _openRoyalVillage(context))),
+                Positioned(left: 12, top: 1090, width: 1000, height: 270, child: _TapZone(onTap: () => _openRoyalDeal(context))),
+                Positioned(left: 350, top: 1360, width: 332, height: 155, child: _TapZone(onTap: () => _comingSoon(context, 'More'))),
               ],
             ),
           ),
