@@ -16,21 +16,25 @@ class WelcomePage extends StatelessWidget {
         builder: (context, constraints) {
           final w = constraints.maxWidth;
           final h = constraints.maxHeight;
+
           return Stack(
             fit: StackFit.expand,
             children: [
               Image.asset(
                 'assets/image/Welcome.png',
-                fit: BoxFit.cover,
-                alignment: Alignment.center,
+                width: w,
+                height: h,
+                fit: BoxFit.fill,
                 filterQuality: FilterQuality.high,
                 gaplessPlayback: true,
               ),
+
+              // ENTER THE ROYAL WORLD
               Positioned(
-                left: w * 0.16,
-                right: w * 0.16,
-                top: h * 0.79,
-                height: h * 0.13,
+                left: w * 0.20,
+                right: w * 0.20,
+                top: h * 0.81,
+                height: h * 0.105,
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: onEnter,

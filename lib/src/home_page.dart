@@ -7,7 +7,7 @@ import 'royal_deal_page.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  static const double _designWidth = 1024;
+  static const double _designWidth = 864;
   static const double _designHeight = 1536;
 
   void _comingSoon(BuildContext context, String title) {
@@ -57,6 +57,7 @@ class HomePage extends StatelessWidget {
         child: FittedBox(
           fit: BoxFit.fill,
           alignment: Alignment.center,
+          clipBehavior: Clip.hardEdge,
           child: SizedBox(
             width: _designWidth,
             height: _designHeight,
@@ -69,16 +70,75 @@ class HomePage extends StatelessWidget {
                   height: _designHeight,
                   fit: BoxFit.fill,
                   filterQuality: FilterQuality.high,
-                  isAntiAlias: true,
                   gaplessPlayback: true,
                 ),
-                Positioned(left: 0, top: 0, width: 145, height: 155, child: _TapZone(onTap: () => _comingSoon(context, 'Menu'))),
-                Positioned(left: 875, top: 0, width: 149, height: 155, child: _TapZone(onTap: () => _comingSoon(context, 'Notifications'))),
-                Positioned(left: 0, top: 280, width: 340, height: 815, child: _TapZone(onTap: () => _comingSoon(context, 'Royal Mall'))),
-                Positioned(left: 332, top: 350, width: 356, height: 745, child: _TapZone(onTap: () => _openRoyalClub(context))),
-                Positioned(left: 681, top: 280, width: 343, height: 815, child: _TapZone(onTap: () => _openRoyalVillage(context))),
-                Positioned(left: 12, top: 1090, width: 1000, height: 270, child: _TapZone(onTap: () => _openRoyalDeal(context))),
-                Positioned(left: 350, top: 1360, width: 332, height: 155, child: _TapZone(onTap: () => _comingSoon(context, 'More'))),
+
+                // Menu
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  width: 125,
+                  height: 155,
+                  child: _TapZone(onTap: () => _comingSoon(context, 'Menu')),
+                ),
+
+                // Notifications
+                Positioned(
+                  left: 735,
+                  top: 0,
+                  width: 129,
+                  height: 155,
+                  child: _TapZone(
+                    onTap: () => _comingSoon(context, 'Notifications'),
+                  ),
+                ),
+
+                // RM — Royal Mall
+                Positioned(
+                  left: 0,
+                  top: 290,
+                  width: 286,
+                  height: 800,
+                  child: _TapZone(
+                    onTap: () => _comingSoon(context, 'Royal Mall'),
+                  ),
+                ),
+
+                // RC — Royal Club
+                Positioned(
+                  left: 285,
+                  top: 365,
+                  width: 295,
+                  height: 725,
+                  child: _TapZone(onTap: () => _openRoyalClub(context)),
+                ),
+
+                // RV — Royal Village
+                Positioned(
+                  left: 578,
+                  top: 290,
+                  width: 286,
+                  height: 800,
+                  child: _TapZone(onTap: () => _openRoyalVillage(context)),
+                ),
+
+                // Royal Deal — only the banner itself
+                Positioned(
+                  left: 12,
+                  top: 1100,
+                  width: 840,
+                  height: 255,
+                  child: _TapZone(onTap: () => _openRoyalDeal(context)),
+                ),
+
+                // More
+                Positioned(
+                  left: 300,
+                  top: 1365,
+                  width: 264,
+                  height: 140,
+                  child: _TapZone(onTap: () => _comingSoon(context, 'More')),
+                ),
               ],
             ),
           ),

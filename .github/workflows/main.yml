@@ -21,9 +21,11 @@ jobs:
         with:
           flutter-version: '3.24.5'
 
-      - name: Verify uploaded Royal1 home artwork
+      - name: Verify Royal1 artwork files
         run: |
+          test -s assets/image/Welcome.png
           test -s assets/image/Home.png
+          file assets/image/Welcome.png
           file assets/image/Home.png
 
       - name: Install Royal 1 launcher icon
@@ -42,10 +44,10 @@ jobs:
         run: flutter pub get
 
       - name: Build APK
-        run: flutter build apk --debug --build-name 1.0.7 --build-number 9
+        run: flutter build apk --debug --build-name 1.0.8 --build-number 10
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: sahand-app-apk
+          name: Royal1-v1.0.8-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
