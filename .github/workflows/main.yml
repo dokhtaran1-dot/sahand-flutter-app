@@ -32,6 +32,14 @@ jobs:
           test -s assets/image/screen_03.png
           test -s assets/image/screen_04.png
           test -s assets/image/screen_05.png
+          test -s assets/image/salon_dore.png
+          test -s assets/image/salon_jardin.png
+          test -s assets/image/salon_lumiere.png
+          test -s assets/image/salon_royal.png
+          test -s assets/image/salon_prive.png
+          test -s assets/image/salon_noir.png
+          test -s assets/image/salon_ame_du_poete.png
+          test -s assets/image/rv_lounge_imperial_classique.png
           file assets/image/Welcome.png
           file assets/image/Home.png
           file assets/image/Rv_page2.png
@@ -47,7 +55,18 @@ jobs:
 
           zip_path = pathlib.Path('assets/image/Royal_Village_App_Upload.zip')
           out_dir = pathlib.Path('assets/image')
-          manifest = {}
+          manifest = {
+              '00_Salons': [
+                  'assets/image/rv_lounge_imperial_classique.png',
+                  'assets/image/salon_jardin.png',
+                  'assets/image/salon_lumiere.png',
+                  'assets/image/salon_dore.png',
+                  'assets/image/salon_royal.png',
+                  'assets/image/salon_prive.png',
+                  'assets/image/salon_noir.png',
+                  'assets/image/salon_ame_du_poete.png',
+              ]
+          }
 
           with zipfile.ZipFile(zip_path) as z:
               for info in z.infolist():
@@ -108,10 +127,10 @@ jobs:
         run: flutter pub get
 
       - name: Build APK
-        run: flutter build apk --debug --build-name 1.0.11 --build-number 13
+        run: flutter build apk --debug --build-name 1.0.12 --build-number 14
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Royal1-v1.0.11-apk
+          name: Royal1-v1.0.12-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
