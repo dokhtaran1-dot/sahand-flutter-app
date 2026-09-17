@@ -16,6 +16,8 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
   int round = 1;
   int openedThisRound = 0;
   int? bankerOffer;
+  String? bankerOfferLabel;
+  String? bankerOfferSubtitle;
   bool ended = false;
 
   int get _toOpen => round == 1 ? 5 : round == 2 ? 4 : round == 3 ? 3 : round == 4 ? 2 : 1;
