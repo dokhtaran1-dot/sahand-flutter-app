@@ -25,17 +25,72 @@ jobs:
         run: |
           test -s assets/image/Welcome.png
           test -s assets/image/Home.png
+          test -s assets/image/Rv_page2.png
+          test -s assets/image/Royal_Village_App_Upload.zip
           test -s assets/image/screen_01.png
           test -s assets/image/screen_02.png
           test -s assets/image/screen_03.png
           test -s assets/image/screen_04.png
           test -s assets/image/screen_05.png
-          test -s assets/image/rv_entry_part_0.bin
-          test -s assets/image/rv_entry_part_1.bin
-          test -s assets/image/rv_entry_part_2.bin
-          test -s assets/image/rv_entry_part_3.bin
           file assets/image/Welcome.png
           file assets/image/Home.png
+          file assets/image/Rv_page2.png
+
+      - name: Prepare Royal Village gallery assets
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import pathlib
+          import re
+          import zipfile
+
+          zip_path = pathlib.Path('assets/image/Royal_Village_App_Upload.zip')
+          out_dir = pathlib.Path('assets/image')
+          manifest = {}
+
+          with zipfile.ZipFile(zip_path) as z:
+              for info in z.infolist():
+                  if info.is_dir() or not info.filename.lower().endswith('.webp'):
+                      continue
+
+                  parts = pathlib.PurePosixPath(info.filename).parts
+                  if len(parts) < 2:
+                      continue
+
+                  category = parts[-2]
+                  original = parts[-1]
+                  stem = pathlib.Path(original).stem.lower()
+                  safe = re.sub(r'[^a-z0-9]+', '_', stem).strip('_') or 'image'
+                  filename = f'RVG_{category}_{safe}.webp'
+                  destination = out_dir / filename
+                  raw = z.read(info)
+
+                  if destination.exists():
+                      suffix = hashlib.sha1(info.filename.encode('utf-8')).hexdigest()[:8]
+                      destination = out_dir / f'RVG_{category}_{safe}_{suffix}.webp'
+
+                  destination.write_bytes(raw)
+                  manifest.setdefault(category, []).append(
+                      f'assets/image/{destination.name}'
+                  )
+
+          for values in manifest.values():
+              values.sort()
+
+          (out_dir / 'rv_gallery_manifest.json').write_text(
+              json.dumps(manifest, ensure_ascii=False, indent=2),
+              encoding='utf-8',
+          )
+
+          print('Royal Village gallery categories:')
+          for key in sorted(manifest):
+              print(f'  {key}: {len(manifest[key])}')
+          print('Total:', sum(len(v) for v in manifest.values()))
+
+          # The source ZIP is no longer needed inside the APK after extraction.
+          zip_path.unlink()
+          PY
 
       - name: Install Royal 1 launcher icon
         run: |
@@ -53,10 +108,10 @@ jobs:
         run: flutter pub get
 
       - name: Build APK
-        run: flutter build apk --debug --build-name 1.0.10 --build-number 12
+        run: flutter build apk --debug --build-name 1.0.11 --build-number 13
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Royal1-v1.0.10-apk
+          name: Royal1-v1.0.11-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
