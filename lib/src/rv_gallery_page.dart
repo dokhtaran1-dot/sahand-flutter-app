@@ -15,6 +15,7 @@ class _RvGalleryPageState extends State<RvGalleryPage> {
   static const _bg = Color(0xFF03110D);
 
   final Map<String, String> _labels = const {
+    '00_Salons': 'اتاق‌ها',
     '01_Cakes': 'کیک‌ها',
     '02_Fruit': 'میوه',
     '03_Drinks': 'نوشیدنی‌ها',
