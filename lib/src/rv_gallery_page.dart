@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -26,6 +27,10 @@ class _RvGalleryPageState extends State<RvGalleryPage> {
   };
 
   late final Future<Map<String, List<String>>> _future = _loadManifest();
+  final ScrollController _categoryController = ScrollController();
+  Timer? _autoTimer;
+  bool _autoStarted = false;
+  List<String> _autoKeys = const [];
   String? _selected;
 
   Future<Map<String, List<String>>> _loadManifest() async {
@@ -39,6 +44,50 @@ class _RvGalleryPageState extends State<RvGalleryPage> {
       if (values.isNotEmpty) result[entry.key] = values;
     }
     return result;
+  }
+
+  void _ensureAutoAdvance(List<String> keys) {
+    if (_autoStarted || keys.length < 2) return;
+    _autoStarted = true;
+    _autoKeys = List<String>.from(keys);
+
+    _autoTimer = Timer.periodic(const Duration(seconds: 4), (_) {
+      if (!mounted || _autoKeys.isEmpty) return;
+
+      final currentIndex = _autoKeys.indexOf(_selected ?? _autoKeys.first);
+      final nextIndex = currentIndex < 0
+          ? 0
+          : (currentIndex + 1) % _autoKeys.length;
+
+      setState(() {
+        _selected = _autoKeys[nextIndex];
+      });
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollCategoryTo(nextIndex);
+      });
+    });
+  }
+
+  void _scrollCategoryTo(int index) {
+    if (!_categoryController.hasClients) return;
+    final max = _categoryController.position.maxScrollExtent;
+    final target = (index * 125.0).clamp(0.0, max).toDouble();
+    _categoryController.animateTo(
+      target,
+      duration: const Duration(milliseconds: 550),
+      curve: Curves.easeInOutCubic,
+    );
+  }
+
+  void _selectCategory(String key, List<String> keys) {
+    final index = keys.indexOf(key);
+    setState(() => _selected = key);
+    if (index >= 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollCategoryTo(index);
+      });
+    }
   }
 
   void _openImage(String asset) {
@@ -64,6 +113,13 @@ class _RvGalleryPageState extends State<RvGalleryPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _autoTimer?.cancel();
+    _categoryController.dispose();
+    super.dispose();
   }
 
   @override
@@ -104,6 +160,7 @@ class _RvGalleryPageState extends State<RvGalleryPage> {
           final data = snapshot.data!;
           final keys = data.keys.toList()..sort();
           _selected ??= keys.first;
+          _ensureAutoAdvance(keys);
           final current = data[_selected] ?? const <String>[];
 
           return Column(
@@ -111,6 +168,7 @@ class _RvGalleryPageState extends State<RvGalleryPage> {
               SizedBox(
                 height: 62,
                 child: ListView.separated(
+                  controller: _categoryController,
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   scrollDirection: Axis.horizontal,
                   itemCount: keys.length,
@@ -120,7 +178,7 @@ class _RvGalleryPageState extends State<RvGalleryPage> {
                     final selected = key == _selected;
                     return ChoiceChip(
                       selected: selected,
-                      onSelected: (_) => setState(() => _selected = key),
+                      onSelected: (_) => _selectCategory(key, keys),
                       label: Text(
                         '${_labels[key] ?? key} (${data[key]!.length})',
                         textDirection: TextDirection.rtl,
@@ -137,40 +195,47 @@ class _RvGalleryPageState extends State<RvGalleryPage> {
                 ),
               ),
               Expanded(
-                child: GridView.builder(
-                  padding: const EdgeInsets.fromLTRB(10, 4, 10, 20),
-                  itemCount: current.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                    childAspectRatio: 0.88,
-                  ),
-                  itemBuilder: (context, index) {
-                    final asset = current[index];
-                    return InkWell(
-                      onTap: () => _openImage(asset),
-                      borderRadius: BorderRadius.circular(16),
-                      child: ClipRRect(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 450),
+                  child: GridView.builder(
+                    key: ValueKey<String>(_selected ?? ''),
+                    padding: const EdgeInsets.fromLTRB(10, 4, 10, 20),
+                    itemCount: current.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                      childAspectRatio: 0.88,
+                    ),
+                    itemBuilder: (context, index) {
+                      final asset = current[index];
+                      return InkWell(
+                        onTap: () => _openImage(asset),
                         borderRadius: BorderRadius.circular(16),
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF091B15),
-                            border: Border.all(color: _gold.withOpacity(.55)),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Image.asset(
-                            asset,
-                            fit: BoxFit.cover,
-                            filterQuality: FilterQuality.high,
-                            errorBuilder: (_, __, ___) => const Center(
-                              child: Icon(Icons.image_not_supported_outlined, color: _gold),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF091B15),
+                              border: Border.all(color: _gold.withOpacity(.55)),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Image.asset(
+                              asset,
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.high,
+                              errorBuilder: (_, __, ___) => const Center(
+                                child: Icon(
+                                  Icons.image_not_supported_outlined,
+                                  color: _gold,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
             ],
