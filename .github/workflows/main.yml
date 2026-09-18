@@ -26,6 +26,7 @@ jobs:
           test -s assets/image/Welcome.png
           test -s assets/image/Home.png
           test -s assets/image/Rv_page2.png
+          test -s assets/image/Rc_page2.png
           test -s assets/image/Royal_Village_App_Upload.zip
           test -s assets/image/deal_case.png
           test -s assets/image/deal_banker.png
@@ -135,10 +136,10 @@ jobs:
         run: flutter pub get
 
       - name: Build APK
-        run: flutter build apk --debug --build-name 1.0.15 --build-number 17
+        run: flutter build apk --debug --build-name 1.0.16 --build-number 18
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Royal1-v1.0.15-apk
+          name: Royal1-v1.0.16-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
