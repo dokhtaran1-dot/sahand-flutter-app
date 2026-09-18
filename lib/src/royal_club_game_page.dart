@@ -1,13 +1,18 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 
 import 'royal_crown_game_page.dart';
 import 'royal_deal_page.dart';
+import 'royal_mall_page.dart';
 
 class RoyalClubGamePage extends StatelessWidget {
   const RoyalClubGamePage({super.key});
 
+  static const double _artWidth = 941;
+  static const double _artHeight = 1672;
+  static const String _art = 'assets/image/Rc_page2.png';
   static const Color _gold = Color(0xFFE8C36A);
-  static const Color _burgundy = Color(0xFF6D0711);
 
   void _openDeal(BuildContext context) {
     Navigator.of(context).push(
@@ -18,6 +23,12 @@ class RoyalClubGamePage extends StatelessWidget {
   void _openCrown(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const RoyalCrownGamePage()),
+    );
+  }
+
+  void _openMall(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RoyalMallPage()),
     );
   }
 
@@ -34,203 +45,125 @@ class RoyalClubGamePage extends StatelessWidget {
           ),
           content: Text(
             text,
-            textDirection: TextDirection.rtl,
             textAlign: TextAlign.center,
+            textDirection: TextDirection.rtl,
             style: const TextStyle(color: Colors.white),
           ),
         ),
       );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: RadialGradient(
-              center: Alignment(0, -.55),
-              radius: 1.2,
-              colors: [Color(0xFF24130A), Color(0xFF070707), Colors.black],
+  void _showInfo(BuildContext context, String title, String body) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF0A0705),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        side: BorderSide(color: _gold),
+      ),
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 22, 24, 28),
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: _gold,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  body,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    height: 1.8,
+                  ),
+                ),
+              ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  void _showProfile(BuildContext context) {
+    final name = TextEditingController();
+    final phone = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF0A0705),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        side: BorderSide(color: _gold),
+      ),
+      builder: (sheetContext) => Padding(
+        padding: EdgeInsets.fromLTRB(
+          22,
+          22,
+          22,
+          MediaQuery.of(sheetContext).viewInsets.bottom + 28,
+        ),
+        child: Directionality(
+          textDirection: TextDirection.rtl,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 8, 12, 2),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: _gold),
-                    ),
-                    const Spacer(),
-                    const Text(
-                      'ROYAL CLUB',
-                      style: TextStyle(
-                        color: _gold,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 2.5,
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: () => _message(context, 'اعلان‌های باشگاه'),
-                      icon: const Icon(Icons.notifications_none_rounded, color: _gold),
-                    ),
-                  ],
+              const Text(
+                'پروفایل من',
+                style: TextStyle(
+                  color: _gold,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(18, 6, 18, 110),
-                  child: Column(
-                    children: [
-                      const Text(
-                        'Rc',
-                        style: TextStyle(
-                          color: _gold,
-                          fontSize: 76,
-                          fontFamily: 'serif',
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -4,
-                        ),
-                      ),
-                      const Text(
-                        'باشگاه رویال',
-                        textDirection: TextDirection.rtl,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 29,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      const Text(
-                        'MORE THAN A CLUB  •  A ROYAL LIFESTYLE',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white60,
-                          fontSize: 10,
-                          letterSpacing: 2.2,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Crown + Deal or No Deal only. No cards and no chips.
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.fromLTRB(22, 26, 22, 22),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF0C0907),
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(color: _gold.withOpacity(.7)),
-                          boxShadow: [
-                            BoxShadow(color: _gold.withOpacity(.10), blurRadius: 26),
-                          ],
-                        ),
-                        child: Column(
-                          children: [
-                            const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.workspace_premium_rounded, color: _gold, size: 86),
-                                SizedBox(width: 22),
-                                Icon(Icons.business_center_rounded, color: _gold, size: 86),
-                              ],
-                            ),
-                            const SizedBox(height: 18),
-                            const Text(
-                              'DEAL OR NO DEAL',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 26,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 1.2,
-                              ),
-                            ),
-                            const SizedBox(height: 7),
-                            const Text(
-                              'بازی ویژه اعضای باشگاه رویال',
-                              textDirection: TextDirection.rtl,
-                              style: TextStyle(color: _gold, fontSize: 15),
-                            ),
-                            const SizedBox(height: 18),
-                            SizedBox(
-                              width: double.infinity,
-                              height: 56,
-                              child: ElevatedButton.icon(
-                                onPressed: () => _openDeal(context),
-                                icon: const Icon(Icons.play_arrow_rounded),
-                                label: const Text(
-                                  'شروع DEAL OR NO DEAL',
-                                  textDirection: TextDirection.rtl,
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: _burgundy,
-                                  foregroundColor: Colors.white,
-                                  side: const BorderSide(color: _gold),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(28),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-
-                      GridView.count(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 12,
-                        crossAxisSpacing: 12,
-                        childAspectRatio: 1.35,
-                        children: [
-                          _RcTile(
-                            icon: Icons.emoji_events_outlined,
-                            title: 'تاج رویال',
-                            subtitle: 'چالش و امتیاز',
-                            onTap: () => _openCrown(context),
-                          ),
-                          _RcTile(
-                            icon: Icons.sports_esports_outlined,
-                            title: 'بازی‌ها',
-                            subtitle: 'چالش‌های باشگاه',
-                            onTap: () => _openCrown(context),
-                          ),
-                          _RcTile(
-                            icon: Icons.person_outline_rounded,
-                            title: 'پروفایل من',
-                            subtitle: 'اطلاعات و عضویت',
-                            onTap: () => _message(context, 'پروفایل در حال تکمیل است'),
-                          ),
-                          _RcTile(
-                            icon: Icons.card_membership_rounded,
-                            title: 'ثبت‌نام',
-                            subtitle: 'عضویت در Royal Club',
-                            onTap: () => _message(context, 'فرم ثبت‌نام در حال تکمیل است'),
-                          ),
-                          _RcTile(
-                            icon: Icons.card_giftcard_rounded,
-                            title: 'جوایز ویژه',
-                            subtitle: 'امتیاز و هدایا',
-                            onTap: () => _message(context, 'جوایز ویژه'),
-                          ),
-                          _RcTile(
-                            icon: Icons.local_offer_outlined,
-                            title: 'پیشنهادهای خاص',
-                            subtitle: 'ویژه اعضا',
-                            onTap: () => _message(context, 'پیشنهادهای اختصاصی Royal Club'),
-                          ),
-                        ],
-                      ),
-                    ],
+              const SizedBox(height: 18),
+              TextField(
+                controller: name,
+                style: const TextStyle(color: Colors.white),
+                decoration: _inputDecoration(
+                  'نام و نام خانوادگی',
+                  Icons.person_outline,
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: phone,
+                keyboardType: TextInputType.phone,
+                style: const TextStyle(color: Colors.white),
+                decoration: _inputDecoration(
+                  'شماره موبایل',
+                  Icons.phone_outlined,
+                ),
+              ),
+              const SizedBox(height: 18),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(sheetContext);
+                    _message(context, 'اطلاعات پروفایل ثبت شد');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF650810),
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: _gold),
+                  ),
+                  child: const Text(
+                    'ثبت اطلاعات',
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -238,130 +171,387 @@ class RoyalClubGamePage extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        color: Colors.black,
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: Container(
-          height: 72,
-          decoration: BoxDecoration(
-            color: const Color(0xFF090806),
-            borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: _gold.withOpacity(.65)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _BottomItem(
-                icon: Icons.home_rounded,
-                label: 'خانه',
-                onTap: () => Navigator.of(context).pop(),
-              ),
-              _BottomItem(
-                icon: Icons.sports_esports_outlined,
-                label: 'بازی‌ها',
-                onTap: () => _openCrown(context),
-              ),
-              _BottomItem(
-                icon: Icons.workspace_premium_rounded,
-                label: 'RC',
-                onTap: () {},
-                active: true,
-              ),
-              _BottomItem(
-                icon: Icons.person_outline_rounded,
-                label: 'پروفایل',
-                onTap: () => _message(context, 'پروفایل در حال تکمیل است'),
-              ),
-            ],
+    );
+  }
+
+  static InputDecoration _inputDecoration(String label, IconData icon) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: Colors.white70),
+      prefixIcon: Icon(icon, color: _gold),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: _gold),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: _gold, width: 1.6),
+      ),
+    );
+  }
+
+  void _showMore(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF0A0705),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        side: BorderSide(color: _gold),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(18, 18, 18, 26),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'ROYAL CLUB',
+                  style: TextStyle(
+                    color: _gold,
+                    fontSize: 21,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _MenuTile(
+                  icon: Icons.people_outline,
+                  title: 'PEOPLE',
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _showProfile(context);
+                  },
+                ),
+                _MenuTile(
+                  icon: Icons.workspace_premium_outlined,
+                  title: 'PRIVILEGES',
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _showInfo(
+                      context,
+                      'PRIVILEGES',
+                      'مزایا، امتیازها و دسترسی‌های اختصاصی اعضای Royal Club.',
+                    );
+                  },
+                ),
+                _MenuTile(
+                  icon: Icons.auto_awesome_outlined,
+                  title: 'EXPERIENCES',
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _showInfo(
+                      context,
+                      'EXPERIENCES',
+                      'تجربه‌های ویژه، رویدادها و پیشنهادهای اختصاصی اعضا.',
+                    );
+                  },
+                ),
+                _MenuTile(
+                  icon: Icons.sports_esports_outlined,
+                  title: 'GAMES',
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _openCrown(context);
+                  },
+                ),
+                _MenuTile(
+                  icon: Icons.card_giftcard_outlined,
+                  title: 'REWARDS',
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _showInfo(
+                      context,
+                      'REWARDS',
+                      'R1 Tickets، جوایز ویژه، VIP و پیشنهادهای Royal Club.',
+                    );
+                  },
+                ),
+                _MenuTile(
+                  icon: Icons.card_membership_outlined,
+                  title: 'ثبت‌نام',
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _showProfile(context);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          ImageFiltered(
+            imageFilter: ui.ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+            child: ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(.45),
+                BlendMode.darken,
+              ),
+              child: Image.asset(_art, fit: BoxFit.cover),
+            ),
+          ),
+          Center(
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: SizedBox(
+                width: _artWidth,
+                height: _artHeight,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.asset(
+                      _art,
+                      width: _artWidth,
+                      height: _artHeight,
+                      fit: BoxFit.fill,
+                      filterQuality: FilterQuality.high,
+                      gaplessPlayback: true,
+                    ),
+
+                    // Top menu
+                    Positioned(
+                      left: 0,
+                      top: 0,
+                      width: 150,
+                      height: 150,
+                      child: _TapZone(onTap: () => _showMore(context)),
+                    ),
+
+                    // Notification
+                    Positioned(
+                      left: 790,
+                      top: 0,
+                      width: 151,
+                      height: 145,
+                      child: _TapZone(
+                        onTap: () => _showInfo(
+                          context,
+                          'اعلان‌ها',
+                          'اعلان‌های Royal Club و پیشنهادهای جدید اینجا نمایش داده می‌شوند.',
+                        ),
+                      ),
+                    ),
+
+                    // Right menu: PEOPLE
+                    Positioned(
+                      left: 760,
+                      top: 135,
+                      width: 181,
+                      height: 62,
+                      child: _TapZone(onTap: () => _showProfile(context)),
+                    ),
+
+                    // PRIVILEGES
+                    Positioned(
+                      left: 760,
+                      top: 197,
+                      width: 181,
+                      height: 58,
+                      child: _TapZone(
+                        onTap: () => _showInfo(
+                          context,
+                          'PRIVILEGES',
+                          'مزایا و امتیازهای اختصاصی اعضای Royal Club.',
+                        ),
+                      ),
+                    ),
+
+                    // EXPERIENCES
+                    Positioned(
+                      left: 760,
+                      top: 255,
+                      width: 181,
+                      height: 58,
+                      child: _TapZone(
+                        onTap: () => _showInfo(
+                          context,
+                          'EXPERIENCES',
+                          'تجربه‌ها و رویدادهای اختصاصی Royal Club.',
+                        ),
+                      ),
+                    ),
+
+                    // GAMES
+                    Positioned(
+                      left: 760,
+                      top: 313,
+                      width: 181,
+                      height: 58,
+                      child: _TapZone(onTap: () => _openCrown(context)),
+                    ),
+
+                    // REWARDS
+                    Positioned(
+                      left: 760,
+                      top: 371,
+                      width: 181,
+                      height: 58,
+                      child: _TapZone(
+                        onTap: () => _showInfo(
+                          context,
+                          'REWARDS',
+                          'R1 Tickets، جوایز VIP و پیشنهادهای ویژه اعضا.',
+                        ),
+                      ),
+                    ),
+
+                    // Deal or No Deal
+                    Positioned(
+                      left: 205,
+                      top: 1000,
+                      width: 535,
+                      height: 125,
+                      child: _TapZone(onTap: () => _openDeal(context)),
+                    ),
+
+                    // Games
+                    Positioned(
+                      left: 62,
+                      top: 1130,
+                      width: 260,
+                      height: 225,
+                      child: _TapZone(onTap: () => _openCrown(context)),
+                    ),
+
+                    // Profile
+                    Positioned(
+                      left: 336,
+                      top: 1130,
+                      width: 260,
+                      height: 225,
+                      child: _TapZone(onTap: () => _showProfile(context)),
+                    ),
+
+                    // Rewards
+                    Positioned(
+                      left: 610,
+                      top: 1130,
+                      width: 270,
+                      height: 225,
+                      child: _TapZone(
+                        onTap: () => _showInfo(
+                          context,
+                          'جوایز ویژه',
+                          'R1 Tickets، VIP Parking، Dinner، Live Music و جوایز ویژه Royal Club.',
+                        ),
+                      ),
+                    ),
+
+                    // Bottom Home
+                    Positioned(
+                      left: 35,
+                      top: 1400,
+                      width: 165,
+                      height: 145,
+                      child: _TapZone(onTap: () => Navigator.of(context).pop()),
+                    ),
+
+                    // Bottom Games
+                    Positioned(
+                      left: 195,
+                      top: 1400,
+                      width: 175,
+                      height: 145,
+                      child: _TapZone(onTap: () => _openCrown(context)),
+                    ),
+
+                    // Bottom RC
+                    Positioned(
+                      left: 375,
+                      top: 1370,
+                      width: 190,
+                      height: 185,
+                      child: _TapZone(
+                        onTap: () => _showInfo(
+                          context,
+                          'ROYAL CLUB',
+                          'MORE THAN A CLUB • A ROYAL LIFESTYLE',
+                        ),
+                      ),
+                    ),
+
+                    // Bottom Royal Mall
+                    Positioned(
+                      left: 555,
+                      top: 1400,
+                      width: 180,
+                      height: 145,
+                      child: _TapZone(onTap: () => _openMall(context)),
+                    ),
+
+                    // Bottom More
+                    Positioned(
+                      left: 735,
+                      top: 1400,
+                      width: 175,
+                      height: 145,
+                      child: _TapZone(onTap: () => _showMore(context)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _RcTile extends StatelessWidget {
+class _TapZone extends StatelessWidget {
+  final VoidCallback onTap;
+  const _TapZone({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+      ),
+    );
+  }
+}
+
+class _MenuTile extends StatelessWidget {
   final IconData icon;
   final String title;
-  final String subtitle;
   final VoidCallback onTap;
 
-  const _RcTile({
+  const _MenuTile({
     required this.icon,
     required this.title,
-    required this.subtitle,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(22),
+    return ListTile(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: const Color(0xFF0D0A08),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: RoyalClubGamePage._gold.withOpacity(.45)),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: RoyalClubGamePage._gold, size: 31),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              textDirection: TextDirection.rtl,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 15,
-              ),
-            ),
-            const SizedBox(height: 3),
-            Text(
-              subtitle,
-              textDirection: TextDirection.rtl,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white54, fontSize: 11),
-            ),
-          ],
+      leading: Icon(icon, color: const Color(0xFFE8C36A)),
+      title: Text(
+        title,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.1,
         ),
       ),
-    );
-  }
-}
-
-class _BottomItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final bool active;
-
-  const _BottomItem({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.active = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final color = active ? Colors.white : RoyalClubGamePage._gold;
-    return InkWell(
-      borderRadius: BorderRadius.circular(18),
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: color, size: 25),
-            const SizedBox(height: 3),
-            Text(label, style: TextStyle(color: color, fontSize: 11)),
-          ],
-        ),
+      trailing: const Icon(
+        Icons.chevron_left,
+        color: Color(0xFFE8C36A),
       ),
     );
   }
