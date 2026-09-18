@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import 'royal_village_page.dart';
+import 'royal_mall_page.dart';
 import 'royal_club_game_page.dart';
 import 'royal_deal_page.dart';
 
@@ -32,6 +33,12 @@ class HomePage extends StatelessWidget {
           ),
         ),
       );
+  }
+
+  void _openRoyalMall(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RoyalMallPage()),
+    );
   }
 
   void _openRoyalVillage(BuildContext context) {
@@ -98,7 +105,7 @@ class HomePage extends StatelessWidget {
                     Positioned(left: 825, top: 0, width: 135, height: 150,
                       child: _TapZone(onTap: () => _comingSoon(context, 'Notifications'))),
                     Positioned(left: 0, top: 300, width: 310, height: 875,
-                      child: _TapZone(onTap: () => _comingSoon(context, 'Royal Mall'))),
+                      child: _TapZone(onTap: () => _openRoyalMall(context))),
                     Positioned(left: 305, top: 385, width: 350, height: 790,
                       child: _TapZone(onTap: () => _openRoyalClub(context))),
                     Positioned(left: 650, top: 300, width: 310, height: 875,
