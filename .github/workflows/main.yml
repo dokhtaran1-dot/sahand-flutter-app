@@ -31,14 +31,23 @@ jobs:
             cp /tmp/royal1_icon.png "$dir/ic_launcher.png"
           done
 
+      - name: Verify active artwork
+        run: |
+          test -s assets/image/Home.png
+          test -s assets/image/Rv_page2.png
+          test -s assets/image/Rc_page2.png
+          test -s assets/image/deal_case.png
+          test -s assets/image/deal_banker.png
+          test -s assets/image/deal_jackpot.png
+
       - name: Get packages
         run: flutter pub get
 
       - name: Build APK
-        run: flutter build apk --debug --build-name 1.0.4 --build-number 6
+        run: flutter build apk --debug --build-name 1.0.5 --build-number 7
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: royal1-v1.0.4-apk
+          name: royal1-v1.0.5-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
