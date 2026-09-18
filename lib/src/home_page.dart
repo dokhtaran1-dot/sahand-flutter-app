@@ -9,8 +9,8 @@ import 'royal_club_game_page.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  static const double _artWidth = 960;
-  static const double _artHeight = 1707;
+  static const double _artWidth = 941;
+  static const double _artHeight = 1672;
   static const String _art = 'assets/image/Home.png';
 
   void _openRoyalMall(BuildContext context) {
@@ -67,36 +67,73 @@ class HomePage extends StatelessWidget {
                       gaplessPlayback: true,
                     ),
 
-                    // Final order requested: RM / RV / RC.
+                    // New Home.png layout — RM / RV / RC.
                     Positioned(
-                      left: 15,
-                      top: 520,
-                      width: 295,
-                      height: 760,
+                      left: 20,
+                      top: 590,
+                      width: 290,
+                      height: 690,
                       child: _TapZone(onTap: () => _openRoyalMall(context)),
                     ),
                     Positioned(
-                      left: 325,
-                      top: 520,
-                      width: 310,
-                      height: 760,
+                      left: 320,
+                      top: 590,
+                      width: 290,
+                      height: 690,
                       child: _TapZone(onTap: () => _openRoyalVillage(context)),
                     ),
                     Positioned(
-                      left: 650,
-                      top: 520,
-                      width: 295,
-                      height: 760,
+                      left: 620,
+                      top: 590,
+                      width: 290,
+                      height: 690,
                       child: _TapZone(onTap: () => _openRoyalClub(context)),
                     ),
 
-                    // Bottom central R1 acts as Home; no fourth game card here.
+                    // Bottom navigation.
                     Positioned(
-                      left: 350,
-                      top: 1430,
-                      width: 260,
-                      height: 210,
+                      left: 20,
+                      top: 1480,
+                      width: 180,
+                      height: 150,
                       child: _TapZone(onTap: () {}),
+                    ),
+                    Positioned(
+                      left: 200,
+                      top: 1480,
+                      width: 185,
+                      height: 150,
+                      child: _TapZone(onTap: () => _openRoyalClub(context)),
+                    ),
+                    Positioned(
+                      left: 385,
+                      top: 1450,
+                      width: 175,
+                      height: 185,
+                      child: _TapZone(onTap: () {}),
+                    ),
+                    Positioned(
+                      left: 560,
+                      top: 1480,
+                      width: 185,
+                      height: 150,
+                      child: _TapZone(onTap: () => _openRoyalVillage(context)),
+                    ),
+                    Positioned(
+                      left: 745,
+                      top: 1480,
+                      width: 176,
+                      height: 150,
+                      child: _TapZone(onTap: () => _openRoyalClub(context)),
+                    ),
+
+                    // Top menu.
+                    Positioned(
+                      left: 825,
+                      top: 15,
+                      width: 105,
+                      height: 105,
+                      child: _TapZone(onTap: () => _openRoyalClub(context)),
                     ),
                   ],
                 ),
