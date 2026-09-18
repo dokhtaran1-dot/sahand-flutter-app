@@ -393,7 +393,7 @@ class _InfoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: _RoyalClubPageGold.value),
+      leading: Icon(icon, color: const Color(0xFFE8C36A)),
       title: Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       subtitle: Text(subtitle, style: const TextStyle(color: Colors.white70)),
     );
@@ -425,6 +425,3 @@ class _MenuButton extends StatelessWidget {
   }
 }
 
-class _RoyalClubPageGold {
-  static const int value = 0xFFE8C36A;
-}
