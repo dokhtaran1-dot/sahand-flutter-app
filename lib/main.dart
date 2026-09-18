@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'welcome_page.dart';
 import 'src/home_page.dart';
 
 void main() {
@@ -20,10 +21,31 @@ class RoyalOneApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'ROYAL 1',
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.black,
+      ),
+      home: const _EntryGate(),
     );
+  }
+}
+
+class _EntryGate extends StatefulWidget {
+  const _EntryGate();
+
+  @override
+  State<_EntryGate> createState() => _EntryGateState();
+}
+
+class _EntryGateState extends State<_EntryGate> {
+  bool entered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    if (entered) return const HomePage();
+    return WelcomePage(onEnter: () => setState(() => entered = true));
   }
 }
