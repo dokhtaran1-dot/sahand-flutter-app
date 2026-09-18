@@ -122,6 +122,11 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
     }
   }
 
+  String? _rewardImage(int value) {
+    if (value == 10000) return 'assets/image/deal_jackpot.png';
+    return null;
+  }
+
   void _result(String title, String text) {
     showDialog(
       context: context,
@@ -227,27 +232,100 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
                             ),
                             boxShadow: [BoxShadow(color: (isMine ? Colors.red : gold).withOpacity(.24), blurRadius: 8)],
                           ),
-                          child: Center(
-                            child: isOpen
-                                ? Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(Icons.confirmation_number_outlined, color: gold),
-                                      const SizedBox(height: 4),
-                                      Text('${_caseValues[i]}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                                      const Text('R1', style: TextStyle(color: gold, fontSize: 11)),
-                                    ],
-                                  )
-                                : Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(Icons.business_center, color: gold, size: 30),
-                                      const SizedBox(height: 4),
-                                      Text('${i + 1}', style: const TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.bold)),
-                                      if (isMine) const Text('جعبه من', textDirection: TextDirection.rtl, style: TextStyle(color: Colors.redAccent, fontSize: 10)),
-                                    ],
-                                  ),
-                          ),
+                          child: isOpen
+                              ? Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    if (_rewardImage(_caseValues[i]) != null)
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(13),
+                                        child: Image.asset(
+                                          _rewardImage(_caseValues[i])!,
+                                          fit: BoxFit.cover,
+                                          filterQuality: FilterQuality.high,
+                                        ),
+                                      )
+                                    else
+                                      Padding(
+                                        padding: const EdgeInsets.all(7),
+                                        child: Image.asset(
+                                          'assets/image/deal_case.png',
+                                          fit: BoxFit.contain,
+                                          filterQuality: FilterQuality.high,
+                                          color: Colors.white.withOpacity(.22),
+                                          colorBlendMode: BlendMode.modulate,
+                                        ),
+                                      ),
+                                    Positioned(
+                                      left: 4,
+                                      right: 4,
+                                      bottom: 4,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(.80),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          '${_caseValues[i]} R1',
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(5),
+                                      child: Image.asset(
+                                        'assets/image/deal_case.png',
+                                        fit: BoxFit.contain,
+                                        filterQuality: FilterQuality.high,
+                                      ),
+                                    ),
+                                    Center(
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(.68),
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(color: gold.withOpacity(.8)),
+                                        ),
+                                        child: Text(
+                                          '${i + 1}',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    if (isMine)
+                                      const Positioned(
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 2,
+                                        child: Text(
+                                          'جعبه من',
+                                          textAlign: TextAlign.center,
+                                          textDirection: TextDirection.rtl,
+                                          style: TextStyle(
+                                            color: Colors.redAccent,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
                         ),
                       );
                     },
@@ -281,9 +359,18 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.phone_in_talk, color: gold, size: 46),
-                          const SizedBox(height: 10),
-                          const Text('بانکدار تماس گرفته است...', textDirection: TextDirection.rtl, style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(18),
+                            child: Image.asset(
+                              'assets/image/deal_banker.png',
+                              height: 155,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.high,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          const Text('بانکدار تماس گرفته است...', textAlign: TextAlign.center, textDirection: TextDirection.rtl, style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
                           const SizedBox(height: 18),
                           const Text('پیشنهاد فعلی', textDirection: TextDirection.rtl, style: TextStyle(color: gold)),
                           Text('${bankerOffer!}', style: const TextStyle(color: Colors.white, fontSize: 42, fontWeight: FontWeight.w900)),
