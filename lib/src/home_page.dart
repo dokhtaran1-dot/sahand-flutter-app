@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'royal_village_page.dart';
-import 'royal_club_game_page.dart';
+import 'royal_club_page.dart';
 import 'royal_deal_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -39,7 +39,7 @@ class HomePage extends StatelessWidget {
 
   void _openRoyalClub(BuildContext context) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const RoyalClubGamePage()),
+      MaterialPageRoute(builder: (_) => const RoyalClubPage()),
     );
   }
 
