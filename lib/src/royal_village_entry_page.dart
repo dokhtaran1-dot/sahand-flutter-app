@@ -76,12 +76,10 @@ class RoyalVillageEntryPage extends StatelessWidget {
                     height: 1.8,
                   ),
                 ),
-                  ],
-                ),
-              ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -94,10 +92,10 @@ class RoyalVillageEntryPage extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           ImageFiltered(
-            imageFilter: ui.ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+            imageFilter: ui.ImageFilter.blur(sigmaX: 20, sigmaY: 20),
             child: ColorFiltered(
               colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(.38),
+                Colors.black.withOpacity(.42),
                 BlendMode.darken,
               ),
               child: Image.asset(
@@ -126,201 +124,208 @@ class RoyalVillageEntryPage extends StatelessWidget {
                       gaplessPlayback: true,
                     ),
 
-                // Back
-                Positioned(
-                  left: 0,
-                  top: 0,
-                  width: 120,
-                  height: 130,
-                  child: _TapZone(onTap: () => Navigator.of(context).pop()),
-                ),
-
-                // Location / Tabriz
-                Positioned(
-                  left: 850,
-                  top: 0,
-                  width: 145,
-                  height: 120,
-                  child: _TapZone(
-                    onTap: () => _info(
-                      context,
-                      'Royal Village • Tabriz',
-                      'رویال ویلیج، تبریز\nبرای رزرو سالن و تجربه اختصاصی از بخش رزرو استفاده کنید.',
+                    // Back
+                    Positioned(
+                      left: 0,
+                      top: 0,
+                      width: 120,
+                      height: 130,
+                      child: _TapZone(
+                        onTap: () => Navigator.of(context).pop(),
+                      ),
                     ),
-                  ),
-                ),
 
-                // Top menu
-                Positioned(
-                  left: 995,
-                  top: 0,
-                  width: 149,
-                  height: 125,
-                  child: _TapZone(onTap: () => _openGallery(context)),
-                ),
-
-                // Top row salons
-                Positioned(
-                  left: 22,
-                  top: 520,
-                  width: 270,
-                  height: 220,
-                  child: _TapZone(
-                    onTap: () => _openSalon(
-                      context,
-                      'RV Lounge Impérial Classique',
+                    // Location / Tabriz
+                    Positioned(
+                      left: 850,
+                      top: 0,
+                      width: 145,
+                      height: 120,
+                      child: _TapZone(
+                        onTap: () => _info(
+                          context,
+                          'Royal Village • Tabriz',
+                          'رویال ویلیج، تبریز\nبرای رزرو سالن و تجربه اختصاصی از بخش رزرو استفاده کنید.',
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                Positioned(
-                  left: 296,
-                  top: 520,
-                  width: 255,
-                  height: 220,
-                  child: _TapZone(
-                    onTap: () => _openSalon(context, 'Salon Jardin'),
-                  ),
-                ),
-                Positioned(
-                  left: 554,
-                  top: 520,
-                  width: 255,
-                  height: 220,
-                  child: _TapZone(
-                    onTap: () => _openSalon(context, 'Salon Lumière'),
-                  ),
-                ),
-                Positioned(
-                  left: 812,
-                  top: 520,
-                  width: 310,
-                  height: 220,
-                  child: _TapZone(
-                    onTap: () => _openSalon(context, 'Salon Doré'),
-                  ),
-                ),
 
-                // Grand Salon
-                Positioned(
-                  left: 22,
-                  top: 744,
-                  width: 1100,
-                  height: 248,
-                  child: _TapZone(
-                    onTap: () => _openSalon(context, 'Grand Salon'),
-                  ),
-                ),
-
-                // Bottom row salons
-                Positioned(
-                  left: 22,
-                  top: 995,
-                  width: 270,
-                  height: 220,
-                  child: _TapZone(
-                    onTap: () => _openSalon(context, 'Salon Royal'),
-                  ),
-                ),
-                Positioned(
-                  left: 296,
-                  top: 995,
-                  width: 255,
-                  height: 220,
-                  child: _TapZone(
-                    onTap: () => _openSalon(context, 'Salon Privé'),
-                  ),
-                ),
-                Positioned(
-                  left: 554,
-                  top: 995,
-                  width: 255,
-                  height: 220,
-                  child: _TapZone(
-                    onTap: () => _openSalon(context, 'Salon Noir'),
-                  ),
-                ),
-                Positioned(
-                  left: 812,
-                  top: 995,
-                  width: 310,
-                  height: 220,
-                  child: _TapZone(
-                    onTap: () => _openSalon(context, 'Salon Âme du Poète'),
-                  ),
-                ),
-
-                // Bottom navigation — Home
-                Positioned(
-                  left: 0,
-                  top: 1228,
-                  width: 190,
-                  height: 308,
-                  child: _TapZone(onTap: () => Navigator.of(context).pop()),
-                ),
-
-                // Restaurants / salons
-                Positioned(
-                  left: 190,
-                  top: 1228,
-                  width: 195,
-                  height: 308,
-                  child: _TapZone(onTap: () => _openGallery(context)),
-                ),
-
-                // Reservation
-                Positioned(
-                  left: 385,
-                  top: 1228,
-                  width: 190,
-                  height: 308,
-                  child: _TapZone(onTap: () => _openReservation(context)),
-                ),
-
-                // Live music
-                Positioned(
-                  left: 575,
-                  top: 1228,
-                  width: 190,
-                  height: 308,
-                  child: _TapZone(
-                    onTap: () => _info(
-                      context,
-                      'موسیقی زنده',
-                      'رزرو موسیقی زنده و اجرای اختصاصی برای مراسم و سالن‌های Royal Village.',
+                    // Top menu
+                    Positioned(
+                      left: 995,
+                      top: 0,
+                      width: 149,
+                      height: 125,
+                      child: _TapZone(onTap: () => _openGallery(context)),
                     ),
-                  ),
-                ),
 
-                // Surprises
-                Positioned(
-                  left: 765,
-                  top: 1228,
-                  width: 190,
-                  height: 308,
-                  child: _TapZone(
-                    onTap: () => _info(
-                      context,
-                      'سوپرایزها',
-                      'سوپرایز تولد، کیک، گل‌آرایی، اجرای ویژه و خدمات اختصاصی Royal Village.',
+                    // Top row salons
+                    Positioned(
+                      left: 22,
+                      top: 520,
+                      width: 270,
+                      height: 220,
+                      child: _TapZone(
+                        onTap: () => _openSalon(
+                          context,
+                          'RV Lounge Impérial Classique',
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                    Positioned(
+                      left: 296,
+                      top: 520,
+                      width: 255,
+                      height: 220,
+                      child: _TapZone(
+                        onTap: () => _openSalon(context, 'Salon Jardin'),
+                      ),
+                    ),
+                    Positioned(
+                      left: 554,
+                      top: 520,
+                      width: 255,
+                      height: 220,
+                      child: _TapZone(
+                        onTap: () => _openSalon(context, 'Salon Lumière'),
+                      ),
+                    ),
+                    Positioned(
+                      left: 812,
+                      top: 520,
+                      width: 310,
+                      height: 220,
+                      child: _TapZone(
+                        onTap: () => _openSalon(context, 'Salon Doré'),
+                      ),
+                    ),
 
-                // Royal Club
-                Positioned(
-                  left: 955,
-                  top: 1228,
-                  width: 189,
-                  height: 308,
-                  child: _TapZone(onTap: () => _openRoyalClub(context)),
+                    // Grand Salon
+                    Positioned(
+                      left: 22,
+                      top: 744,
+                      width: 1100,
+                      height: 248,
+                      child: _TapZone(
+                        onTap: () => _openSalon(context, 'Grand Salon'),
+                      ),
+                    ),
+
+                    // Bottom row salons
+                    Positioned(
+                      left: 22,
+                      top: 995,
+                      width: 270,
+                      height: 220,
+                      child: _TapZone(
+                        onTap: () => _openSalon(context, 'Salon Royal'),
+                      ),
+                    ),
+                    Positioned(
+                      left: 296,
+                      top: 995,
+                      width: 255,
+                      height: 220,
+                      child: _TapZone(
+                        onTap: () => _openSalon(context, 'Salon Privé'),
+                      ),
+                    ),
+                    Positioned(
+                      left: 554,
+                      top: 995,
+                      width: 255,
+                      height: 220,
+                      child: _TapZone(
+                        onTap: () => _openSalon(context, 'Salon Noir'),
+                      ),
+                    ),
+                    Positioned(
+                      left: 812,
+                      top: 995,
+                      width: 310,
+                      height: 220,
+                      child: _TapZone(
+                        onTap: () => _openSalon(context, 'Salon Âme du Poète'),
+                      ),
+                    ),
+
+                    // Bottom navigation — Home
+                    Positioned(
+                      left: 0,
+                      top: 1228,
+                      width: 190,
+                      height: 308,
+                      child: _TapZone(
+                        onTap: () => Navigator.of(context).pop(),
+                      ),
+                    ),
+
+                    // Restaurants / salons
+                    Positioned(
+                      left: 190,
+                      top: 1228,
+                      width: 195,
+                      height: 308,
+                      child: _TapZone(onTap: () => _openGallery(context)),
+                    ),
+
+                    // Reservation
+                    Positioned(
+                      left: 385,
+                      top: 1228,
+                      width: 190,
+                      height: 308,
+                      child: _TapZone(onTap: () => _openReservation(context)),
+                    ),
+
+                    // Live music
+                    Positioned(
+                      left: 575,
+                      top: 1228,
+                      width: 190,
+                      height: 308,
+                      child: _TapZone(
+                        onTap: () => _info(
+                          context,
+                          'موسیقی زنده',
+                          'رزرو موسیقی زنده و اجرای اختصاصی برای مراسم و سالن‌های Royal Village.',
+                        ),
+                      ),
+                    ),
+
+                    // Surprises
+                    Positioned(
+                      left: 765,
+                      top: 1228,
+                      width: 190,
+                      height: 308,
+                      child: _TapZone(
+                        onTap: () => _info(
+                          context,
+                          'سوپرایزها',
+                          'سوپرایز تولد، کیک، گل‌آرایی، اجرای ویژه و خدمات اختصاصی Royal Village.',
+                        ),
+                      ),
+                    ),
+
+                    // Royal Club
+                    Positioned(
+                      left: 955,
+                      top: 1228,
+                      width: 189,
+                      height: 308,
+                      child: _TapZone(onTap: () => _openRoyalClub(context)),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
+
 }
 
 class _TapZone extends StatelessWidget {
