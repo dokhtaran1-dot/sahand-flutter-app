@@ -49,9 +49,12 @@ class HomePage extends StatelessWidget {
             ),
           ),
           Center(
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: SizedBox(
+            child: FractionallySizedBox(
+              widthFactor: .96,
+              heightFactor: .96,
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: SizedBox(
                 width: _artWidth,
                 height: _artHeight,
                 child: Stack(
@@ -135,7 +138,8 @@ class HomePage extends StatelessWidget {
                       height: 105,
                       child: _TapZone(onTap: () => _openRoyalClub(context)),
                     ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
