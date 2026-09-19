@@ -53,14 +53,22 @@ jobs:
           test -s assets/image/screen_04.png
           test -s assets/image/screen_05.png
 
+      - name: Extract Royal Village salon package
+        run: |
+          rm -rf assets/image/rv_upload
+          mkdir -p assets/image/rv_upload
+          unzip -o assets/image/Royal_Village_App_Upload.zip -d assets/image/rv_upload
+          echo "Royal Village package contents:"
+          find assets/image/rv_upload -type f | sort
+
       - name: Get packages
         run: flutter pub get
 
       - name: Build APK
-        run: flutter build apk --debug --build-name 1.0.9 --build-number 11
+        run: flutter build apk --debug --build-name 1.0.10 --build-number 12
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: royal1-v1.0.9-apk
+          name: royal1-v1.0.10-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
