@@ -361,12 +361,18 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(18),
-                            child: Image.asset(
-                              'assets/image/deal_banker.png',
-                              height: 155,
+                            child: Container(
+                              height: 260,
                               width: double.infinity,
-                              fit: BoxFit.cover,
-                              filterQuality: FilterQuality.high,
+                              color: Colors.black,
+                              alignment: Alignment.center,
+                              child: Image.asset(
+                                'assets/image/deal_banker.png',
+                                height: 260,
+                                fit: BoxFit.contain,
+                                alignment: Alignment.center,
+                                filterQuality: FilterQuality.high,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 12),
