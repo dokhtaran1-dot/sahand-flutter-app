@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SalonDetailPage extends StatefulWidget {
   final String salonName;
@@ -93,181 +94,184 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
     }
   }
 
-  void showDesigns() {
+  String _salonKey() {
+    return widget.salonName
+        .toLowerCase()
+        .replaceAll('â', 'a')
+        .replaceAll('é', 'e')
+        .replaceAll('è', 'e')
+        .replaceAll('è', 'e')
+        .replaceAll('é', 'e')
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '_')
+        .replaceAll(RegExp(r'^_|_$'), '');
+  }
+
+  Future<List<String>> _uploadedImages(String kind) async {
+    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+    final all = manifest
+        .listAssets()
+        .where((p) => p.startsWith('assets/image/rv_upload/'))
+        .where((p) {
+          final q = p.toLowerCase();
+          return q.endsWith('.png') ||
+              q.endsWith('.jpg') ||
+              q.endsWith('.jpeg') ||
+              q.endsWith('.webp');
+        })
+        .toList();
+
+    bool isCake(String p) {
+      final q = p.toLowerCase();
+      return q.contains('cake') || q.contains('kik') || q.contains('کیک');
+    }
+
+    bool isDesign(String p) {
+      final q = p.toLowerCase();
+      return q.contains('design') ||
+          q.contains('decor') ||
+          q.contains('birthday') ||
+          q.contains('theme') ||
+          q.contains('دیزاین');
+    }
+
+    var typed = all.where((p) => kind == 'cake' ? isCake(p) : isDesign(p)).toList();
+    final key = _salonKey();
+    final words = key.split('_').where((w) => w.length > 3).toList();
+    final salonSpecific = typed.where((p) {
+      final q = p.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_');
+      return words.any(q.contains);
+    }).toList();
+
+    if (salonSpecific.isNotEmpty) typed = salonSpecific;
+    typed.sort();
+    return typed;
+  }
+
+  void _showUploadedGallery({required String kind}) {
+    final isCake = kind == 'cake';
     showModalBottomSheet(
       context: context,
       backgroundColor: const Color(0xFF0B0D0C),
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(28),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (context) {
-        return SafeArea(
+      builder: (sheetContext) => SafeArea(
+        child: FractionallySizedBox(
+          heightFactor: .88,
           child: Padding(
-            padding: const EdgeInsets.all(18),
+            padding: const EdgeInsets.fromLTRB(14, 18, 14, 12),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  '۱۰ دیزاین اختصاصی',
-                  style: TextStyle(
+                Text(
+                  isCake ? 'کیک‌های اختصاصی' : 'دیزاین‌های اختصاصی',
+                  style: const TextStyle(
                     color: gold2,
                     fontSize: 21,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 5),
-                Text(
-                  widget.salonName,
-                  style: const TextStyle(
-                    color: Colors.white54,
-                  ),
-                ),
-                const SizedBox(height: 18),
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 10,
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 2.6,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                  ),
-                  itemBuilder: (context, index) {
-                    final number = index + 1;
-
-                    return InkWell(
-                      onTap: () {
-                        setState(() {
-                          selectedDesign = number;
-                        });
-                        Navigator.pop(context);
-                      },
-                      borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: selectedDesign == number
-                              ? emerald
-                              : panel,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: selectedDesign == number
-                                ? gold2
-                                : gold.withOpacity(.45),
-                          ),
-                        ),
-                        child: Center(
+                const SizedBox(height: 4),
+                Text(widget.salonName,
+                    style: const TextStyle(color: Colors.white54)),
+                const SizedBox(height: 14),
+                Expanded(
+                  child: FutureBuilder<List<String>>(
+                    future: _uploadedImages(kind),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState != ConnectionState.done) {
+                        return const Center(
+                          child: CircularProgressIndicator(color: gold2),
+                        );
+                      }
+                      final images = snapshot.data ?? const <String>[];
+                      if (images.isEmpty) {
+                        return Center(
                           child: Text(
-                            'دیزاین $number',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            isCake
+                                ? 'عکس‌های کیک در فایل ZIP پیدا نشد.'
+                                : 'عکس‌های دیزاین در فایل ZIP پیدا نشد.',
+                            textDirection: TextDirection.rtl,
+                            style: const TextStyle(color: Colors.white70),
                           ),
+                        );
+                      }
+                      return GridView.builder(
+                        itemCount: images.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          childAspectRatio: .82,
                         ),
-                      ),
-                    );
-                  },
+                        itemBuilder: (_, index) {
+                          final path = images[index];
+                          final number = index + 1;
+                          final selected = isCake
+                              ? selectedCake == number
+                              : selectedDesign == number;
+                          return InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (isCake) {
+                                  selectedCake = number;
+                                } else {
+                                  selectedDesign = number;
+                                }
+                              });
+                              Navigator.pop(sheetContext);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: panel,
+                                borderRadius: BorderRadius.circular(18),
+                                border: Border.all(
+                                  color: selected ? gold2 : gold.withOpacity(.55),
+                                  width: selected ? 2 : 1,
+                                ),
+                              ),
+                              clipBehavior: Clip.antiAlias,
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: Image.asset(
+                                      path,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      filterQuality: FilterQuality.high,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text(
+                                      isCake ? 'کیک $number' : 'دیزاین $number',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
           ),
-        );
-      },
-    );
-  }
-
-  void showCakes() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF0B0D0C),
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(28),
         ),
       ),
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  '۱۰ کیک اختصاصی',
-                  style: TextStyle(
-                    color: gold2,
-                    fontSize: 21,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  widget.salonName,
-                  style: const TextStyle(
-                    color: Colors.white54,
-                  ),
-                ),
-                const SizedBox(height: 18),
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 10,
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 2.6,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                  ),
-                  itemBuilder: (context, index) {
-                    final number = index + 1;
-
-                    return InkWell(
-                      onTap: () {
-                        setState(() {
-                          selectedCake = number;
-                        });
-                        Navigator.pop(context);
-                      },
-                      borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: selectedCake == number
-                              ? emerald
-                              : panel,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: selectedCake == number
-                                ? gold2
-                                : gold.withOpacity(.45),
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'کیک $number',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
+
+  void showDesigns() => _showUploadedGallery(kind: 'design');
+
+  void showCakes() => _showUploadedGallery(kind: 'cake');
 
   void reserve() {
     if (selectedDate == null || selectedTime == null) {
