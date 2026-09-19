@@ -47,15 +47,20 @@ jobs:
           test -s assets/image/salon_prive.png
           test -s assets/image/salon_noir.png
           test -s assets/image/salon_ame_du_poete.png
+          test -s assets/image/screen_01.png
+          test -s assets/image/screen_02.png
+          test -s assets/image/screen_03.png
+          test -s assets/image/screen_04.png
+          test -s assets/image/screen_05.png
 
       - name: Get packages
         run: flutter pub get
 
       - name: Build APK
-        run: flutter build apk --debug --build-name 1.0.7 --build-number 9
+        run: flutter build apk --debug --build-name 1.0.8 --build-number 10
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: royal1-v1.0.7-apk
+          name: royal1-v1.0.8-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
