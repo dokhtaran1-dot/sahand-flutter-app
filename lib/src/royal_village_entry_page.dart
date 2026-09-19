@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 
 import 'reservation_page.dart';
@@ -74,10 +76,12 @@ class RoyalVillageEntryPage extends StatelessWidget {
                     height: 1.8,
                   ),
                 ),
-              ],
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -86,25 +90,41 @@ class RoyalVillageEntryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SizedBox.expand(
-        child: FittedBox(
-          fit: BoxFit.fill,
-          alignment: Alignment.center,
-          clipBehavior: Clip.hardEdge,
-          child: SizedBox(
-            width: _designWidth,
-            height: _designHeight,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image.asset(
-                  _art,
-                  width: _designWidth,
-                  height: _designHeight,
-                  fit: BoxFit.fill,
-                  filterQuality: FilterQuality.high,
-                  gaplessPlayback: true,
-                ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          ImageFiltered(
+            imageFilter: ui.ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+            child: ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(.38),
+                BlendMode.darken,
+              ),
+              child: Image.asset(
+                _art,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.high,
+              ),
+            ),
+          ),
+          Center(
+            child: FittedBox(
+              fit: BoxFit.contain,
+              alignment: Alignment.center,
+              child: SizedBox(
+                width: _designWidth,
+                height: _designHeight,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.asset(
+                      _art,
+                      width: _designWidth,
+                      height: _designHeight,
+                      fit: BoxFit.contain,
+                      filterQuality: FilterQuality.high,
+                      gaplessPlayback: true,
+                    ),
 
                 // Back
                 Positioned(
