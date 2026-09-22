@@ -83,6 +83,27 @@ class RoyalScoreStore {
   static const _nameKey = 'rc_display_name_v1';
   static const _scoresKey = 'rc_local_scores_v1';
   static const _pendingKey = 'rc_pending_scores_v1';
+  static const _ticketKey = 'rc_local_ticket_balance_v1';
+  static const _earnedKey = 'rc_local_ticket_earned_v1';
+
+  static Future<int> ticketBalance() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_ticketKey) ?? 0;
+  }
+
+  static Future<int> lifetimeTickets() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_earnedKey) ?? 0;
+  }
+
+  static Future<void> _creditTickets(
+      SharedPreferences prefs, int tickets) async {
+    if (tickets <= 0) return;
+    await prefs.setInt(_ticketKey,
+        (prefs.getInt(_ticketKey) ?? 0) + tickets);
+    await prefs.setInt(_earnedKey,
+        (prefs.getInt(_earnedKey) ?? 0) + tickets);
+  }
 
   static Future<String?> displayName() async {
     final prefs = await SharedPreferences.getInstance();
@@ -139,7 +160,8 @@ class RoyalScoreStore {
 
   /// Records only scores from completed rounds. The current app has no
   /// verified accounts or protected scoring endpoint.
-  static Future<void> recordScore(RoyalScoreGame game, int points) async {
+  static Future<void> recordScore(RoyalScoreGame game, int points,
+      {int tickets = 0}) async {
     if (points <= 0 || points > 1000000) return;
     final prefs = await SharedPreferences.getInstance();
     final name = prefs.getString(_nameKey)?.trim() ?? '';
@@ -147,6 +169,8 @@ class RoyalScoreStore {
       final pending = _readPending(prefs);
       pending[game.name] = (pending[game.name] ?? 0) + points;
       await prefs.setString(_pendingKey, jsonEncode(pending));
+      await _creditTickets(prefs, tickets);
+      revision.value += 1;
       return;
     }
     final players = _readPlayers(prefs);
@@ -157,6 +181,7 @@ class RoyalScoreStore {
     players[key] = previous.add(game, points);
     await prefs.setString(_scoresKey,
         jsonEncode(players.values.map((p) => p.toJson()).toList()));
+    await _creditTickets(prefs, tickets);
     revision.value += 1;
   }
 
