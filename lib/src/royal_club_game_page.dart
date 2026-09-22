@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'royal_crown_game_page.dart';
 import 'royal_deal_page.dart';
+import 'royal_games_page.dart';
 import 'royal_club_tv.dart';
 import 'royal_top_preview.dart';
 import 'royal_leaderboard_page.dart';
@@ -21,6 +22,12 @@ class RoyalClubGamePage extends StatelessWidget {
   void _openDeal(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const RoyalDealPage()),
+    );
+  }
+
+  void _openGames(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RoyalGamesPage()),
     );
   }
 
@@ -268,7 +275,7 @@ class RoyalClubGamePage extends StatelessWidget {
                   title: 'GAMES',
                   onTap: () {
                     Navigator.pop(sheetContext);
-                    _openCrown(context);
+                    _openGames(context);
                   },
                 ),
                 _MenuTile(
@@ -399,7 +406,7 @@ class RoyalClubGamePage extends StatelessWidget {
                       top: 313,
                       width: 181,
                       height: 58,
-                      child: _TapZone(onTap: () => _openCrown(context)),
+                      child: _TapZone(onTap: () => _openGames(context)),
                     ),
 
                     // REWARDS
@@ -449,7 +456,7 @@ class RoyalClubGamePage extends StatelessWidget {
                       top: 1130,
                       width: 260,
                       height: 225,
-                      child: _TapZone(onTap: () => _openCrown(context)),
+                      child: _TapZone(onTap: () => _openGames(context)),
                     ),
 
                     // Profile
@@ -487,7 +494,7 @@ class RoyalClubGamePage extends StatelessWidget {
                       top: 1400,
                       width: 175,
                       height: 145,
-                      child: _TapZone(onTap: () => _openCrown(context)),
+                      child: _TapZone(onTap: () => _openGames(context)),
                     ),
 
                     // Bottom RC
