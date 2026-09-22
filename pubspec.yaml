@@ -26,6 +26,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/image/
+    - assets/image/rv_upload/
     - assets/images/ads/
     - assets/images/light_box/
     - assets/videos/
