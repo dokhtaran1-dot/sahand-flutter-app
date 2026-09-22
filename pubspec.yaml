@@ -27,6 +27,13 @@ flutter:
   assets:
     - assets/image/
     - assets/image/rv_upload/
+    - assets/image/rv_upload/Royal_Village_App_Upload/01_Cakes/
+    - assets/image/rv_upload/Royal_Village_App_Upload/02_Fruit/
+    - assets/image/rv_upload/Royal_Village_App_Upload/03_Drinks/
+    - assets/image/rv_upload/Royal_Village_App_Upload/04_Desserts/
+    - assets/image/rv_upload/Royal_Village_App_Upload/05_Food/
+    - assets/image/rv_upload/Royal_Village_App_Upload/06_Hookah_VIP/
+    - assets/image/rv_upload/Royal_Village_App_Upload/07_Menu_Posters/
     - assets/images/ads/
     - assets/images/light_box/
     - assets/videos/
