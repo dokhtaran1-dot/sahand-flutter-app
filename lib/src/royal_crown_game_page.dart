@@ -40,7 +40,8 @@ class _RoyalCrownGamePageState extends State<RoyalCrownGamePage> {
   }
 
   void _finish() async {
-    await RoyalScoreStore.recordScore(RoyalScoreGame.crown, score);
+    await RoyalScoreStore.recordScore(RoyalScoreGame.crown, score,
+        tickets: 2 + min(5, score ~/ 500));
     if (!mounted) return;
     showDialog(context: context, builder: (_) => AlertDialog(
       backgroundColor: const Color(0xFF120909),
