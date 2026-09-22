@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 
+import 'royal_score_store.dart';
+import 'royal_leaderboard_page.dart';
+
 class RoyalCrownGamePage extends StatefulWidget {
   const RoyalCrownGamePage({super.key});
   @override
@@ -36,7 +39,9 @@ class _RoyalCrownGamePageState extends State<RoyalCrownGamePage> {
     setState(() { score += 100; crown = _random.nextInt(9); });
   }
 
-  void _finish() {
+  void _finish() async {
+    await RoyalScoreStore.recordScore(RoyalScoreGame.crown, score);
+    if (!mounted) return;
     showDialog(context: context, builder: (_) => AlertDialog(
       backgroundColor: const Color(0xFF120909),
       title: const Text('THE ROYAL CROWN 👑', textAlign: TextAlign.center, style: TextStyle(color: Color(0xFFD7B45A))),
@@ -54,7 +59,7 @@ class _RoyalCrownGamePageState extends State<RoyalCrownGamePage> {
     const gold = Color(0xFFD7B45A);
     return Scaffold(
       backgroundColor: const Color(0xFF050505),
-      appBar: AppBar(backgroundColor: Colors.black, foregroundColor: gold, centerTitle: true, title: const Text('THE ROYAL CROWN 👑')),
+      appBar: AppBar(backgroundColor: Colors.black, foregroundColor: gold, centerTitle: true, title: const Text('THE ROYAL CROWN 👑'), actions: [IconButton(tooltip: '۱۰ بازیکن برتر', icon: const Icon(Icons.leaderboard_rounded), onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RoyalLeaderboardPage()))) ]),
       body: SafeArea(child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(children: [
