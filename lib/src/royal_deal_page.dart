@@ -129,7 +129,8 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
   }
 
   void _result(String title, String text, int points) async {
-    await RoyalScoreStore.recordScore(RoyalScoreGame.deal, points);
+    await RoyalScoreStore.recordScore(RoyalScoreGame.deal, points,
+        tickets: 2 + min(5, points ~/ 1000));
     if (!mounted) return;
     showDialog(
       context: context,
