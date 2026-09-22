@@ -1,5 +1,3 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 
 import 'reservation_page.dart';
@@ -12,8 +10,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
 
   static const String _art = 'assets/image/Rv_page2.png';
   static const double _designWidth = 1144;
-  static const double _designHeight = 1228;
-  static const double _artHeight = 1536;
+  static const double _designHeight = 1536;
   static const Color _gold = Color(0xFFD6B15E);
 
   void _openSalon(BuildContext context, String name) {
@@ -89,27 +86,11 @@ class RoyalVillageEntryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          ImageFiltered(
-            imageFilter: ui.ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: ColorFiltered(
-              colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(.42),
-                BlendMode.darken,
-              ),
-              child: Image.asset(
-                _art,
-                fit: BoxFit.cover,
-                filterQuality: FilterQuality.high,
-              ),
-            ),
-          ),
-          Center(
-            child: FittedBox(
-              fit: BoxFit.contain,
-              alignment: Alignment.center,
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: FittedBox(
+          fit: BoxFit.contain,
+          alignment: Alignment.topCenter,
               child: SizedBox(
                 width: _designWidth,
                 height: _designHeight,
@@ -119,8 +100,8 @@ class RoyalVillageEntryPage extends StatelessWidget {
                     Image.asset(
                       _art,
                       width: _designWidth,
-                      height: _artHeight,
-                      fit: BoxFit.fill,
+                      height: _designHeight,
+                      fit: BoxFit.contain,
                       alignment: Alignment.topCenter,
                       filterQuality: FilterQuality.high,
                       gaplessPlayback: true,
@@ -256,8 +237,6 @@ class RoyalVillageEntryPage extends StatelessWidget {
               ),
             ),
           ),
-        ],
-      ),
     );
   }
 
