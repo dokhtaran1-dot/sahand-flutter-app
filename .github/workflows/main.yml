@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build ROYAL1 Android + Web
 
 on:
   workflow_dispatch:
@@ -6,9 +6,21 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: royal1-pages
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout
@@ -34,19 +46,13 @@ jobs:
       - name: Verify active artwork
         run: |
           test -s assets/image/Home.png
+          test -s assets/image/Welcome.png
           test -s assets/image/Rv_page2.png
           test -s assets/image/Rc_page2.png
           test -s assets/image/deal_case.png
           test -s assets/image/deal_banker.png
           test -s assets/image/deal_jackpot.png
-          test -s assets/image/rv_lounge_imperial_classique.png
-          test -s assets/image/salon_jardin.png
-          test -s assets/image/salon_lumiere.png
-          test -s assets/image/salon_dore.png
-          test -s assets/image/salon_royal.png
-          test -s assets/image/salon_prive.png
-          test -s assets/image/salon_noir.png
-          test -s assets/image/salon_ame_du_poete.png
+          test -s assets/image/Royal_Village_App_Upload.zip
           test -s assets/image/screen_01.png
           test -s assets/image/screen_02.png
           test -s assets/image/screen_03.png
@@ -58,17 +64,31 @@ jobs:
           rm -rf assets/image/rv_upload
           mkdir -p assets/image/rv_upload
           unzip -o assets/image/Royal_Village_App_Upload.zip -d assets/image/rv_upload
-          echo "Royal Village package contents:"
           find assets/image/rv_upload -type f | sort
 
       - name: Get packages
         run: flutter pub get
 
       - name: Build APK
-        run: flutter build apk --debug --build-name 1.0.10 --build-number 12
+        run: flutter build apk --debug --build-name 1.0.11 --build-number 13
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: royal1-v1.0.10-apk
+          name: royal1-v1.0.11-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
+
+      - name: Build Web
+        run: flutter build web --release --base-href /sahand-flutter-app/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Web
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+      - name: Deploy Web
+        id: deployment
+        uses: actions/deploy-pages@v4
