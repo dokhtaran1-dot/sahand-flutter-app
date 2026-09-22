@@ -107,44 +107,22 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
   }
 
   Future<List<String>> _uploadedImages(String kind) async {
+    if (kind == 'design') {
+      // The uploaded ZIP has cakes, drinks and menus, but no design gallery.
+      return [imagePath]; // Show the actual salon photograph as reference.
+    }
     final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-    final all = manifest
-        .listAssets()
-        .where((p) => p.startsWith('assets/image/rv_upload/'))
-        .where((p) {
-          final q = p.toLowerCase();
-          return q.endsWith('.png') ||
-              q.endsWith('.jpg') ||
-              q.endsWith('.jpeg') ||
-              q.endsWith('.webp');
-        })
-        .toList();
-
-    bool isCake(String p) {
-      final q = p.toLowerCase();
-      return q.contains('cake') || q.contains('kik') || q.contains('کیک');
-    }
-
-    bool isDesign(String p) {
-      final q = p.toLowerCase();
-      return q.contains('design') ||
-          q.contains('decor') ||
-          q.contains('birthday') ||
-          q.contains('theme') ||
-          q.contains('دیزاین');
-    }
-
-    var typed = all.where((p) => kind == 'cake' ? isCake(p) : isDesign(p)).toList();
+    const folder = 'assets/image/rv_upload/Royal_Village_App_Upload/01_Cakes/';
+    final all = manifest.listAssets()
+        .where((p) => p.startsWith(folder) && p.toLowerCase().endsWith('.webp'))
+        .toList()..sort();
     final key = _salonKey();
     final words = key.split('_').where((w) => w.length > 3).toList();
-    final salonSpecific = typed.where((p) {
-      final q = p.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_');
-      return words.any(q.contains);
+    final preferred = all.where((p) {
+      final normalized = p.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_');
+      return words.any(normalized.contains);
     }).toList();
-
-    if (salonSpecific.isNotEmpty) typed = salonSpecific;
-    typed.sort();
-    return typed;
+    return [...preferred, ...all.where((p) => !preferred.contains(p))].take(10).toList();
   }
 
   void _showUploadedGallery({required String kind}) {
@@ -164,7 +142,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
             child: Column(
               children: [
                 Text(
-                  isCake ? 'کیک‌های اختصاصی' : 'دیزاین‌های اختصاصی',
+                  isCake ? 'کیک‌های اختصاصی' : 'تصویر دیزاین سالن',
                   style: const TextStyle(
                     color: gold2,
                     fontSize: 21,
@@ -174,6 +152,12 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
                 const SizedBox(height: 4),
                 Text(widget.salonName,
                     style: const TextStyle(color: Colors.white54)),
+                if (!isCake) const Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Text('در ZIP ارسالی، ۱۰ عکس مجزای دیزاین وجود ندارد. تصویر خود سالن نمایش داده می‌شود.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white70)),
+                ),
                 const SizedBox(height: 14),
                 Expanded(
                   child: FutureBuilder<List<String>>(
@@ -245,7 +229,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
                                   Padding(
                                     padding: const EdgeInsets.all(8),
                                     child: Text(
-                                      isCake ? 'کیک $number' : 'دیزاین $number',
+                                      isCake ? 'کیک $number' : 'تصویر سالن',
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
