@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -77,6 +78,8 @@ class RoyalPlayerScore {
 class RoyalScoreStore {
   RoyalScoreStore._();
 
+  static final ValueNotifier<int> revision = ValueNotifier<int>(0);
+
   static const _nameKey = 'rc_display_name_v1';
   static const _scoresKey = 'rc_local_scores_v1';
   static const _pendingKey = 'rc_pending_scores_v1';
@@ -131,6 +134,7 @@ class RoyalScoreStore {
     await prefs.setString(_scoresKey,
         jsonEncode(players.values.map((p) => p.toJson()).toList()));
     await prefs.remove(_pendingKey);
+    revision.value += 1;
   }
 
   /// Records only scores from completed rounds. The current app has no
@@ -153,6 +157,7 @@ class RoyalScoreStore {
     players[key] = previous.add(game, points);
     await prefs.setString(_scoresKey,
         jsonEncode(players.values.map((p) => p.toJson()).toList()));
+    revision.value += 1;
   }
 
   static Future<List<RoyalPlayerScore>> topTen(
