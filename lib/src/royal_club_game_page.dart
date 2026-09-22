@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'royal_crown_game_page.dart';
 import 'royal_deal_page.dart';
 import 'royal_club_tv.dart';
+import 'royal_top_preview.dart';
+import 'royal_leaderboard_page.dart';
 import 'royal_mall_page.dart';
 import 'royal_rewards_page.dart';
 
@@ -31,6 +33,12 @@ class RoyalClubGamePage extends StatelessWidget {
   void _openMall(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const RoyalMallPage()),
+    );
+  }
+
+  void _openLeaderboard(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RoyalLeaderboardPage()),
     );
   }
 
@@ -402,6 +410,17 @@ class RoyalClubGamePage extends StatelessWidget {
                       height: 58,
                       child: _TapZone(
                         onTap: () => _openRewards(context),
+                      ),
+                    ),
+
+                    // Top 10 preview: tap to view all 10 player names and scores.
+                    Positioned(
+                      left: 104,
+                      top: 435,
+                      width: 733,
+                      height: 105,
+                      child: RoyalTopTenPreview(
+                        onTap: () => _openLeaderboard(context),
                       ),
                     ),
 
