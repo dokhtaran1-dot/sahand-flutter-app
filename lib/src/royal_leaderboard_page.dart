@@ -342,7 +342,7 @@ class _RankRow extends StatelessWidget {
           const SizedBox(width: 11),
           CircleAvatar(
             backgroundColor: const Color(0xFF422A15),
-            child: Text(player.name.characters.first.toUpperCase(),
+            child: Text(player.name.substring(0, 1).toUpperCase(),
                 style: const TextStyle(
                     color: gold, fontWeight: FontWeight.w800)),
           ),
