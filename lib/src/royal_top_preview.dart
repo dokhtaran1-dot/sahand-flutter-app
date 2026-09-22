@@ -15,7 +15,9 @@ class RoyalTopTenPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<RoyalPlayerScore>>(
+    return ValueListenableBuilder<int>(
+      valueListenable: RoyalScoreStore.revision,
+      builder: (context, revision, _) => FutureBuilder<List<RoyalPlayerScore>>(
       future: RoyalScoreStore.topTen(),
       builder: (context, snapshot) {
         final players = snapshot.data ?? const <RoyalPlayerScore>[];
@@ -125,6 +127,7 @@ class RoyalTopTenPreview extends StatelessWidget {
           ),
         );
       },
+      ),
     );
   }
 }
