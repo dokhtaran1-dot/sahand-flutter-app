@@ -12,7 +12,8 @@ class RoyalVillageEntryPage extends StatelessWidget {
 
   static const String _art = 'assets/image/Rv_page2.png';
   static const double _designWidth = 1144;
-  static const double _designHeight = 1536;
+  static const double _designHeight = 1228;
+  static const double _artHeight = 1536;
   static const Color _gold = Color(0xFFD6B15E);
 
   void _openSalon(BuildContext context, String name) {
@@ -118,8 +119,9 @@ class RoyalVillageEntryPage extends StatelessWidget {
                     Image.asset(
                       _art,
                       width: _designWidth,
-                      height: _designHeight,
-                      fit: BoxFit.contain,
+                      height: _artHeight,
+                      fit: BoxFit.fill,
+                      alignment: Alignment.topCenter,
                       filterQuality: FilterQuality.high,
                       gaplessPlayback: true,
                     ),
