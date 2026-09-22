@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 import 'royal_deal_audio.dart';
+import 'royal_score_store.dart';
 
 class RoyalDealPage extends StatefulWidget {
   const RoyalDealPage({super.key});
@@ -103,7 +104,7 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
     final win = bankerOffer ?? 0;
     setState(() => ended = true);
     _fx('deal_win', volume: 1);
-    _result('DEAL 🤝', 'پیشنهاد بانکدار را قبول کردی\n$win تیکت R1');
+    _result('DEAL 🤝', 'پیشنهاد بانکدار را قبول کردی\n$win تیکت R1', win);
   }
 
   void _noDeal() {
@@ -118,7 +119,7 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
       final win = _caseValues[_myCase!];
       setState(() => ended = true);
       _fx(win >= 3000 ? 'jackpot' : 'final_reveal', volume: 1);
-      _result('FINAL CASE 👑', 'جعبه شما: $win تیکت R1');
+      _result('FINAL CASE 👑', 'جعبه شما: $win تیکت R1', win);
     }
   }
 
@@ -127,7 +128,9 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
     return null;
   }
 
-  void _result(String title, String text) {
+  void _result(String title, String text, int points) async {
+    await RoyalScoreStore.recordScore(RoyalScoreGame.deal, points);
+    if (!mounted) return;
     showDialog(
       context: context,
       barrierDismissible: false,
