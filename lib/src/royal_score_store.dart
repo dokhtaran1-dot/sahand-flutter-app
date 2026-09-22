@@ -89,7 +89,7 @@ class RoyalScoreStore {
 
   /// Display names are intentionally separate from phone numbers / real names.
   static Future<void> saveDisplayName(String proposedName) async {
-    final name = proposedName.trim().replaceAll(RegExp(r'\\s+'), ' ');
+    final name = proposedName.trim().replaceAll(RegExp(r'\s+'), ' ');
     if (name.length < 2 || name.length > 30) {
       throw const FormatException('نام نمایشی باید بین ۲ تا ۳۰ کاراکتر باشد.');
     }
