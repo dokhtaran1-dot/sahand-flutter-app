@@ -50,7 +50,7 @@ const List<_Level> _levels = [
         _jade, _ivory),
     _Spot(Offset(.47, .40), Icons.auto_awesome, Icons.diamond,
         _gold, _jade),
-    _Spot(Offset(.23, .76), Icons.local_cafe, Icons.wine_bar_outlined,
+    _Spot(Offset(.23, .76), Icons.local_cafe, Icons.local_drink_outlined,
         _ivory, _gold),
     _Spot(Offset(.79, .76), Icons.spa, Icons.star,
         _ruby, _gold),
