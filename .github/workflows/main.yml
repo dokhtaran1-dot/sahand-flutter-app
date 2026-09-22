@@ -43,6 +43,17 @@ jobs:
             cp /tmp/royal1_icon.png "$dir/ic_launcher.png"
           done
 
+      # A previous edit removed the large original zip from the current tree.
+      # Retrieve that exact checked-in version at build time, without putting
+      # the deleted archive back into the user's working branch.
+      - name: Restore required Royal Village salon archive
+        run: |
+          if [ ! -s assets/image/Royal_Village_App_Upload.zip ]; then
+            git fetch --no-tags --depth=1 origin ac94557573e15519e35b3b5f7b99388bb2553bed
+            git show ac94557573e15519e35b3b5f7b99388bb2553bed:assets/image/Royal_Village_App_Upload.zip > assets/image/Royal_Village_App_Upload.zip
+          fi
+          unzip -tq assets/image/Royal_Village_App_Upload.zip
+
       - name: Verify active artwork
         run: |
           test -s assets/image/Home.png
