@@ -359,16 +359,27 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(18),
-                            child: Container(
-                              height: 260,
-                              width: double.infinity,
+                          Container(
+                            height: 260,
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
                               color: Colors.black,
-                              alignment: Alignment.center,
+                              borderRadius: BorderRadius.circular(18),
+                              border: Border.all(color: gold, width: 2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: gold.withOpacity(.30),
+                                  blurRadius: 12,
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
                               child: Image.asset(
                                 'assets/image/deal_banker.png',
-                                height: 260,
+                                width: double.infinity,
+                                height: double.infinity,
                                 fit: BoxFit.contain,
                                 alignment: Alignment.center,
                                 filterQuality: FilterQuality.high,
