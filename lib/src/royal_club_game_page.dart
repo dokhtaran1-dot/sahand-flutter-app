@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'royal_crown_game_page.dart';
 import 'royal_deal_page.dart';
+import 'royal_club_tv.dart';
 import 'royal_mall_page.dart';
 import 'royal_rewards_page.dart';
 
@@ -402,6 +403,16 @@ class RoyalClubGamePage extends StatelessWidget {
                       child: _TapZone(
                         onTap: () => _openRewards(context),
                       ),
+                    ),
+
+                    // Dedicated RC television above the games section.
+                    // Existing artwork, menus, game buttons and rewards remain.
+                    const Positioned(
+                      left: 104,
+                      top: 548,
+                      width: 733,
+                      height: 414,
+                      child: RoyalClubTv(),
                     ),
 
                     // Deal or No Deal
