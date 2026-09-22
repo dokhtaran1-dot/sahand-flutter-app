@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'royal_crown_game_page.dart';
 import 'royal_deal_page.dart';
 import 'royal_mall_page.dart';
+import 'royal_rewards_page.dart';
 
 class RoyalClubGamePage extends StatelessWidget {
   const RoyalClubGamePage({super.key});
@@ -29,6 +30,12 @@ class RoyalClubGamePage extends StatelessWidget {
   void _openMall(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const RoyalMallPage()),
+    );
+  }
+
+  void _openRewards(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RoyalRewardsPage()),
     );
   }
 
@@ -260,11 +267,7 @@ class RoyalClubGamePage extends StatelessWidget {
                   title: 'REWARDS',
                   onTap: () {
                     Navigator.pop(sheetContext);
-                    _showInfo(
-                      context,
-                      'REWARDS',
-                      'R1 Tickets، جوایز ویژه، VIP و پیشنهادهای Royal Club.',
-                    );
+                    _openRewards(context);
                   },
                 ),
                 _MenuTile(
@@ -397,11 +400,7 @@ class RoyalClubGamePage extends StatelessWidget {
                       width: 181,
                       height: 58,
                       child: _TapZone(
-                        onTap: () => _showInfo(
-                          context,
-                          'REWARDS',
-                          'R1 Tickets، جوایز VIP و پیشنهادهای ویژه اعضا.',
-                        ),
+                        onTap: () => _openRewards(context),
                       ),
                     ),
 
@@ -439,11 +438,7 @@ class RoyalClubGamePage extends StatelessWidget {
                       width: 270,
                       height: 225,
                       child: _TapZone(
-                        onTap: () => _showInfo(
-                          context,
-                          'جوایز ویژه',
-                          'R1 Tickets، VIP Parking، Dinner، Live Music و جوایز ویژه Royal Club.',
-                        ),
+                        onTap: () => _openRewards(context),
                       ),
                     ),
 
