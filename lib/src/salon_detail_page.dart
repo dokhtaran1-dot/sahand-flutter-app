@@ -34,7 +34,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
         'assets/image/rv_lounge_imperial_classique.png',
     'Salon Doré': 'assets/image/salon_dore.png',
     'Salon Âme du Poète': 'assets/image/salon_ame_du_poete.png',
-    'Salon Royal': 'assets/image/salon_de_lame.png',
+    'Salon Royal': 'assets/image/salon_royal.png',
   };
 
   final Map<String, String> salonDescriptions = {
