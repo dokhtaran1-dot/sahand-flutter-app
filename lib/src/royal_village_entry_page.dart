@@ -440,7 +440,8 @@ class RoyalVillageEntryPage extends StatelessWidget {
                   ),
                 ),
               ),
-            );
+            ),
+          );
           },
         ),
       ),
