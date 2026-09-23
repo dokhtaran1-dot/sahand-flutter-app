@@ -199,8 +199,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SafeArea(
-        child: LayoutBuilder(
+      body: LayoutBuilder(
           builder: (context, constraints) {
             // Fit the complete approved poster to the phone width first.
             // This preserves its exact 1144×1536 aspect ratio and prevents
@@ -443,11 +442,9 @@ class RoyalVillageEntryPage extends StatelessWidget {
             ),
           );
           },
-        ),
       ),
     );
   }
-
 }
 
 class _TapZone extends StatelessWidget {
