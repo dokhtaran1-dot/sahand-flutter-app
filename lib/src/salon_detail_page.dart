@@ -37,6 +37,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
     'Salon Doré': 'assets/image/salon_dore.png',
     'Salon Âme du Poète': 'assets/image/salon_ame_du_poete.png',
     'Salon Royal': 'assets/image/salon_royal.png',
+    'Grand Salon': 'assets/image/Rv_page2.png',
   };
 
   final Map<String, String> salonDescriptions = {
@@ -60,7 +61,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
 
   String get imagePath =>
       salonImages[widget.salonName] ??
-      'assets/image/royal_village.png';
+      'assets/image/Rv_page2.png';
 
   String get description =>
       salonDescriptions[widget.salonName] ??
