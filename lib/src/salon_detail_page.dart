@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'reservation_page.dart';
+
 class SalonDetailPage extends StatefulWidget {
   final String salonName;
 
@@ -269,59 +271,20 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
       );
       return;
     }
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: panel,
-          title: const Text(
-            'درخواست رزرو',
-            textDirection: TextDirection.rtl,
-            style: TextStyle(color: gold2),
-          ),
-          content: Text(
-            '${widget.salonName}\n\n'
-            'تاریخ: ${selectedDate!.year}/${selectedDate!.month}/${selectedDate!.day}\n'
-            'ساعت: ${selectedTime!.format(context)}\n'
-            'دیزاین: ${selectedDesign ?? "انتخاب نشده"}\n'
-            'کیک: ${selectedCake ?? "انتخاب نشده"}',
-            textDirection: TextDirection.rtl,
-            style: const TextStyle(
-              color: Colors.white,
-              height: 1.8,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text(
-                'بازگشت',
-                style: TextStyle(color: Colors.white60),
-              ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: emerald,
-                foregroundColor: gold2,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'درخواست رزرو ثبت شد',
-                      textDirection: TextDirection.rtl,
-                    ),
-                  ),
-                );
-              },
-              child: const Text('ثبت درخواست'),
-            ),
-          ],
-        );
-      },
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ReservationPage(
+          salonName: widget.salonName,
+          initialDate: selectedDate,
+          initialTime: selectedTime,
+          initialDesign: selectedDesign == null
+              ? null
+              : 'دیزاین $selectedDesign',
+          initialCake: selectedCake == null
+              ? null
+              : 'کیک $selectedCake',
+        ),
+      ),
     );
   }
 
