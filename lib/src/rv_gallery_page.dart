@@ -13,7 +13,7 @@ class RvGalleryPage extends StatelessWidget {
     _SalonItem('Salon Jardin', 'assets/image/salon_jardin.png'),
     _SalonItem('Salon Lumière', 'assets/image/salon_lumiere.png'),
     _SalonItem('Salon Doré', 'assets/image/salon_dore.png'),
-    _SalonItem('Grand Salon', 'assets/image/royal_village.png'),
+    _SalonItem('Grand Salon', 'assets/image/Rv_page2.png'),
     _SalonItem('Salon Royal', 'assets/image/salon_royal.png'),
     _SalonItem('Salon Privé', 'assets/image/salon_prive.png'),
     _SalonItem('Salon Noir', 'assets/image/salon_noir.png'),
