@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'reservation_page.dart';
 import 'royal_club_game_page.dart';
@@ -73,6 +74,118 @@ class RoyalVillageEntryPage extends StatelessWidget {
                     fontSize: 15,
                     height: 1.8,
                   ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // These are store searches, not claims that an official app listing
+  // is already published. Replace them with verified product URLs when live.
+  static const String _bazaarSearch =
+      'https://cafebazaar.ir/search?q=ROYAL%20ONE';
+  static const String _playSearch =
+      'https://play.google.com/store/search?q=ROYAL%20ONE&c=apps';
+  static const String _appStoreSearch =
+      'https://apps.apple.com/us/search?term=ROYAL%20ONE';
+  static const String _instagram =
+      'https://www.instagram.com/the_royalmall/';
+
+  // Previously supplied Royal Village contact number. Confirm with the
+  // business before publishing externally.
+  static const String _whatsAppNumber = '989145353530';
+
+  Future<void> _openLink(
+    BuildContext context,
+    String link, {
+    required String title,
+  }) async {
+    final uri = Uri.parse(link);
+    try {
+      if (await launchUrl(uri, mode: LaunchMode.externalApplication)) return;
+      if (await launchUrl(uri, mode: LaunchMode.platformDefault)) return;
+    } catch (_) {
+      // Show a usable fallback instead of silently ignoring the tap.
+    }
+    if (!context.mounted) return;
+    _info(context, title, 'باز کردن لینک ممکن نشد.\\n$link');
+  }
+
+  Future<void> _openWhatsApp(BuildContext context) async {
+    final message = Uri.encodeComponent(
+      'سلام، برای رزرو سالن‌های رویال ویلیج راهنمایی می‌خواهم.',
+    );
+    await _openLink(
+      context,
+      'https://wa.me/$_whatsAppNumber?text=$message',
+      title: 'ارتباط با رویال ویلیج در واتساپ',
+    );
+  }
+
+  void _openStoreChooser(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: const Color(0xFF07150F),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+        side: BorderSide(color: _gold),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(18, 17, 18, 22),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('ROYAL ONE',
+                    style: TextStyle(color: _gold,
+                        fontSize: 24, fontWeight: FontWeight.w900)),
+                const SizedBox(height: 5),
+                const Text(
+                  'انتخاب فروشگاه برای جستجوی اپلیکیشن؛ '
+                  'این لینک‌ها تأیید انتشار اپ نیستند.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.white70, height: 1.5),
+                ),
+                const SizedBox(height: 15),
+                ListTile(
+                  leading: const Icon(Icons.storefront_rounded,
+                      color: _gold),
+                  title: const Text('کافه بازار',
+                      style: TextStyle(color: Colors.white)),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _openLink(context, _bazaarSearch,
+                        title: 'جستجو در کافه بازار');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.shop_rounded,
+                      color: _gold),
+                  title: const Text('Google Play',
+                      textDirection: TextDirection.ltr,
+                      style: TextStyle(color: Colors.white)),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _openLink(context, _playSearch,
+                        title: 'جستجو در Google Play');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.apple_rounded,
+                      color: _gold),
+                  title: const Text('App Store',
+                      textDirection: TextDirection.ltr,
+                      style: TextStyle(color: Colors.white)),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _openLink(context, _appStoreSearch,
+                        title: 'جستجو در App Store');
+                  },
                 ),
               ],
             ),
@@ -229,6 +342,77 @@ class RoyalVillageEntryPage extends StatelessWidget {
                       height: 220,
                       child: _TapZone(
                         onTap: () => _openSalon(context, 'Salon Âme du Poète'),
+                      ),
+                    ),
+
+                    // The approved poster remains an unchanged bitmap.
+                    // These transparent hit regions match its footer icons:
+                    // app mock-up / Bazaar / Google Play / App Store /
+                    // WhatsApp / Instagram.
+                    Positioned(
+                      left: 10,
+                      top: 1340,
+                      width: 323,
+                      height: 161,
+                      child: _TapZone(
+                        onTap: () => _openStoreChooser(context),
+                      ),
+                    ),
+                    Positioned(
+                      left: 347,
+                      top: 1355,
+                      width: 146,
+                      height: 138,
+                      child: _TapZone(
+                        onTap: () => _openLink(
+                          context, _bazaarSearch,
+                          title: 'جستجو در کافه بازار',
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 497,
+                      top: 1355,
+                      width: 150,
+                      height: 138,
+                      child: _TapZone(
+                        onTap: () => _openLink(
+                          context, _playSearch,
+                          title: 'جستجو در Google Play',
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 650,
+                      top: 1355,
+                      width: 146,
+                      height: 138,
+                      child: _TapZone(
+                        onTap: () => _openLink(
+                          context, _appStoreSearch,
+                          title: 'جستجو در App Store',
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 812,
+                      top: 1350,
+                      width: 148,
+                      height: 145,
+                      child: _TapZone(
+                        onTap: () => _openWhatsApp(context),
+                      ),
+                    ),
+                    Positioned(
+                      left: 967,
+                      top: 1350,
+                      width: 166,
+                      height: 145,
+                      child: _TapZone(
+                        onTap: () => _openLink(
+                          context, _instagram,
+                          title: 'Instagram • the_royalmall',
+                        ),
                       ),
                     ),
 
