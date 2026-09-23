@@ -206,16 +206,19 @@ class RoyalVillageEntryPage extends StatelessWidget {
             // This preserves its exact 1144×1536 aspect ratio and prevents
             // stretching/cropping. If a device is unusually short, scale
             // down just enough to keep the whole poster visible.
-            final widthScale = constraints.maxWidth / _designWidth;
-            final heightScale = constraints.maxHeight / _designHeight;
-            final scale = widthScale <= heightScale ? widthScale : heightScale;
-            final shownWidth = _designWidth * scale;
+            // Mobile RV page: fill the available width. The poster keeps its
+            // exact aspect ratio; vertical overflow is scrollable instead of
+            // shrinking the whole poster to fit the browser height.
+            final scale = constraints.maxWidth / _designWidth;
+            final shownWidth = constraints.maxWidth;
             final shownHeight = _designHeight * scale;
 
-            return Center(
-              child: SizedBox(
-                width: shownWidth,
-                height: shownHeight,
+            return SingleChildScrollView(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: SizedBox(
+                  width: shownWidth,
+                  height: shownHeight,
                 child: Transform.scale(
                   scale: scale,
                   alignment: Alignment.topLeft,
