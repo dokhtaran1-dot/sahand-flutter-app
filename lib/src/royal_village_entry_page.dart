@@ -199,26 +199,41 @@ class RoyalVillageEntryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Align(
-        alignment: Alignment.topCenter,
-        child: FittedBox(
-          fit: BoxFit.contain,
-          alignment: Alignment.topCenter,
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // Fit the complete approved poster to the phone width first.
+            // This preserves its exact 1144×1536 aspect ratio and prevents
+            // stretching/cropping. If a device is unusually short, scale
+            // down just enough to keep the whole poster visible.
+            final widthScale = constraints.maxWidth / _designWidth;
+            final heightScale = constraints.maxHeight / _designHeight;
+            final scale = widthScale <= heightScale ? widthScale : heightScale;
+            final shownWidth = _designWidth * scale;
+            final shownHeight = _designHeight * scale;
+
+            return Center(
               child: SizedBox(
-                width: _designWidth,
-                height: _designHeight,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image.asset(
-                      _art,
-                      width: _designWidth,
-                      height: _designHeight,
-                      fit: BoxFit.contain,
-                      alignment: Alignment.topCenter,
-                      filterQuality: FilterQuality.high,
-                      gaplessPlayback: true,
-                    ),
+                width: shownWidth,
+                height: shownHeight,
+                child: Transform.scale(
+                  scale: scale,
+                  alignment: Alignment.topLeft,
+                  child: SizedBox(
+                    width: _designWidth,
+                    height: _designHeight,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Image.asset(
+                          _art,
+                          width: _designWidth,
+                          height: _designHeight,
+                          fit: BoxFit.fill,
+                          filterQuality: FilterQuality.high,
+                          isAntiAlias: true,
+                          gaplessPlayback: true,
+                        ),
 
                     // Back
                     Positioned(
@@ -416,11 +431,16 @@ class RoyalVillageEntryPage extends StatelessWidget {
                       ),
                     ),
 
-                  ],
+
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
+        ),
+      ),
     );
   }
 
