@@ -1,6 +1,7 @@
-import 'rv_gallery_page.dart';
+import 'royal_village_entry_page.dart';
 
-// The RV tile on Home opens the salon selection as the third app screen.
-class RoyalVillagePage extends RvGalleryPage {
+// The RV tile must open the approved full-screen poster. Its transparent
+// interaction layer sends each salon and footer icon to the right destination.
+class RoyalVillagePage extends RoyalVillageEntryPage {
   const RoyalVillagePage({super.key});
 }
