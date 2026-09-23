@@ -199,44 +199,27 @@ class RoyalVillageEntryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: LayoutBuilder(
-          builder: (context, constraints) {
-            // Fit the complete approved poster to the phone width first.
-            // This preserves its exact 1144×1536 aspect ratio and prevents
-            // stretching/cropping. If a device is unusually short, scale
-            // down just enough to keep the whole poster visible.
-            // Mobile RV page: fill the available width. The poster keeps its
-            // exact aspect ratio; vertical overflow is scrollable instead of
-            // shrinking the whole poster to fit the browser height.
-            final scale = constraints.maxWidth / _designWidth;
-            final shownWidth = constraints.maxWidth;
-            final shownHeight = _designHeight * scale;
-
-            return SingleChildScrollView(
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: SizedBox(
-                  width: shownWidth,
-                  height: shownHeight,
-                child: Transform.scale(
-                  scale: scale,
-                  alignment: Alignment.topLeft,
-                  child: SizedBox(
-                    width: _designWidth,
-                    height: _designHeight,
-                    child: Stack(
-                      fit: StackFit.expand,
+      body: SingleChildScrollView(
+        child: SizedBox(
+          width: double.infinity,
+          child: AspectRatio(
+            aspectRatio: _designWidth / _designHeight,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.asset(
+                  _art,
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                  isAntiAlias: true,
+                  gaplessPlayback: true,
+                ),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final sx = constraints.maxWidth / _designWidth;
+                    final sy = constraints.maxHeight / _designHeight;
+                    return Stack(
                       children: [
-                        Image.asset(
-                          _art,
-                          width: _designWidth,
-                          height: _designHeight,
-                          fit: BoxFit.fill,
-                          filterQuality: FilterQuality.high,
-                          isAntiAlias: true,
-                          gaplessPlayback: true,
-                        ),
-
                     // Back
                     Positioned(
                       left: 0,
@@ -434,17 +417,32 @@ class RoyalVillageEntryPage extends StatelessWidget {
                     ),
 
 
-                      ],
-                    ),
-                  ),
+
+                      ].map((widget) {
+                        if (widget is Positioned) {
+                          return Positioned(
+                            left: widget.left == null ? null : widget.left! * sx,
+                            top: widget.top == null ? null : widget.top! * sy,
+                            right: widget.right == null ? null : widget.right! * sx,
+                            bottom: widget.bottom == null ? null : widget.bottom! * sy,
+                            width: widget.width == null ? null : widget.width! * sx,
+                            height: widget.height == null ? null : widget.height! * sy,
+                            child: widget.child,
+                          );
+                        }
+                        return widget;
+                      }).toList(),
+                    );
+                  },
                 ),
-              ),
+              ],
             ),
-          );
-          },
+          ),
+        ),
       ),
     );
   }
+
 }
 
 class _TapZone extends StatelessWidget {
