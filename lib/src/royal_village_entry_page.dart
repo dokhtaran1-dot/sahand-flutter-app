@@ -199,27 +199,30 @@ class RoyalVillageEntryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        child: SizedBox(
-          width: double.infinity,
-          child: AspectRatio(
-            aspectRatio: _designWidth / _designHeight,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          // RV is a full-screen poster on phones: no black remainder.
+          // We deliberately fill the viewport while keeping the original
+          // bitmap at high filtering quality. Hotspots use the same x/y
+          // factors, so every salon/footer button stays aligned.
+          final sx = constraints.maxWidth / _designWidth;
+          final sy = constraints.maxHeight / _designHeight;
+
+          return SizedBox.expand(
             child: Stack(
               fit: StackFit.expand,
               children: [
                 Image.asset(
                   _art,
+                  width: constraints.maxWidth,
+                  height: constraints.maxHeight,
                   fit: BoxFit.fill,
                   filterQuality: FilterQuality.high,
                   isAntiAlias: true,
                   gaplessPlayback: true,
                 ),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final sx = constraints.maxWidth / _designWidth;
-                    final sy = constraints.maxHeight / _designHeight;
-                    return Stack(
-                      children: [
+                Stack(
+                  children: [
                     // Back
                     Positioned(
                       left: 0,
@@ -418,27 +421,26 @@ class RoyalVillageEntryPage extends StatelessWidget {
 
 
 
-                      ].map((widget) {
-                        if (widget is Positioned) {
-                          return Positioned(
-                            left: widget.left == null ? null : widget.left! * sx,
-                            top: widget.top == null ? null : widget.top! * sy,
-                            right: widget.right == null ? null : widget.right! * sx,
-                            bottom: widget.bottom == null ? null : widget.bottom! * sy,
-                            width: widget.width == null ? null : widget.width! * sx,
-                            height: widget.height == null ? null : widget.height! * sy,
-                            child: widget.child,
-                          );
-                        }
-                        return widget;
-                      }).toList(),
-                    );
-                  },
+
+                  ].map((widget) {
+                    if (widget is Positioned) {
+                      return Positioned(
+                        left: widget.left == null ? null : widget.left! * sx,
+                        top: widget.top == null ? null : widget.top! * sy,
+                        right: widget.right == null ? null : widget.right! * sx,
+                        bottom: widget.bottom == null ? null : widget.bottom! * sy,
+                        width: widget.width == null ? null : widget.width! * sx,
+                        height: widget.height == null ? null : widget.height! * sy,
+                        child: widget.child,
+                      );
+                    }
+                    return widget;
+                  }).toList(),
                 ),
               ],
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
