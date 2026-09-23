@@ -3,10 +3,18 @@ import 'reservation_store.dart';
 
 class ReservationPage extends StatefulWidget {
   final String salonName;
+  final DateTime? initialDate;
+  final TimeOfDay? initialTime;
+  final String? initialDesign;
+  final String? initialCake;
 
   const ReservationPage({
     super.key,
     required this.salonName,
+    this.initialDate,
+    this.initialTime,
+    this.initialDesign,
+    this.initialCake,
   });
 
   @override
@@ -29,10 +37,27 @@ class _ReservationPageState extends State<ReservationPage> {
   final phoneController = TextEditingController();
   final noteController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    selectedDate = widget.initialDate;
+    selectedTime = widget.initialTime;
+    design = widget.initialDesign ?? design;
+    cake = widget.initialCake ?? cake;
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    phoneController.dispose();
+    noteController.dispose();
+    super.dispose();
+  }
+
   Future<void> _pickDate() async {
     final result = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().add(const Duration(days: 1)),
+      initialDate: selectedDate ?? DateTime.now().add(const Duration(days: 1)),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
@@ -45,7 +70,7 @@ class _ReservationPageState extends State<ReservationPage> {
   Future<void> _pickTime() async {
     final result = await showTimePicker(
       context: context,
-      initialTime: const TimeOfDay(hour: 20, minute: 0),
+      initialTime: selectedTime ?? const TimeOfDay(hour: 20, minute: 0),
     );
 
     if (result != null) {
@@ -53,7 +78,7 @@ class _ReservationPageState extends State<ReservationPage> {
     }
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (selectedDate == null ||
         selectedTime == null ||
         nameController.text.trim().isEmpty ||
@@ -68,27 +93,38 @@ class _ReservationPageState extends State<ReservationPage> {
       );
       return;
     }
-ReservationStore.instance.add(
-  ReservationRecord(
-    salonName: widget.salonName,
-    customerName: nameController.text.trim(),
-    phone: phoneController.text.trim(),
-    date:
-        '${selectedDate!.year}/${selectedDate!.month}/${selectedDate!.day}',
-    time: selectedTime!.format(context),
-    guests: guests,
-    design: design,
-    cake: cake,
-    note: noteController.text.trim(),
-  ),
-);
+    try {
+      await ReservationStore.instance.add(
+        ReservationRecord(
+          salonName: widget.salonName,
+          customerName: nameController.text.trim(),
+          phone: phoneController.text.trim(),
+          date: '${selectedDate!.year}/${selectedDate!.month}/${selectedDate!.day}',
+          time: selectedTime!.format(context),
+          guests: guests,
+          design: design,
+          cake: cake,
+          note: noteController.text.trim(),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('ذخیره درخواست انجام نشد؛ دوباره تلاش کنید.',
+              textDirection: TextDirection.rtl),
+        ),
+      );
+      return;
+    }
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (_) {
         return AlertDialog(
           backgroundColor: const Color(0xFF07110E),
           title: const Text(
-            'درخواست رزرو ثبت شد',
+            'درخواست روی گوشی شما ذخیره شد',
             textDirection: TextDirection.rtl,
             style: TextStyle(color: goldLight),
           ),
@@ -96,7 +132,9 @@ ReservationStore.instance.add(
             '${widget.salonName}\n'
             'تعداد مهمان: $guests نفر\n'
             'دیزاین: $design\n'
-            'کیک: $cake',
+            'کیک: $cake\\n\\n'
+            'این درخواست هنوز برای مدیریت رویال ویلیج ارسال نشده '
+            'و رزرو شما قطعی نیست.',
             textDirection: TextDirection.rtl,
             style: const TextStyle(
               color: Colors.white,
@@ -286,6 +324,10 @@ ReservationStore.instance.add(
                   'Romantic',
                   'VIP',
                   'Birthday',
+                  if (widget.initialDesign != null &&
+                      !const ['Classic', 'Royal', 'Romantic', 'VIP', 'Birthday']
+                          .contains(widget.initialDesign))
+                    widget.initialDesign!,
                 ].map((item) {
                   return ChoiceChip(
                     label: Text(item),
@@ -326,6 +368,10 @@ ReservationStore.instance.add(
                   'کیک اختصاصی',
                   'کیک تولد',
                   'کیک VIP',
+                  if (widget.initialCake != null &&
+                      !const ['بدون کیک', 'کیک اختصاصی', 'کیک تولد', 'کیک VIP']
+                          .contains(widget.initialCake))
+                    widget.initialCake!,
                 ].map((item) {
                   return ChoiceChip(
                     label: Text(item),
