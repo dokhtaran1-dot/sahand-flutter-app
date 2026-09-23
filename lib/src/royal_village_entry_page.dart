@@ -176,7 +176,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.apple_rounded,
+                  leading: const Icon(Icons.phone_iphone_rounded,
                       color: _gold),
                   title: const Text('App Store',
                       textDirection: TextDirection.ltr,
