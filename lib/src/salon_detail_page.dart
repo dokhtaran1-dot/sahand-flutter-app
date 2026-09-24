@@ -110,35 +110,27 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
     }
   }
 
-  String _salonKey() {
-    return widget.salonName
-        .toLowerCase()
-        .replaceAll('â', 'a')
-        .replaceAll('é', 'e')
-        .replaceAll('è', 'e')
-        .replaceAll('è', 'e')
-        .replaceAll('é', 'e')
-        .replaceAll(RegExp(r'[^a-z0-9]+'), '_')
-        .replaceAll(RegExp(r'^_|_$'), '');
-  }
+  static const Map<String, String> galleryFolders = {
+    'Salon Doré': 'dore',
+    'Salon Privé': 'prive',
+    'Salon Âme du Poète': 'ame_du_poete',
+    'Salon Noir': 'noir',
+    'Salon Royal': 'royal',
+    'Salon Lumière': 'lumiere',
+    'Salon Jardin': 'jardin',
+    'RV Lounge Impérial Classique': 'imperial',
+  };
 
   Future<List<String>> _uploadedImages(String kind) async {
-    if (kind == 'design') {
-      // The uploaded ZIP has cakes, drinks and menus, but no design gallery.
-      return [imagePath]; // Show the actual salon photograph as reference.
-    }
+    final salon = galleryFolders[widget.salonName];
+    if (salon == null) return const [];
+    final folder = 'assets/image/rv_gallery/$salon/${kind == 'cake' ? 'cakes' : 'designs'}/';
     final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-    const folder = 'assets/image/rv_upload/Royal_Village_App_Upload/01_Cakes/';
-    final all = manifest.listAssets()
-        .where((p) => p.startsWith(folder) && p.toLowerCase().endsWith('.webp'))
+    final assets = manifest.listAssets()
+        .where((path) => path.startsWith(folder) &&
+            (path.endsWith('.jpg') || path.endsWith('.webp') || path.endsWith('.png')))
         .toList()..sort();
-    final key = _salonKey();
-    final words = key.split('_').where((w) => w.length > 3).toList();
-    final preferred = all.where((p) {
-      final normalized = p.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_');
-      return words.any(normalized.contains);
-    }).toList();
-    return [...preferred, ...all.where((p) => !preferred.contains(p))].take(10).toList();
+    return assets.take(10).toList();
   }
 
   void _showUploadedGallery({required String kind}) {
@@ -168,12 +160,6 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
                 const SizedBox(height: 4),
                 Text(widget.salonName,
                     style: const TextStyle(color: Colors.white54)),
-                if (!isCake) const Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Text('در ZIP ارسالی، ۱۰ عکس مجزای دیزاین وجود ندارد. تصویر خود سالن نمایش داده می‌شود.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white70)),
-                ),
                 const SizedBox(height: 14),
                 Expanded(
                   child: FutureBuilder<List<String>>(
@@ -245,7 +231,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
                                   Padding(
                                     padding: const EdgeInsets.all(8),
                                     child: Text(
-                                      isCake ? 'کیک $number' : 'تصویر سالن',
+                                      isCake ? 'کیک $number' : 'دیزاین $number',
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
