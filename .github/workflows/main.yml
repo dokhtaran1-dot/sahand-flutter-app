@@ -89,9 +89,9 @@ jobs:
 
       - name: Install approved booking posters
         run: |
-          if [ -s assets/image/RV_8_approved_booking_posters.zip ]; then
-            unzip -tq assets/image/RV_8_approved_booking_posters.zip
-            unzip -o assets/image/RV_8_approved_booking_posters.zip -d .
+          if [ -s assets/image/RV_8_final_imperial_ultra.zip ]; then
+            unzip -tq assets/image/RV_8_final_imperial_ultra.zip
+            unzip -o assets/image/RV_8_final_imperial_ultra.zip -d .
           fi
           test -s assets/image/booking_posters/dore.png
           test -s assets/image/booking_posters/jardin.png
