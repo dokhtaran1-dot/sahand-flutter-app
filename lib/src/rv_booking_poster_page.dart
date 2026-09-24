@@ -16,7 +16,7 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
     'Salon Doré': 'dore', 'Salon Jardin': 'jardin',
     'Salon Noir': 'noir', 'Salon Âme du Poète': 'ame_du_poete',
     'Salon Royal': 'royal', 'RV Lounge Impérial Classique': 'imperial',
-    'Salon Lumière': 'lumiere',
+    'Salon Lumière': 'lumiere', 'Salon Privé': 'prive',
   };
   static const Map<String, List<String>> music = {
     'dore': ['Golden Hour – Piano', 'Éclat Doré – Violin', 'Soleil de Paris – Lounge'],
@@ -26,6 +26,7 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
     'royal': ['Couronne Royale – Piano', 'Majesté – Violin', 'Royal Signature – Lounge'],
     'imperial': ['Impérial Classique – Piano', 'Prestige – Violin', 'Royal Night – Lounge'],
     'lumiere': ['Lumière Blanche – Piano', 'Venise Éternelle – Violin', 'Clair de Lumière – Lounge'],
+    'prive': ['Nuit Privée – Piano', 'Velours Rouge – Violin', 'Secret de Minuit – Lounge'],
   };
   DateTime? date;
   TimeOfDay? time;
