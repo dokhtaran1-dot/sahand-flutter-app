@@ -27,6 +27,7 @@ flutter:
   assets:
     - assets/image/
     - assets/image/rv_upload/
+    - assets/image/booking_posters/
     - assets/image/salon_gallery/dore/
     - assets/image/salon_gallery/prive/
     - assets/image/salon_gallery/noir/
