@@ -137,11 +137,8 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
       initialDesign: design == null ? null : 'دیزاین $design',
       initialCake: cake == null ? null : 'کیک $cake',
       initialMusic: selectedMusic,
+      initialExtras: extras.isEmpty ? null : extras,
     )));
-    if (extras.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('انتخاب‌های تکمیلی: $extras')));
-    }
   }
   @override
   Widget build(BuildContext context) => Scaffold(
