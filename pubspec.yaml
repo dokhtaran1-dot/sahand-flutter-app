@@ -27,6 +27,14 @@ flutter:
   assets:
     - assets/image/
     - assets/image/rv_upload/
+    - assets/image/salon_gallery/dore/
+    - assets/image/salon_gallery/prive/
+    - assets/image/salon_gallery/noir/
+    - assets/image/salon_gallery/royal/
+    - assets/image/salon_gallery/lumiere/
+    - assets/image/salon_gallery/jardin/
+    - assets/image/salon_gallery/ame_du_poete/
+    - assets/image/salon_gallery/imperial/
     - assets/image/rv_upload/Royal_Village_App_Upload/01_Cakes/
     - assets/image/rv_upload/Royal_Village_App_Upload/02_Fruit/
     - assets/image/rv_upload/Royal_Village_App_Upload/03_Drinks/
