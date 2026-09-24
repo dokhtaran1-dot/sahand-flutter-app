@@ -7,6 +7,7 @@ class ReservationPage extends StatefulWidget {
   final TimeOfDay? initialTime;
   final String? initialDesign;
   final String? initialCake;
+  final String? initialMusic;
 
   const ReservationPage({
     super.key,
@@ -15,6 +16,7 @@ class ReservationPage extends StatefulWidget {
     this.initialTime,
     this.initialDesign,
     this.initialCake,
+    this.initialMusic,
   });
 
   @override
@@ -32,6 +34,7 @@ class _ReservationPageState extends State<ReservationPage> {
   int guests = 2;
   String design = 'Classic';
   String cake = 'بدون کیک';
+  String? music;
 
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
@@ -44,6 +47,7 @@ class _ReservationPageState extends State<ReservationPage> {
     selectedTime = widget.initialTime;
     design = widget.initialDesign ?? design;
     cake = widget.initialCake ?? cake;
+    music = widget.initialMusic;
   }
 
   @override
@@ -132,7 +136,8 @@ class _ReservationPageState extends State<ReservationPage> {
             '${widget.salonName}\n'
             'تعداد مهمان: $guests نفر\n'
             'دیزاین: $design\n'
-            'کیک: $cake\\n\\n'
+            'کیک: $cake\\n'
+            'موسیقی: ${music ?? 'انتخاب نشده'}\\n\\n'
             'این درخواست هنوز برای مدیریت رویال ویلیج ارسال نشده '
             'و رزرو شما قطعی نیست.',
             textDirection: TextDirection.rtl,
@@ -390,6 +395,26 @@ class _ReservationPageState extends State<ReservationPage> {
                   );
                 }).toList(),
               ),
+
+              const SizedBox(height: 24),
+
+              const Text(
+                'موسیقی',
+                style: TextStyle(color: goldLight, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              if (music != null)
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: _box(),
+                  child: Row(children: [
+                    const Icon(Icons.music_note_rounded, color: goldLight),
+                    const SizedBox(width: 10),
+                    Expanded(child: Text(music!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
+                  ]),
+                )
+              else
+                const Text('موسیقی در صفحه سالن انتخاب نشده است.', style: TextStyle(color: Colors.white54)),
 
               const SizedBox(height: 24),
 
