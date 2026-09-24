@@ -161,7 +161,7 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
           child: GestureDetector(behavior: HitTestBehavior.opaque, onTap: action));
       return Stack(fit: StackFit.expand, children: [
         Image.asset(keyName == 'grand'
-            ? 'assets/image/grand_salon_booking_poster.png'
+            ? 'assets/image/1000075552-1.png'
             : 'assets/image/booking_posters/$keyName.png',
           fit: BoxFit.fill, filterQuality: FilterQuality.high,
           errorBuilder: (_, __, ___) => keyName == 'grand'
