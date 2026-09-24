@@ -37,6 +37,7 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
   String? drink;
   bool magic = false;
   bool vip = false;
+  String? grandMenu;
   final notes = TextEditingController();
   String get keyName => posters[widget.salonName] ?? 'dore';
   @override
@@ -123,6 +124,14 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
         : item == 'vip' ? (vip ? 'VIP انتخاب شد' : 'VIP حذف شد')
         : (drink == null ? 'آبمیوه حذف شد' : 'آبمیوه اختصاصی انتخاب شد'))));
   }
+  void chooseGrandMenu() => showModalBottomSheet<void>(
+    context: context, backgroundColor: const Color(0xFF07140F),
+    builder: (sheet) => SafeArea(child: Column(mainAxisSize: MainAxisSize.min,
+      children: ['منوی اختصاصی ایرانی', 'منوی فرانسوی', 'منوی ویژه VIP', 'مشاوره برای منوی مراسم'].map((item) => ListTile(
+        title: Text(item, style: const TextStyle(color: gold), textDirection: TextDirection.rtl),
+        onTap: () { setState(() => grandMenu = item); Navigator.pop(sheet); },
+      )).toList())),
+  );
   void reserve() {
     if (date == null || time == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -131,7 +140,7 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
     }
     final extras = <String>[
       if (drink != null) drink!, if (magic) 'تردست برای ۲ نفر',
-      if (vip) 'تجربه VIP', if (notes.text.trim().isNotEmpty) notes.text.trim(),
+      if (vip) 'تجربه VIP', if (grandMenu != null) grandMenu!, if (notes.text.trim().isNotEmpty) notes.text.trim(),
     ].join(' | ');
     Navigator.push(context, MaterialPageRoute(builder: (_) => ReservationPage(
       salonName: widget.salonName, initialDate: date, initialTime: time,
@@ -151,37 +160,27 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
         Positioned(left: x*sx, top: y*sy, width: w*sx, height: h*sy,
           child: GestureDetector(behavior: HitTestBehavior.opaque, onTap: action));
       return Stack(fit: StackFit.expand, children: [
-        if (keyName == 'grand')
-          Image.asset('assets/image/Grand_Salon_Original.png',
-            fit: BoxFit.cover, filterQuality: FilterQuality.high,
-            errorBuilder: (_, __, ___) => Image.asset('assets/image/Rv_page2.png', fit: BoxFit.cover))
-        else
-          Image.asset('assets/image/booking_posters/$keyName.png',
-            fit: BoxFit.fill, filterQuality: FilterQuality.high),
+        Image.asset(keyName == 'grand'
+            ? 'assets/image/grand_salon_booking_poster.png'
+            : 'assets/image/booking_posters/$keyName.png',
+          fit: BoxFit.fill, filterQuality: FilterQuality.high,
+          errorBuilder: (_, __, ___) => keyName == 'grand'
+            ? Image.asset('assets/image/Grand_Salon_Original.png', fit: BoxFit.cover)
+            : const Center(child: Text('تصویر سالن در دسترس نیست',
+                style: TextStyle(color: gold)))),
         if (keyName == 'grand') ...[
-          Positioned.fill(child: IgnorePointer(child: Column(children: [
-            const Spacer(flex: 4),
-            Expanded(flex: 6, child: Container(decoration: const BoxDecoration(
-              gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter,
-                colors: [Color(0xE600130E), Color(0xFF00140E)])))),
-          ]))),
-          Positioned(top: 20*sy, left: 100*sx, right: 100*sx,
-            child: const Text('GRAND SALON', textAlign: TextAlign.center,
-              style: TextStyle(color: gold, fontSize: 28, fontWeight: FontWeight.bold))),
-          for (final item in <(double,double,double,double,String)>[
-            (15,500,410,128,'ساعت'), (436,500,414,128,'تاریخ'),
-            (15,633,410,142,'۱۰ دیزاین اختصاصی'), (436,633,414,142,'۱۰ کیک اختصاصی'),
-            (15,780,410,130,'نوشیدنی اختصاصی'), (436,780,414,130,'۳ موسیقی'),
-            (15,913,410,135,'تردست دونفره'), (436,913,414,135,'درخواست ویژه'),
-            (15,1050,834,250,'تجربه VIP'), (50,1305,760,125,'ادامه و ثبت رزرو'),
-          ]) Positioned(left:item.$1*sx,top:item.$2*sy,width:item.$3*sx,height:item.$4*sy,
-            child: IgnorePointer(child: Container(margin: const EdgeInsets.all(3),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(color: const Color(0xE007281C),
-                border: Border.all(color: gold),borderRadius: BorderRadius.circular(13)),
-              child: Text(item.$5,textAlign: TextAlign.center,
-                style: const TextStyle(color: gold,fontSize: 16,fontWeight: FontWeight.bold))))),
-        ],
+          hit(10, 0, 90, 120, () => Navigator.pop(context)),
+          hit(15, 685, 405, 135, pickDate),
+          hit(432, 685, 415, 135, pickTime),
+          hit(15, 835, 405, 135, () => gallery('cake')),
+          hit(432, 835, 415, 135, () => gallery('design')),
+          hit(15, 975, 405, 135, chooseMusic),
+          hit(432, 975, 415, 135, () => toggle('magic')),
+          hit(15, 1115, 405, 135, () => toggle('drink')),
+          hit(432, 1115, 415, 135, chooseGrandMenu),
+          hit(15, 1250, 832, 135, () => toggle('vip')),
+          hit(15, 1390, 832, 145, reserve),
+        ] else ...[
         hit(0, 0, 95, 100, () => Navigator.pop(context)),
         hit(15, 500, 410, 128, pickTime),
         hit(436, 500, 414, 128, pickDate),
@@ -193,6 +192,7 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
         hit(436, 913, 414, 135, editNotes),
         hit(15, 1050, 834, 250, () => toggle('vip')),
         hit(50, 1305, 760, 125, reserve),
+        ],
       ]);
     }),
   );
