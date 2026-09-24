@@ -16,7 +16,7 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
     'Salon Doré': 'dore', 'Salon Jardin': 'jardin',
     'Salon Noir': 'noir', 'Salon Âme du Poète': 'ame_du_poete',
     'Salon Royal': 'royal', 'RV Lounge Impérial Classique': 'imperial',
-    'Salon Lumière': 'lumiere', 'Salon Privé': 'prive',
+    'Salon Lumière': 'lumiere', 'Salon Privé': 'prive', 'Grand Salon': 'grand',
   };
   static const Map<String, List<String>> music = {
     'dore': ['Golden Hour – Piano', 'Éclat Doré – Violin', 'Soleil de Paris – Lounge'],
@@ -27,6 +27,7 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
     'imperial': ['Impérial Classique – Piano', 'Prestige – Violin', 'Royal Night – Lounge'],
     'lumiere': ['Lumière Blanche – Piano', 'Venise Éternelle – Violin', 'Clair de Lumière – Lounge'],
     'prive': ['Nuit Privée – Piano', 'Velours Rouge – Violin', 'Secret de Minuit – Lounge'],
+    'grand': ['Grand Élégance – Piano', 'La Cérémonie – Violin', 'Royal Evening – Lounge'],
   };
   DateTime? date;
   TimeOfDay? time;
@@ -150,8 +151,13 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
         Positioned(left: x*sx, top: y*sy, width: w*sx, height: h*sy,
           child: GestureDetector(behavior: HitTestBehavior.opaque, onTap: action));
       return Stack(fit: StackFit.expand, children: [
-        Image.asset('assets/image/booking_posters/$keyName.png',
-          fit: BoxFit.fill, filterQuality: FilterQuality.high),
+        if (keyName == 'grand')
+          Image.asset('assets/image/grand_salon.png',
+            fit: BoxFit.cover, filterQuality: FilterQuality.high,
+            errorBuilder: (_, __, ___) => Image.asset('assets/image/Rv_page2.png', fit: BoxFit.cover))
+        else
+          Image.asset('assets/image/booking_posters/$keyName.png',
+            fit: BoxFit.fill, filterQuality: FilterQuality.high),
         hit(0, 0, 95, 100, () => Navigator.pop(context)),
         hit(15, 500, 410, 128, pickTime),
         hit(436, 500, 414, 128, pickDate),
