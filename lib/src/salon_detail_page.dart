@@ -122,15 +122,24 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
   };
 
   Future<List<String>> _uploadedImages(String kind) async {
-    final salon = galleryFolders[widget.salonName];
-    if (salon == null) return const [];
-    final folder = 'assets/image/rv_gallery/$salon/${kind == 'cake' ? 'cakes' : 'designs'}/';
+    const keys = {
+      'Salon Doré': 'dore',
+      'Salon Privé': 'prive',
+      'Salon Noir': 'noir',
+      'Salon Royal': 'royal',
+      'Salon Lumière': 'lumiere',
+      'Salon Jardin': 'jardin',
+      'Salon Âme du Poète': 'ame_du_poete',
+      'RV Lounge Impérial Classique': 'imperial',
+    };
+    final key = keys[widget.salonName];
+    if (key == null) return const [];
     final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-    final assets = manifest.listAssets()
-        .where((path) => path.startsWith(folder) &&
-            (path.endsWith('.jpg') || path.endsWith('.webp') || path.endsWith('.png')))
+    final prefix = 'assets/image/salon_gallery/$key/${kind}_';
+    final images = manifest.listAssets()
+        .where((path) => path.startsWith(prefix) && path.endsWith('.webp'))
         .toList()..sort();
-    return assets.take(10).toList();
+    return images.take(10).toList();
   }
 
   void _showUploadedGallery({required String kind}) {
@@ -150,7 +159,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
             child: Column(
               children: [
                 Text(
-                  isCake ? 'کیک‌های اختصاصی' : 'تصویر دیزاین سالن',
+                  isCake ? '۱۰ کیک اختصاصی' : '۱۰ دیزاین اختصاصی',
                   style: const TextStyle(
                     color: gold2,
                     fontSize: 21,
@@ -175,8 +184,8 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
                         return Center(
                           child: Text(
                             isCake
-                                ? 'عکس‌های کیک در فایل ZIP پیدا نشد.'
-                                : 'عکس‌های دیزاین در فایل ZIP پیدا نشد.',
+                                ? 'تصاویر کیک این سالن هنوز روی وب بارگذاری نشده‌اند.'
+                                : 'تصاویر دیزاین این سالن هنوز روی وب بارگذاری نشده‌اند.',
                             textDirection: TextDirection.rtl,
                             style: const TextStyle(color: Colors.white70),
                           ),
