@@ -105,8 +105,20 @@ jobs:
       - name: Get packages
         run: flutter pub get
 
+      - name: Configure Royal Club membership
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_ANON_KEY" ]; then
+            printf 'ROYAL_CLUB_DART_DEFINES=--dart-define=SUPABASE_URL=%s --dart-define=SUPABASE_ANON_KEY=%s --dart-define=ROYAL_CLUB_BACKEND_READY=true\\n' "$SUPABASE_URL" "$SUPABASE_ANON_KEY" >> "$GITHUB_ENV"
+          else
+            echo 'ROYAL_CLUB_DART_DEFINES=' >> "$GITHUB_ENV"
+            echo 'Membership remains disabled until backend is configured.'
+          fi
+
       - name: Build APK
-        run: flutter build apk --debug --build-name 1.0.14 --build-number 16
+        run: flutter build apk --debug --build-name 1.0.14 --build-number 16 $ROYAL_CLUB_DART_DEFINES
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -115,7 +127,7 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
 
       - name: Build Web
-        run: flutter build web --release --base-href /sahand-flutter-app/
+        run: flutter build web --release --base-href /sahand-flutter-app/ $ROYAL_CLUB_DART_DEFINES
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
