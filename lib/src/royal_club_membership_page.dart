@@ -26,7 +26,7 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
   }
 
   Future<void> sendCode() async {
-    if (name.text.trim().length < 3 || !RegExp(r'^\\+989\\d{9}$').hasMatch(normalizedPhone) || !consent) {
+    if (name.text.trim().length < 3 || !RegExp(r'^\+989\d{9}$').hasMatch(normalizedPhone) || !consent) {
       setState(() => error = 'نام، شماره موبایل ایران و پذیرش قوانین را بررسی کنید.');
       return;
     }
