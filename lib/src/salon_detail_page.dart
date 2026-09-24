@@ -26,6 +26,19 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
   TimeOfDay? selectedTime;
   int? selectedDesign;
   int? selectedCake;
+  String? selectedMusic;
+
+  static const Map<String, List<String>> salonMusic = {
+    'Salon Doré': ['Golden Hour – Piano', 'Éclat Doré – Violin', 'Soleil de Paris – Lounge'],
+    'Salon Privé': ['Nuit Privée – Piano', 'Velours Rouge – Violin', 'Secret de Minuit – Lounge'],
+    'Salon Noir': ['Noir Élégance – Piano', 'Minuit Rouge – Violin', 'Ombre & Lumière – Lounge'],
+    'Salon Âme du Poète': ['Poème d’Amour – Piano', 'Rose de Paris – Violin', 'Rêve du Poète – Lounge'],
+    'Salon Jardin': ['Jardin de Rêve – Piano', 'Fleurs de Paris – Violin', 'Matin au Jardin – Lounge'],
+    'Salon Lumière': ['Lumière Blanche – Piano', 'Venise Éternelle – Violin', 'Clair de Lumière – Lounge'],
+    'Salon Royal': ['Couronne Royale – Piano', 'Majesté – Violin', 'Royal Signature – Lounge'],
+    'RV Lounge Impérial Classique': ['Impérial Classique – Piano', 'Prestige – Violin', 'Royal Night – Lounge'],
+    'Grand Salon': ['Grand Élégance – Piano', 'La Cérémonie – Violin', 'Royal Evening – Lounge'],
+  };
 
   final Map<String, String> salonImages = {
     'Salon Lumière': 'assets/image/salon_lumiere.png',
@@ -260,6 +273,8 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
 
   void showCakes() => _showUploadedGallery(kind: 'cake');
 
+  List<String> get _musicOptions => salonMusic[widget.salonName] ?? const ['Royal Piano', 'Royal Violin', 'Royal Lounge'];
+
   void reserve() {
     if (selectedDate == null || selectedTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -284,6 +299,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
           initialCake: selectedCake == null
               ? null
               : 'کیک $selectedCake',
+          initialMusic: selectedMusic,
         ),
       ),
     );
@@ -450,6 +466,37 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
                   : 'کیک $selectedCake انتخاب شده',
               button: 'مشاهده کیک‌ها',
               onTap: showCakes,
+            ),
+
+            const SizedBox(height: 12),
+
+            _ActionCard(
+              icon: Icons.music_note_rounded,
+              title: '۳ موسیقی اختصاصی',
+              subtitle: selectedMusic ?? 'انتخاب موسیقی مخصوص این سالن',
+              button: 'انتخاب موسیقی',
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  backgroundColor: panel,
+                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+                  builder: (sheetContext) => SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.all(18),
+                      child: Column(mainAxisSize: MainAxisSize.min, children: [
+                        Text(widget.salonName, textDirection: TextDirection.ltr, style: const TextStyle(color: gold2, fontSize: 18, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 14),
+                        ..._musicOptions.map((track) => ListTile(
+                          leading: const Icon(Icons.music_note_rounded, color: gold2),
+                          title: Text(track, textDirection: TextDirection.ltr, style: const TextStyle(color: Colors.white)),
+                          trailing: selectedMusic == track ? const Icon(Icons.check_circle, color: gold2) : null,
+                          onTap: () { setState(() => selectedMusic = track); Navigator.pop(sheetContext); },
+                        )),
+                      ]),
+                    ),
+                  ),
+                );
+              },
             ),
 
             const SizedBox(height: 12),
