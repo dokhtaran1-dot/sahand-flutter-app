@@ -12,6 +12,7 @@ class ReservationRecord {
   final int guests;
   final String design;
   final String cake;
+  final String music;
   final String note;
 
   ReservationRecord({
@@ -23,6 +24,7 @@ class ReservationRecord {
     required this.guests,
     required this.design,
     required this.cake,
+    this.music = '',
     required this.note,
   });
 
@@ -36,6 +38,7 @@ class ReservationRecord {
       'guests': guests,
       'design': design,
       'cake': cake,
+      'music': music,
       'note': note,
     };
   }
@@ -50,6 +53,7 @@ class ReservationRecord {
       guests: map['guests'] ?? 1,
       design: map['design'] ?? '',
       cake: map['cake'] ?? '',
+      music: map['music'] ?? '',
       note: map['note'] ?? '',
     );
   }
