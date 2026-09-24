@@ -41,15 +41,15 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
   };
 
   final Map<String, String> salonImages = {
-    'Salon Lumière': 'assets/image/salon_lumiere.png',
-    'Salon Noir': 'assets/image/salon_noir.png',
+    'Salon Lumière': 'assets/image/Salon_lumiere.png',
+    'Salon Noir': 'assets/image/Salon_noir.png',
     'Salon Jardin': 'assets/image/salon_jardin.png',
-    'Salon Privé': 'assets/image/salon_prive.png',
+    'Salon Privé': 'assets/image/Salon_prive.png',
     'RV Lounge Impérial Classique':
         'assets/image/rv_lounge_imperial_classique.png',
     'Salon Doré': 'assets/image/salon_dore.png',
     'Salon Âme du Poète': 'assets/image/salon_ame_du_poete.png',
-    'Salon Royal': 'assets/image/salon_royal.png',
+    'Salon Royal': 'assets/image/Salon_royal.png',
     'Grand Salon': 'assets/image/Rv_page2.png',
   };
 
