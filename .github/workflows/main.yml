@@ -87,6 +87,20 @@ jobs:
             mkdir -p "assets/image/salon_gallery/$salon"
           done
 
+      - name: Install approved booking posters
+        run: |
+          if [ -s assets/image/RV_7_approved_booking_posters.zip ]; then
+            unzip -tq assets/image/RV_7_approved_booking_posters.zip
+            unzip -o assets/image/RV_7_approved_booking_posters.zip -d .
+          fi
+          test -s assets/image/booking_posters/dore.png
+          test -s assets/image/booking_posters/jardin.png
+          test -s assets/image/booking_posters/noir.png
+          test -s assets/image/booking_posters/ame_du_poete.png
+          test -s assets/image/booking_posters/royal.png
+          test -s assets/image/booking_posters/imperial.png
+          test -s assets/image/booking_posters/lumiere.png
+
       - name: Get packages
         run: flutter pub get
 
