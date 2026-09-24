@@ -108,6 +108,7 @@ class _ReservationPageState extends State<ReservationPage> {
           guests: guests,
           design: design,
           cake: cake,
+          music: music ?? '',
           note: noteController.text.trim(),
         ),
       );
