@@ -8,6 +8,7 @@ class ReservationPage extends StatefulWidget {
   final String? initialDesign;
   final String? initialCake;
   final String? initialMusic;
+  final String? initialExtras;
 
   const ReservationPage({
     super.key,
@@ -17,6 +18,7 @@ class ReservationPage extends StatefulWidget {
     this.initialDesign,
     this.initialCake,
     this.initialMusic,
+    this.initialExtras,
   });
 
   @override
@@ -48,6 +50,7 @@ class _ReservationPageState extends State<ReservationPage> {
     design = widget.initialDesign ?? design;
     cake = widget.initialCake ?? cake;
     music = widget.initialMusic;
+    noteController.text = widget.initialExtras ?? '';
   }
 
   @override
