@@ -10,6 +10,7 @@ import 'royal_top_preview.dart';
 import 'royal_leaderboard_page.dart';
 import 'royal_mall_page.dart';
 import 'royal_rewards_page.dart';
+import 'royal_club_membership_page.dart';
 
 class RoyalClubGamePage extends StatelessWidget {
   const RoyalClubGamePage({super.key});
@@ -120,6 +121,16 @@ class RoyalClubGamePage extends StatelessWidget {
   }
 
   void _showProfile(BuildContext context) {
+    const configured = bool.fromEnvironment('ROYAL_CLUB_BACKEND_READY', defaultValue: false);
+    if (configured) {
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RoyalClubMembershipPage()));
+      return;
+    }
+    _showInfo(context, 'ثبت‌نام رویال کلاب', 'فرم عضویت آماده است. برای فعال‌سازی ثبت‌نام واقعی، پایگاه داده و سرویس پیامک باید توسط مدیریت متصل شوند.');
+    return;
+  }
+
+  void _unusedOldProfile(BuildContext context) {
     final name = TextEditingController();
     final phone = TextEditingController();
 
