@@ -19,7 +19,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const {
         'Salon Doré', 'Salon Jardin', 'Salon Noir', 'Salon Âme du Poète',
-        'Salon Royal', 'RV Lounge Impérial Classique', 'Salon Lumière',
+        'Salon Royal', 'Salon Privé', 'RV Lounge Impérial Classique', 'Salon Lumière',
       }.contains(name)
         ? RvBookingPosterPage(salonName: name)
         : SalonDetailPage(salonName: name)),
