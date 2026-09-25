@@ -2,6 +2,9 @@ name: Build ROYAL1 Android + Web
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
   push:
     branches:
       - main
@@ -130,13 +133,16 @@ jobs:
         run: flutter build web --release --base-href /sahand-flutter-app/ $ROYAL_CLUB_DART_DEFINES
 
       - name: Setup Pages
+        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
 
       - name: Upload Web
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: build/web
 
       - name: Deploy Web
+        if: github.event_name != 'pull_request'
         id: deployment
         uses: actions/deploy-pages@v4
