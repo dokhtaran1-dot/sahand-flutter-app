@@ -8,7 +8,6 @@ plugins {
 android {
     namespace = "com.example.sahand_consortium"
     compileSdk = 34
-    buildToolsVersion = "36.1.0"
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
