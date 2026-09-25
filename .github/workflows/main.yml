@@ -108,6 +108,13 @@ jobs:
       - name: Get packages
         run: flutter pub get
 
+      - name: Work around app_links 6.4.1 Android compile SDK bug
+        run: |
+          plugin_gradle="$HOME/.pub-cache/hosted/pub.dev/app_links-6.4.1/android/build.gradle"
+          test -f "$plugin_gradle"
+          sed -i 's/flutter\.compileSdkVersion/34/g; s/flutter\.minSdkVersion/23/g' "$plugin_gradle"
+          grep -n -E 'compileSdk|minSdk' "$plugin_gradle"
+
       - name: Configure Royal Club membership
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
