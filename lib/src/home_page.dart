@@ -1,167 +1,91 @@
 import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
-
-import 'royal_mall_page.dart';
 import 'royal_village_page.dart';
-import 'royal_club_game_page.dart';
+import 'royal_signature_page.dart';
+import 'royal_etehad_page.dart';
+import 'royal_explore_page.dart';
 
+/// Touch regions use the same 928 x 1648 coordinate space as the approved
+/// Royal One poster. Contain fitting keeps art and hit targets aligned.
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+  static const double artWidth = 928;
+  static const double artHeight = 1648;
+  static const String artwork = 'assets/image/RoyalOne_Home_Final.png';
 
-  static const double _artWidth = 941;
-  static const double _artHeight = 1672;
-  static const String _art = 'assets/image/Home.png';
-
-  void _openRoyalMall(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const RoyalMallPage()),
-    );
+  void _push(BuildContext context, Widget page) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
   }
 
-  void _openRoyalVillage(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const RoyalVillagePage()),
-    );
-  }
-
-  void _openRoyalClub(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const RoyalClubGamePage()),
-    );
-  }
+  Widget _hotspot(BuildContext context, Rect rect, Widget page) =>
+      Positioned.fromRect(
+        rect: rect,
+        child: Semantics(
+          button: true,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => _push(context, page),
+            child: const SizedBox.expand(),
+          ),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFF090705),
       body: Stack(
         fit: StackFit.expand,
         children: [
           ImageFiltered(
-            imageFilter: ui.ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+            imageFilter: ui.ImageFilter.blur(sigmaX: 20, sigmaY: 20),
             child: ColorFiltered(
-              colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(.42),
-                BlendMode.darken,
-              ),
-              child: Image.asset(_art, fit: BoxFit.cover),
+              colorFilter: const ColorFilter.mode(
+                Color(0x88000000), BlendMode.darken),
+              child: Image.asset(artwork, fit: BoxFit.cover),
             ),
           ),
           Center(
-            child: FractionallySizedBox(
-              widthFactor: .96,
-              heightFactor: .96,
-              child: FittedBox(
-                fit: BoxFit.contain,
-                child: SizedBox(
-                width: _artWidth,
-                height: _artHeight,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image.asset(
-                      _art,
-                      width: _artWidth,
-                      height: _artHeight,
-                      fit: BoxFit.fill,
-                      filterQuality: FilterQuality.high,
-                      isAntiAlias: true,
-                      gaplessPlayback: true,
-                    ),
-
-                    // New Home.png layout — RM / RV / RC.
-                    Positioned(
-                      left: 20,
-                      top: 590,
-                      width: 290,
-                      height: 690,
-                      child: _TapZone(onTap: () => _openRoyalMall(context)),
-                    ),
-                    Positioned(
-                      left: 320,
-                      top: 590,
-                      width: 290,
-                      height: 690,
-                      child: _TapZone(onTap: () => _openRoyalVillage(context)),
-                    ),
-                    Positioned(
-                      left: 620,
-                      top: 590,
-                      width: 290,
-                      height: 690,
-                      child: _TapZone(onTap: () => _openRoyalClub(context)),
-                    ),
-
-                    // Bottom navigation.
-                    Positioned(
-                      left: 20,
-                      top: 1480,
-                      width: 180,
-                      height: 150,
-                      child: _TapZone(onTap: () {}),
-                    ),
-                    Positioned(
-                      left: 200,
-                      top: 1480,
-                      width: 185,
-                      height: 150,
-                      child: _TapZone(onTap: () => _openRoyalClub(context)),
-                    ),
-                    Positioned(
-                      left: 385,
-                      top: 1450,
-                      width: 175,
-                      height: 185,
-                      child: _TapZone(onTap: () {}),
-                    ),
-                    Positioned(
-                      left: 560,
-                      top: 1480,
-                      width: 185,
-                      height: 150,
-                      child: _TapZone(onTap: () => _openRoyalVillage(context)),
-                    ),
-                    Positioned(
-                      left: 745,
-                      top: 1480,
-                      width: 176,
-                      height: 150,
-                      child: _TapZone(onTap: () => _openRoyalClub(context)),
-                    ),
-
-                    // Top menu.
-                    Positioned(
-                      left: 825,
-                      top: 15,
-                      width: 105,
-                      height: 105,
-                      child: _TapZone(onTap: () => _openRoyalClub(context)),
-                    ),
-                    ],
+            child: LayoutBuilder(builder: (context, constraints) {
+              final scale = (constraints.maxWidth / artWidth <
+                      constraints.maxHeight / artHeight)
+                  ? constraints.maxWidth / artWidth
+                  : constraints.maxHeight / artHeight;
+              return SizedBox(
+                width: artWidth * scale,
+                height: artHeight * scale,
+                child: FittedBox(
+                  fit: BoxFit.fill,
+                  child: SizedBox(
+                    width: artWidth,
+                    height: artHeight,
+                    child: Stack(children: [
+                      Image.asset(artwork, width: artWidth,
+                        height: artHeight, fit: BoxFit.fill,
+                        filterQuality: FilterQuality.high),
+                      // Full portals: tapping the art or ENTER works instantly.
+                      _hotspot(context, const Rect.fromLTWH(15, 520, 291, 922),
+                        const RoyalEtehadPage()),
+                      _hotspot(context, const Rect.fromLTWH(318, 520, 291, 922),
+                        const RoyalSignaturePage()),
+                      _hotspot(context, const Rect.fromLTWH(621, 520, 291, 922),
+                        const RoyalVillagePage()),
+                      // Bottom navigation: Home | RE | RS | RV | Explore.
+                      _hotspot(context, const Rect.fromLTWH(212, 1495, 170, 130),
+                        const RoyalEtehadPage()),
+                      _hotspot(context, const Rect.fromLTWH(385, 1495, 160, 130),
+                        const RoyalSignaturePage()),
+                      _hotspot(context, const Rect.fromLTWH(548, 1495, 175, 130),
+                        const RoyalVillagePage()),
+                      _hotspot(context, const Rect.fromLTWH(725, 1495, 185, 130),
+                        const RoyalExplorePage()),
+                    ]),
                   ),
                 ),
-              ),
-            ),
+              );
+            }),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _TapZone extends StatelessWidget {
-  final VoidCallback onTap;
-  const _TapZone({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
       ),
     );
   }
