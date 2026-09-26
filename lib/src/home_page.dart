@@ -1,7 +1,7 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'royal_village_page.dart';
-import 'royal_club_game_page.dart';
+import 'royal_club_page.dart';
 import 'royal_mall_page.dart';
 
 
@@ -11,7 +11,7 @@ class HomePage extends StatelessWidget {
   const HomePage({super.key});
   static const double artWidth = 941;
   static const double artHeight = 1672;
-  static const String artwork = 'assets/image/RoyalOne_Approved_RM_RC_RV.png';
+  static const String artwork = 'assets/image/Home.png';
 
   void _push(BuildContext context, Widget page) {
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
@@ -67,18 +67,18 @@ class HomePage extends StatelessWidget {
                       _hotspot(context, const Rect.fromLTWH(15, 520, 291, 922),
                         const RoyalMallPage()),
                       _hotspot(context, const Rect.fromLTWH(318, 520, 291, 922),
-                        const RoyalClubGamePage()),
+                        const RoyalClubPage()),
                       _hotspot(context, const Rect.fromLTWH(621, 520, 291, 922),
                         const RoyalVillagePage()),
                       // Bottom navigation: Home | RM | RC | RV | Profile.
                       _hotspot(context, const Rect.fromLTWH(212, 1495, 170, 130),
                         const RoyalMallPage()),
                       _hotspot(context, const Rect.fromLTWH(385, 1495, 160, 130),
-                        const RoyalClubGamePage()),
+                        const RoyalClubPage()),
                       _hotspot(context, const Rect.fromLTWH(548, 1495, 175, 130),
                         const RoyalVillagePage()),
                       _hotspot(context, const Rect.fromLTWH(725, 1495, 185, 130),
-                        const RoyalClubGamePage()),
+                        const RoyalClubPage()),
                     ]),
                   ),
                 ),
