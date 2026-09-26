@@ -1,9 +1,9 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'royal_village_page.dart';
-import 'royal_signature_page.dart';
-import 'royal_etehad_page.dart';
-import 'royal_explore_page.dart';
+import 'royal_club_game_page.dart';
+import 'royal_mall_page.dart';
+
 
 /// Touch regions use the same 928 x 1648 coordinate space as the approved
 /// Royal One poster. Contain fitting keeps art and hit targets aligned.
@@ -11,7 +11,7 @@ class HomePage extends StatelessWidget {
   const HomePage({super.key});
   static const double artWidth = 941;
   static const double artHeight = 1672;
-  static const String artwork = 'assets/image/RoyalOne_Home_Final.png';
+  static const String artwork = 'assets/image/RoyalOne_Approved_RM_RC_RV.png';
 
   void _push(BuildContext context, Widget page) {
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
@@ -65,20 +65,20 @@ class HomePage extends StatelessWidget {
                         filterQuality: FilterQuality.high),
                       // Full portals: tapping the art or ENTER works instantly.
                       _hotspot(context, const Rect.fromLTWH(15, 520, 291, 922),
-                        const RoyalEtehadPage()),
+                        const RoyalMallPage()),
                       _hotspot(context, const Rect.fromLTWH(318, 520, 291, 922),
-                        const RoyalSignaturePage()),
+                        const RoyalClubGamePage()),
                       _hotspot(context, const Rect.fromLTWH(621, 520, 291, 922),
                         const RoyalVillagePage()),
-                      // Bottom navigation: Home | RE | RS | RV | Explore.
+                      // Bottom navigation: Home | RM | RC | RV | Profile.
                       _hotspot(context, const Rect.fromLTWH(212, 1495, 170, 130),
-                        const RoyalEtehadPage()),
+                        const RoyalMallPage()),
                       _hotspot(context, const Rect.fromLTWH(385, 1495, 160, 130),
-                        const RoyalSignaturePage()),
+                        const RoyalClubGamePage()),
                       _hotspot(context, const Rect.fromLTWH(548, 1495, 175, 130),
                         const RoyalVillagePage()),
                       _hotspot(context, const Rect.fromLTWH(725, 1495, 185, 130),
-                        const RoyalExplorePage()),
+                        const RoyalClubGamePage()),
                     ]),
                   ),
                 ),
