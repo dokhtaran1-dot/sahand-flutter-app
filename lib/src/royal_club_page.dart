@@ -31,7 +31,7 @@ class _RoyalClubPageState extends State<RoyalClubPage>{
  const Text('فعال‌سازی پس از تأمین موجودی',textAlign:TextAlign.center,style:TextStyle(fontSize:10,color:Colors.white60))
  ]));}
  Widget leaderboard(){final client=db;if(client==null)return panel(child:const Center(child:Text('LIVE TOP 10\nاتصال سرور هنوز فعال نیست',textAlign:TextAlign.center,style:TextStyle(color:_gold))));
- return StreamBuilder<List<Map<String,dynamic>>>(stream:client.from('rc_leaderboard').stream(primaryKey:['user_id']).order('weekly_xp',ascending:false).limit(10),builder:(context,s){
+ return FutureBuilder<List<Map<String,dynamic>>>(future:client.from('rc_leaderboard').select('user_id,display_name,weekly_xp').order('weekly_xp',ascending:false).limit(10),builder:(context,s){
  final rows=s.data??[];return panel(child:Column(crossAxisAlignment:CrossAxisAlignment.stretch,children:[
  const Text('LIVE • TOP 10',textAlign:TextAlign.center,style:TextStyle(color:_gold,fontWeight:FontWeight.bold)),
  const SizedBox(height:8),
