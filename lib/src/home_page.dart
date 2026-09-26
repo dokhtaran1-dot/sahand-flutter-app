@@ -9,8 +9,8 @@ import 'royal_explore_page.dart';
 /// Royal One poster. Contain fitting keeps art and hit targets aligned.
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
-  static const double artWidth = 928;
-  static const double artHeight = 1648;
+  static const double artWidth = 941;
+  static const double artHeight = 1672;
   static const String artwork = 'assets/image/RoyalOne_Home_Final.png';
 
   void _push(BuildContext context, Widget page) {
