@@ -5,8 +5,8 @@ import 'royal_club_page.dart';
 import 'royal_mall_page.dart';
 
 
-/// Touch regions use the same 928 x 1648 coordinate space as the approved
-/// Royal One poster. Contain fitting keeps art and hit targets aligned.
+/// Touch regions follow the currently bundled Home.png artwork.
+/// The new RM/RC/RV poster must replace Home.png before reordering portals.
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
   static const double artWidth = 941;
@@ -67,12 +67,12 @@ class HomePage extends StatelessWidget {
                       _hotspot(context, const Rect.fromLTWH(15, 520, 291, 922),
                         const RoyalMallPage()),
                       _hotspot(context, const Rect.fromLTWH(318, 520, 291, 922),
-                        const RoyalClubPage()),
-                      _hotspot(context, const Rect.fromLTWH(621, 520, 291, 922),
                         const RoyalVillagePage()),
-                      // Bottom navigation: Home | RM | RC | RV | Profile.
+                      _hotspot(context, const Rect.fromLTWH(621, 520, 291, 922),
+                        const RoyalClubPage()),
+                      // Existing poster bottom navigation: Home | Royal Club | R1 | Reservations | Profile.
                       _hotspot(context, const Rect.fromLTWH(212, 1495, 170, 130),
-                        const RoyalMallPage()),
+                        const RoyalClubPage()),
                       _hotspot(context, const Rect.fromLTWH(385, 1495, 160, 130),
                         const RoyalClubPage()),
                       _hotspot(context, const Rect.fromLTWH(548, 1495, 175, 130),
