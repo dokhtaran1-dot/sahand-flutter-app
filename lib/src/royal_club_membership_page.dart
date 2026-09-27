@@ -47,11 +47,9 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
         phone: normalizedPhone, token: otp.text.trim(), type: OtpType.sms,
       );
       if (result.user == null) throw StateError('No verified user');
-      await db.from('royal_club_members').upsert({
+      await db.from('rc_members').upsert({
         'user_id': result.user!.id,
-        'full_name': name.text.trim(),
-        'phone': normalizedPhone,
-        'accepted_terms_at': DateTime.now().toUtc().toIso8601String(),
+        'display_name': name.text.trim(),
       }, onConflict: 'user_id');
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('عضویت شما با موفقیت ثبت شد')),
