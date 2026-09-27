@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'royal_village_page.dart';
 import 'royal_club_page.dart';
 import 'royal_mall_page.dart';
+import 'point_of_return_page.dart';
 
 
 /// Touch regions follow the currently bundled Home.png artwork.
@@ -85,6 +86,7 @@ class HomePage extends StatelessWidget {
               );
             }),
           ),
+          Positioned(top: 12,right: 12,child:SafeArea(child:Material(color:const Color(0xDD170F0A),borderRadius:BorderRadius.circular(30),child:TextButton.icon(onPressed:()=>_push(context,const PointOfReturnPage()),icon:const Icon(Icons.menu_book,color:Color(0xFFE8C478)),label:const Text('آموزش مدیریت',style:TextStyle(color:Color(0xFFE8C478))))))),
         ],
       ),
     );
