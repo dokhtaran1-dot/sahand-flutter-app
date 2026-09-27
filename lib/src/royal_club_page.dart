@@ -10,7 +10,7 @@ class RoyalClubPage extends StatefulWidget {
  @override State<RoyalClubPage> createState()=>_RoyalClubPageState();
 }
 class _RoyalClubPageState extends State<RoyalClubPage>{
- int slide=0; Timer? timer;
+ int slide=0; Timer? timer; Timer? refreshTimer; int refresh=0;
  final prizes=const [
   ('PlayStation 5','700,000','sports_esports'),
   ('تلویزیون ۶۵ اینچ','1,000,000','tv'),
@@ -18,8 +18,8 @@ class _RoyalClubPageState extends State<RoyalClubPage>{
   ('هدیه اختصاصی کلاب','100,000','card_giftcard')
  ];
  SupabaseClient? get db=>Supabase.instance.isInitialized?Supabase.instance.client:null;
- @override void initState(){super.initState();timer=Timer.periodic(const Duration(milliseconds:2500),(_){if(mounted)setState(()=>slide=(slide+1)%prizes.length);});}
- @override void dispose(){timer?.cancel();super.dispose();}
+ @override void initState(){super.initState();timer=Timer.periodic(const Duration(milliseconds:2500),(_){if(mounted)setState(()=>slide=(slide+1)%prizes.length);});refreshTimer=Timer.periodic(const Duration(seconds:15),(_){if(mounted)setState(()=>refresh++);});}
+ @override void dispose(){timer?.cancel();refreshTimer?.cancel();super.dispose();}
  void open(Widget page)=>Navigator.push(context,MaterialPageRoute(builder:(_)=>page));
  void info(String title,String detail)=>showDialog(context:context,builder:(_)=>AlertDialog(title:Text(title),content:Text(detail),actions:[TextButton(onPressed:()=>Navigator.pop(context),child:const Text('بستن'))]));
  Widget panel({required Widget child})=>Container(padding:const EdgeInsets.all(13),decoration:BoxDecoration(color:const Color(0xff271719),borderRadius:BorderRadius.circular(18),border:Border.all(color:_gold.withOpacity(.7))),child:child);
@@ -30,14 +30,14 @@ class _RoyalClubPageState extends State<RoyalClubPage>{
  Text('${p.$2} تیکت',style:const TextStyle(color:_gold,fontSize:13)),
  const Text('فعال‌سازی پس از تأمین موجودی',textAlign:TextAlign.center,style:TextStyle(fontSize:10,color:Colors.white60))
  ]));}
- Widget leaderboard(){final client=db;if(client==null)return panel(child:const Center(child:Text('LIVE TOP 10\nاتصال سرور هنوز فعال نیست',textAlign:TextAlign.center,style:TextStyle(color:_gold))));
- return FutureBuilder<List<Map<String,dynamic>>>(future:client.from('rc_leaderboard').select('user_id,display_name,weekly_xp').order('weekly_xp',ascending:false).limit(10),builder:(context,s){
+ Widget leaderboard(){final client=db; final tick=refresh;if(client==null)return panel(child:const Center(child:Text('LIVE TOP 10\nاتصال سرور هنوز فعال نیست',textAlign:TextAlign.center,style:TextStyle(color:_gold))));
+ return FutureBuilder<List<Map<String,dynamic>>>(key:ValueKey(tick),future:client.from('rc_leaderboard').select('user_id,display_name,weekly_xp').order('weekly_xp',ascending:false).limit(10),builder:(context,s){
  final rows=s.data??[];return panel(child:Column(crossAxisAlignment:CrossAxisAlignment.stretch,children:[
  const Text('LIVE • TOP 10',textAlign:TextAlign.center,style:TextStyle(color:_gold,fontWeight:FontWeight.bold)),
  const SizedBox(height:8),
  if(s.hasError)const Text('جدول پس از راه‌اندازی سرور نمایش داده می‌شود',style:TextStyle(fontSize:11)),
  if(rows.isEmpty&&!s.hasError)const Text('هنوز امتیاز تأییدشده‌ای ثبت نشده',style:TextStyle(fontSize:11)),
- ...rows.asMap().entries.map((e)=>Padding(padding:const EdgeInsets.symmetric(vertical:2),child:Text('${e.key+1}. ${e.value['display_name']??'عضو کلاب'}  •  ${e.value['weekly_xp']??0} XP',overflow:TextOverflow.ellipsis,style:TextStyle(fontSize:11,color:e.key==0?_gold:Colors.white))))
+ ...rows.take(10).toList().asMap().entries.map((e)=>Padding(padding:const EdgeInsets.symmetric(vertical:2),child:Text('${e.key+1}. ${e.value['display_name']??'عضو کلاب'}  •  ${e.value['weekly_xp']??0} XP',overflow:TextOverflow.ellipsis,style:TextStyle(fontSize:11,color:e.key==0?_gold:Colors.white))))
  ]));});}
  Widget tile(IconData icon,String title,VoidCallback tap)=>InkWell(onTap:tap,child:panel(child:Column(mainAxisAlignment:MainAxisAlignment.center,children:[Icon(icon,color:_gold,size:30),const SizedBox(height:9),Text(title,textAlign:TextAlign.center,style:const TextStyle(fontSize:12,fontWeight:FontWeight.bold))])));
  @override Widget build(BuildContext context)=>Directionality(textDirection:TextDirection.rtl,child:Scaffold(backgroundColor:_bg,appBar:AppBar(backgroundColor:_bg,centerTitle:true,title:const Text('♛  ROYAL CLUB',style:TextStyle(color:_gold,letterSpacing:2)),),body:SafeArea(child:LayoutBuilder(builder:(context,c)=>SingleChildScrollView(padding:const EdgeInsets.all(16),child:Column(children:[
