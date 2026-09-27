@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'royal_games_page.dart';
 import 'royal_club_membership_page.dart';
@@ -58,7 +59,7 @@ class _RoyalClubPageState extends State<RoyalClubPage>{
  ])))));
  })));
 
- @override Widget build(BuildContext context)=>_approvedPoster(context);
+ @override Widget build(BuildContext context)=>FutureBuilder<bool>(future:rootBundle.load('assets/image/RoyalClub_Approved_Final.png').then((_)=>true).catchError((_)=>false),builder:(context,s)=>s.data==true?_approvedPoster(context):_fallbackBuild(context));
  Widget _fallbackBuild(BuildContext context)=>Directionality(textDirection:TextDirection.rtl,child:Scaffold(backgroundColor:_bg,appBar:AppBar(backgroundColor:_bg,centerTitle:true,title:const Text('♛  ROYAL CLUB',style:TextStyle(color:_gold,letterSpacing:2)),),body:SafeArea(child:LayoutBuilder(builder:(context,c)=>SingleChildScrollView(padding:const EdgeInsets.all(16),child:Column(children:[
  const Text('WEEKLY CHAMPION',style:TextStyle(color:_gold,letterSpacing:3)),
  const SizedBox(height:8),
