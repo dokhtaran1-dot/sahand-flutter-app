@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/services.dart';
 import 'royal_village_page.dart';
 import 'royal_club_page.dart';
 import 'royal_mall_page.dart';
@@ -24,7 +23,7 @@ class HomePage extends StatelessWidget {
  }
  Widget _artHome(BuildContext context,BoxConstraints c){const w=941.0,h=1672.0;final scale=(c.maxWidth/w<c.maxHeight/h)?c.maxWidth/w:c.maxHeight/h;return Center(child:SizedBox(width:w*scale,height:h*scale,child:FittedBox(fit:BoxFit.fill,child:SizedBox(width:w,height:h,child:Stack(children:[Image.asset('assets/image/RoyalOne_Home_RC_Ultra.png',width:w,height:h,fit:BoxFit.fill),Positioned.fromRect(rect:const Rect.fromLTWH(0,530,305,820),child:GestureDetector(behavior:HitTestBehavior.opaque,onTap:()=>open(context,const RoyalMallPage()))),Positioned.fromRect(rect:const Rect.fromLTWH(310,530,308,820),child:GestureDetector(behavior:HitTestBehavior.opaque,onTap:()=>open(context,const RoyalClubPage()))),Positioned.fromRect(rect:const Rect.fromLTWH(625,530,310,820),child:GestureDetector(behavior:HitTestBehavior.opaque,onTap:()=>open(context,const RoyalVillagePage()))),Positioned.fromRect(rect:const Rect.fromLTWH(0,1495,180,160),child:GestureDetector(behavior:HitTestBehavior.opaque,onTap:()=>{})),Positioned.fromRect(rect:const Rect.fromLTWH(185,1495,180,160),child:GestureDetector(behavior:HitTestBehavior.opaque,onTap:()=>open(context,const RoyalMallPage()))),Positioned.fromRect(rect:const Rect.fromLTWH(375,1495,185,160),child:GestureDetector(behavior:HitTestBehavior.opaque,onTap:()=>open(context,const RoyalClubPage()))),Positioned.fromRect(rect:const Rect.fromLTWH(565,1495,180,160),child:GestureDetector(behavior:HitTestBehavior.opaque,onTap:()=>open(context,const RoyalVillagePage()))),Positioned.fromRect(rect:const Rect.fromLTWH(750,1495,180,160),child:GestureDetector(behavior:HitTestBehavior.opaque,onTap:()=>open(context,const RoyalClubPage())))])))));}
  Widget nav(BuildContext context,IconData icon,String label,VoidCallback tap)=>Expanded(child:InkWell(onTap:tap,child:Column(mainAxisSize:MainAxisSize.min,children:[Icon(icon,color:gold,size:24),const SizedBox(height:4),Text(label,style:const TextStyle(color:Colors.white70,fontSize:10))])));
- Widget approvedPoster(BuildContext context)=>Scaffold(backgroundColor:dark,body:SafeArea(child:LayoutBuilder(builder:(context,c){const w=941.0,h=1672.0;final scale=(c.maxWidth/w<c.maxHeight/h)?c.maxWidth/w:c.maxHeight/h;return Center(child:SizedBox(width:w*scale,height:h*scale,child:FittedBox(fit:BoxFit.fill,child:SizedBox(width:w,height:h,child:Stack(children:[Image.asset('assets/image/ROYAL_ONE_Home_RC.png',width:w,height:h,fit:BoxFit.fill),
+ Widget approvedPoster(BuildContext context)=>Scaffold(backgroundColor:dark,body:SafeArea(child:LayoutBuilder(builder:(context,c){const w=941.0,h=1672.0;final scale=(c.maxWidth/w<c.maxHeight/h)?c.maxWidth/w:c.maxHeight/h;return Center(child:SizedBox(width:w*scale,height:h*scale,child:FittedBox(fit:BoxFit.fill,child:SizedBox(width:w,height:h,child:Stack(children:[Image.asset('assets/image/RoyalOne_Home_RC_Ultra.png',width:w,height:h,fit:BoxFit.fill),
  hotspot(context,const Rect.fromLTWH(0,525,303,935),const RoyalMallPage()),
  hotspot(context,const Rect.fromLTWH(314,525,307,935),const RoyalClubPage()),
  hotspot(context,const Rect.fromLTWH(634,525,307,935),const RoyalVillagePage()),
@@ -34,7 +33,7 @@ class HomePage extends StatelessWidget {
  Positioned.fromRect(rect:const Rect.fromLTWH(824,5,112,108),child:GestureDetector(onTap:()=>open(context,const PointOfReturnPage()),behavior:HitTestBehavior.opaque,child:const SizedBox.expand())),
  ])))));})));
  Widget hotspot(BuildContext context,Rect rect,Widget page)=>Positioned.fromRect(rect:rect,child:GestureDetector(behavior:HitTestBehavior.opaque,onTap:()=>open(context,page),child:const SizedBox.expand()));
- @override Widget build(BuildContext context)=>FutureBuilder<bool>(future:rootBundle.load('assets/image/ROYAL_ONE_Home_RC.png').then((_)=>true).catchError((_)=>false),builder:(context,s)=>s.data==true?approvedPoster(context):fallbackHome(context));
+ @override Widget build(BuildContext context)=>FutureBuilder<bool>(future:rootBundle.load('assets/image/RoyalOne_Home_RC_Ultra.png').then((_)=>true).catchError((_)=>false),builder:(context,s)=>s.data==true?approvedPoster(context):fallbackHome(context));
  Widget fallbackHome(BuildContext context)=>Scaffold(backgroundColor:dark,body:SafeArea(child:LayoutBuilder(builder:(context,c)=>SingleChildScrollView(child:ConstrainedBox(constraints:BoxConstraints(minHeight:c.maxHeight),child:Container(
  decoration:const BoxDecoration(gradient:LinearGradient(begin:Alignment.topCenter,end:Alignment.bottomCenter,colors:[Color(0xff100b09),Color(0xff332012),Color(0xff080706)])),
  padding:const EdgeInsets.fromLTRB(14,14,14,16),child:Column(children:[
