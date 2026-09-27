@@ -12,6 +12,23 @@ class HomePage extends StatelessWidget {
  static const dark=Color(0xff100c0a);
  void open(BuildContext context,Widget page)=>Navigator.of(context).push(MaterialPageRoute(builder:(_)=>page));
 
+ static const approvedArtwork='assets/image/Home_Approved_RC.png';
+ Widget _approvedHome(BuildContext context)=>Scaffold(backgroundColor:dark,body:SafeArea(child:LayoutBuilder(builder:(context,c){
+ const w=941.0,h=1672.0;
+ final scale=(c.maxWidth/w<c.maxHeight/h)?c.maxWidth/w:c.maxHeight/h;
+ Widget hit(Rect rect,VoidCallback tap)=>Positioned.fromRect(rect:rect,child:GestureDetector(behavior:HitTestBehavior.opaque,onTap:tap,child:const SizedBox.expand()));
+ return Center(child:SizedBox(width:w*scale,height:h*scale,child:FittedBox(fit:BoxFit.fill,child:SizedBox(width:w,height:h,child:Stack(children:[
+ Image.asset(approvedArtwork,width:w,height:h,fit:BoxFit.fill),
+ hit(const Rect.fromLTWH(0,520,306,900),()=>open(context,const RoyalMallPage())),
+ hit(const Rect.fromLTWH(310,520,306,900),()=>open(context,const RoyalClubPage())),
+ hit(const Rect.fromLTWH(620,520,321,900),()=>open(context,const RoyalVillagePage())),
+ hit(const Rect.fromLTWH(0,1450,185,210),()=>{}),
+ hit(const Rect.fromLTWH(190,1450,185,210),()=>open(context,const RoyalMallPage())),
+ hit(const Rect.fromLTWH(380,1450,185,210),()=>open(context,const RoyalClubPage())),
+ hit(const Rect.fromLTWH(570,1450,185,210),()=>open(context,const RoyalVillagePage())),
+ hit(const Rect.fromLTWH(760,1450,181,210),()=>open(context,const RoyalClubPage())),
+ hit(const Rect.fromLTWH(835,0,106,160),()=>open(context,const PointOfReturnPage())),
+ ]))))); })));
  Widget portal(BuildContext context,{required String initials,required String name,required String fa,required String description,required IconData icon,required Widget page}){
  return Expanded(child:InkWell(onTap:()=>open(context,page),borderRadius:BorderRadius.circular(17),child:Container(
  decoration:BoxDecoration(border:Border.all(color:gold,width:1.4),borderRadius:BorderRadius.circular(17),gradient:const LinearGradient(begin:Alignment.topLeft,end:Alignment.bottomRight,colors:[Color(0xff45301c),Color(0xff130e0c),Color(0xff332012)]),boxShadow:const [BoxShadow(color:Color(0x665b3915),blurRadius:14)]),
