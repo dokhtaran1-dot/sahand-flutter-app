@@ -15,7 +15,7 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
   final otp = TextEditingController();
   bool consent = false, sent = false, busy = false;
   String? error;
-  SupabaseClient get db => Supabase.instance.client;
+  SupabaseClient? get db => Supabase.instance.isInitialized ? Supabase.instance.client : null;
 
   String get normalizedPhone {
     var s = phone.text.replaceAll(RegExp(r'[^0-9+]'), '');
@@ -30,9 +30,10 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
       setState(() => error = 'نام، شماره موبایل ایران و پذیرش قوانین را بررسی کنید.');
       return;
     }
+    if (db == null) { setState(() => error = 'عضویت آنلاین پس از اتصال سرور فعال می‌شود.'); return; }
     setState(() { busy = true; error = null; });
     try {
-      await db.auth.signInWithOtp(phone: normalizedPhone, shouldCreateUser: true);
+      await db!.auth.signInWithOtp(phone: normalizedPhone, shouldCreateUser: true);
       if (mounted) setState(() => sent = true);
     } catch (_) {
       if (mounted) setState(() => error = 'ارسال پیامک انجام نشد. تنظیمات پیامک یا شماره را بررسی کنید.');
@@ -41,13 +42,14 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
 
   Future<void> verify() async {
     if (otp.text.trim().length < 4) return;
+    if (db == null) { setState(() => error = 'سرور عضویت هنوز متصل نیست.'); return; }
     setState(() { busy = true; error = null; });
     try {
-      final result = await db.auth.verifyOTP(
+      final result = await db!.auth.verifyOTP(
         phone: normalizedPhone, token: otp.text.trim(), type: OtpType.sms,
       );
       if (result.user == null) throw StateError('No verified user');
-      await db.from('rc_members').upsert({
+      await db!.from('rc_members').upsert({
         'user_id': result.user!.id,
         'display_name': name.text.trim(),
       }, onConflict: 'user_id');
@@ -73,6 +75,7 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
         constraints: const BoxConstraints(maxWidth: 480),
         child: ListView(padding: const EdgeInsets.all(24), children: [
           const Icon(Icons.workspace_premium, size: 75, color: gold),
+          if (db == null) const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Text('سرور عضویت هنوز متصل نیست؛ فرم تا زمان اتصال غیرفعال است.',textAlign: TextAlign.center,style: TextStyle(color: Colors.amber))),
           const SizedBox(height: 12),
           const Text('عضویت اختصاصی رویال کلاب', textAlign: TextAlign.center,
             style: TextStyle(color: gold, fontSize: 23, fontWeight: FontWeight.bold)),
@@ -102,7 +105,7 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
           if (error != null) Padding(padding: const EdgeInsets.symmetric(vertical: 12),
             child: Text(error!, textAlign: TextAlign.center, style: const TextStyle(color: Colors.redAccent))),
           const SizedBox(height: 18),
-          ElevatedButton(onPressed: busy ? null : (sent ? verify : sendCode),
+          ElevatedButton(onPressed: busy || db == null ? null : (sent ? verify : sendCode),
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF650D21), foregroundColor: gold,
               padding: const EdgeInsets.all(17), side: const BorderSide(color: gold)),
             child: Text(busy ? 'لطفاً صبر کنید...' : sent ? 'تأیید و تکمیل عضویت' : 'دریافت کد تأیید')),
