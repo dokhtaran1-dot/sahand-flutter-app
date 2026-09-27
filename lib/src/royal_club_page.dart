@@ -12,6 +12,26 @@ class RoyalClubPage extends StatefulWidget {
 }
 class _RoyalClubPageState extends State<RoyalClubPage>{
  int slide=0; Timer? timer; Timer? refreshTimer; int refresh=0;
+ static const tvPrizes=<({String name, String subtitle, IconData icon})>[
+ (name:'iPhone 18 Pro Max',subtitle:'آیفون ۱۸ پرو مکس',icon:Icons.phone_iphone),
+ (name:'Galaxy Z Fold8',subtitle:'گوشی تاشوی سامسونگ',icon:Icons.tablet_android),
+ (name:'Galaxy Z Flip8',subtitle:'گوشی تاشوی سامسونگ',icon:Icons.flip),
+ (name:'Galaxy Z Flip7',subtitle:'گوشی تاشوی سامسونگ',icon:Icons.flip),
+ (name:'PlayStation 5',subtitle:'کنسول پلی‌استیشن ۵',icon:Icons.videogame_asset),
+ (name:'DualSense PS5',subtitle:'یک عدد دسته اصلی پلی‌استیشن',icon:Icons.sports_esports),
+ (name:'DJI Avata 2',subtitle:'پهپاد با کنترل و عینک',icon:Icons.flight),
+ (name:'iPhone 17',subtitle:'آیفون ۱۷',icon:Icons.phone_iphone),
+ (name:'iPhone 17 Pro Max',subtitle:'آیفون ۱۷ پرو مکس',icon:Icons.phone_iphone),
+ (name:'۸۰٪ تخفیف خرید',subtitle:'مغازه‌های مشارکت‌کننده رویال مال',icon:Icons.shopping_bag),
+ (name:'PlayStation Portal',subtitle:'دستگاه بازی از راه دور',icon:Icons.sports_esports),
+ (name:'PlayStation VR2',subtitle:'عینک واقعیت مجازی',icon:Icons.visibility),
+ (name:'DualSense Edge',subtitle:'دسته حرفه‌ای پلی‌استیشن',icon:Icons.sports_esports),
+ (name:'Nintendo Switch 2',subtitle:'کنسول نینتندو',icon:Icons.videogame_asset),
+ (name:'Xbox Series X',subtitle:'کنسول ایکس‌باکس',icon:Icons.sports_esports),
+ (name:'Steam Deck OLED',subtitle:'کنسول دستی',icon:Icons.tablet_android),
+ (name:'Logitech G29',subtitle:'فرمان و پدال مسابقه',icon:Icons.sports_motorsports),
+ (name:'PULSE Elite',subtitle:'هدست بی‌سیم پلی‌استیشن',icon:Icons.headphones),
+ ];
  final prizes=const [
   ('PlayStation 5','700,000','sports_esports'),
   ('تلویزیون ۶۵ اینچ','1,000,000','tv'),
@@ -19,18 +39,25 @@ class _RoyalClubPageState extends State<RoyalClubPage>{
   ('هدیه اختصاصی کلاب','100,000','card_giftcard')
  ];
  SupabaseClient? get db=>Supabase.instance.isInitialized?Supabase.instance.client:null;
- @override void initState(){super.initState();timer=Timer.periodic(const Duration(milliseconds:2500),(_){if(mounted)setState(()=>slide=(slide+1)%prizes.length);});refreshTimer=Timer.periodic(const Duration(seconds:15),(_){if(mounted)setState(()=>refresh++);});}
+ @override void initState(){super.initState();timer=Timer.periodic(const Duration(milliseconds:2500),(_){if(mounted)setState(()=>slide=(slide+1)%tvPrizes.length);});refreshTimer=Timer.periodic(const Duration(seconds:15),(_){if(mounted)setState(()=>refresh++);});}
  @override void dispose(){timer?.cancel();refreshTimer?.cancel();super.dispose();}
  void open(Widget page)=>Navigator.push(context,MaterialPageRoute(builder:(_)=>page));
  void info(String title,String detail)=>showDialog(context:context,builder:(_)=>AlertDialog(title:Text(title),content:Text(detail),actions:[TextButton(onPressed:()=>Navigator.pop(context),child:const Text('بستن'))]));
  Widget panel({required Widget child})=>Container(padding:const EdgeInsets.all(13),decoration:BoxDecoration(color:const Color(0xff271719),borderRadius:BorderRadius.circular(18),border:Border.all(color:_gold.withOpacity(.7))),child:child);
- Widget prizePanel(){final p=prizes[slide];return panel(child:Column(mainAxisAlignment:MainAxisAlignment.spaceBetween,children:[
+ Widget prizePanel(){return panel(child:Column(mainAxisAlignment:MainAxisAlignment.spaceBetween,children:[
  const Text('جوایز کلاب',style:TextStyle(color:_gold,fontWeight:FontWeight.bold)),
- Icon([Icons.sports_esports,Icons.tv,Icons.phone_iphone,Icons.card_giftcard][slide],size:48,color:_gold),
- Text(p.$1,textAlign:TextAlign.center,style:const TextStyle(fontSize:14,fontWeight:FontWeight.bold)),
- Text('${p.$2} تیکت',style:const TextStyle(color:_gold,fontSize:13)),
+ Icon(tvPrizes[slide].icon,size:48,color:_gold),
+ Text(tvPrizes[slide].name,textAlign:TextAlign.center,style:const TextStyle(fontSize:14,fontWeight:FontWeight.bold)),
  const Text('فعال‌سازی پس از تأمین موجودی',textAlign:TextAlign.center,style:TextStyle(fontSize:10,color:Colors.white60))
  ]));}
+ Widget _tvPrizeCard(int index,{bool compact=false}){final p=tvPrizes[index];final discount=index==9;return Container(decoration:BoxDecoration(gradient:const LinearGradient(begin:Alignment.topLeft,end:Alignment.bottomRight,colors:[Color(0xff100c09),Color(0xff48301a),Color(0xff100b0a)]),borderRadius:BorderRadius.circular(16),border:Border.all(color:_gold,width:2)),padding:EdgeInsets.all(compact?12:24),child:Column(mainAxisAlignment:MainAxisAlignment.spaceEvenly,children:[
+ Text('♛  ROYAL CLUB',textAlign:TextAlign.center,style:TextStyle(color:_gold,fontSize:compact?15:23,fontWeight:FontWeight.bold,letterSpacing:2)),
+ if(discount)Text('۸۰٪',style:TextStyle(color:_gold,fontSize:compact?75:140,fontWeight:FontWeight.w900)) else Icon(p.icon,color:_gold,size:compact?80:150),
+ Text(p.name,textAlign:TextAlign.center,style:TextStyle(color:_gold,fontSize:compact?22:38,fontWeight:FontWeight.bold)),
+ Text(p.subtitle,textAlign:TextAlign.center,style:TextStyle(color:Colors.white,fontSize:compact?15:24)),
+ const Text('نمایش جوایز • ارائه پس از تأیید موجودی',textAlign:TextAlign.center,style:TextStyle(color:Colors.white70,fontSize:12)),
+ ]));}
+ void _openTvGallery(){Navigator.push(context,MaterialPageRoute(builder:(_)=>Scaffold(backgroundColor:_bg,appBar:AppBar(title:const Text('جوایز ROYAL CLUB'),backgroundColor:_bg,foregroundColor:_gold),body:PageView.builder(itemCount:tvPrizes.length,itemBuilder:(context,i)=>Padding(padding:const EdgeInsets.all(18),child:_tvPrizeCard(i))))));}
  Widget leaderboard(){final client=db; final tick=refresh;if(client==null)return panel(child:const Center(child:Text('LIVE TOP 10\nاتصال سرور هنوز فعال نیست',textAlign:TextAlign.center,style:TextStyle(color:_gold))));
  return FutureBuilder<List<Map<String,dynamic>>>(key:ValueKey(tick),future:client.from('rc_leaderboard').select('user_id,display_name,weekly_xp').order('weekly_xp',ascending:false).limit(10),builder:(context,s){
  final rows=s.data??[];return panel(child:Column(crossAxisAlignment:CrossAxisAlignment.stretch,children:[
@@ -51,7 +78,7 @@ class _RoyalClubPageState extends State<RoyalClubPage>{
  _posterHotspot(const Rect.fromLTWH(230,1060,205,255),()=>open(const RoyalGamesPage())),
  _posterHotspot(const Rect.fromLTWH(440,1060,203,255),()=>info('امتیازات کلاب','XP مسابقه هفتگی مستقل از تیکت‌های دریافت جوایز است. دریافت تیکت واقعی پس از اتصال سرور فعال می‌شود.')),
  _posterHotspot(const Rect.fromLTWH(647,1060,206,255),()=>info('آلبوم عکس','آلبوم پس از تأیید و بارگذاری تصاویر مدیریت فعال می‌شود.')),
- _posterHotspot(const Rect.fromLTWH(18,600,410,447),()=>info('جوایز کلاب','جوایز و تیکت موردنیاز پس از تأیید موجودی و راه‌اندازی سرور نمایش داده می‌شوند.')),
+ Positioned.fromRect(rect:const Rect.fromLTWH(18,600,410,447),child:GestureDetector(onTap:_openTvGallery,child:AnimatedSwitcher(duration:const Duration(milliseconds:550),child:KeyedSubtree(key:ValueKey(slide),child:_tvPrizeCard(slide,compact:true))))),
  _posterHotspot(const Rect.fromLTWH(445,600,405,447),()=>info('جدول زنده','رتبه‌بندی بر اساس XP تأییدشده است؛ هر هفته فقط نفر اول برنده پذیرایی امپریال برای شش نفر می‌شود.')),
  _posterHotspot(const Rect.fromLTWH(30,1360,255,145),()=>Navigator.of(context).pop()),
  _posterHotspot(const Rect.fromLTWH(325,1330,215,190),()=>open(const RoyalGamesPage())),
