@@ -40,7 +40,26 @@ class _RoyalClubPageState extends State<RoyalClubPage>{
  ...rows.take(10).toList().asMap().entries.map((e)=>Padding(padding:const EdgeInsets.symmetric(vertical:2),child:Text('${e.key+1}. ${e.value['display_name']??'عضو کلاب'}  •  ${e.value['weekly_xp']??0} XP',overflow:TextOverflow.ellipsis,style:TextStyle(fontSize:11,color:e.key==0?_gold:Colors.white))))
  ]));});}
  Widget tile(IconData icon,String title,VoidCallback tap)=>InkWell(onTap:tap,child:panel(child:Column(mainAxisAlignment:MainAxisAlignment.center,children:[Icon(icon,color:_gold,size:30),const SizedBox(height:9),Text(title,textAlign:TextAlign.center,style:const TextStyle(fontSize:12,fontWeight:FontWeight.bold))])));
- @override Widget build(BuildContext context)=>Directionality(textDirection:TextDirection.rtl,child:Scaffold(backgroundColor:_bg,appBar:AppBar(backgroundColor:_bg,centerTitle:true,title:const Text('♛  ROYAL CLUB',style:TextStyle(color:_gold,letterSpacing:2)),),body:SafeArea(child:LayoutBuilder(builder:(context,c)=>SingleChildScrollView(padding:const EdgeInsets.all(16),child:Column(children:[
+ Widget _posterHotspot(Rect rect, VoidCallback tap)=>Positioned.fromRect(rect:rect,child:GestureDetector(behavior:HitTestBehavior.opaque,onTap:tap,child:const SizedBox.expand()));
+ Widget _approvedPoster(BuildContext context)=>Scaffold(backgroundColor:_bg,body:SafeArea(child:LayoutBuilder(builder:(context,c){
+ const w=864.0,h=1536.0;
+ final scale=(c.maxWidth/w<c.maxHeight/h)?c.maxWidth/w:c.maxHeight/h;
+ return Center(child:SizedBox(width:w*scale,height:h*scale,child:FittedBox(fit:BoxFit.fill,child:SizedBox(width:w,height:h,child:Stack(children:[
+ Image.asset('assets/image/RoyalClub_Approved_Final.png',width:w,height:h,fit:BoxFit.fill,errorBuilder:(context,error,stack)=>const ColoredBox(color:_bg,child:Center(child:Text('تصویر نهایی کلاب هنوز به پروژه اضافه نشده',style:TextStyle(color:_gold))))),
+ _posterHotspot(const Rect.fromLTWH(16,1060,208,255),()=>open(const RoyalClubMembershipPage())),
+ _posterHotspot(const Rect.fromLTWH(230,1060,205,255),()=>open(const RoyalGamesPage())),
+ _posterHotspot(const Rect.fromLTWH(440,1060,203,255),()=>info('امتیازات کلاب','XP مسابقه هفتگی مستقل از تیکت‌های دریافت جوایز است. دریافت تیکت واقعی پس از اتصال سرور فعال می‌شود.')),
+ _posterHotspot(const Rect.fromLTWH(647,1060,206,255),()=>info('آلبوم عکس','آلبوم پس از تأیید و بارگذاری تصاویر مدیریت فعال می‌شود.')),
+ _posterHotspot(const Rect.fromLTWH(18,600,410,447),()=>info('جوایز کلاب','جوایز و تیکت موردنیاز پس از تأیید موجودی و راه‌اندازی سرور نمایش داده می‌شوند.')),
+ _posterHotspot(const Rect.fromLTWH(445,600,405,447),()=>info('جدول زنده','رتبه‌بندی بر اساس XP تأییدشده است؛ هر هفته فقط نفر اول برنده پذیرایی امپریال برای شش نفر می‌شود.')),
+ _posterHotspot(const Rect.fromLTWH(30,1360,255,145),()=>Navigator.of(context).pop()),
+ _posterHotspot(const Rect.fromLTWH(325,1330,215,190),()=>open(const RoyalGamesPage())),
+ _posterHotspot(const Rect.fromLTWH(620,1360,220,145),()=>open(const RoyalClubMembershipPage())),
+ ])))));
+ })));
+
+ @override Widget build(BuildContext context)=>_approvedPoster(context);
+ Widget _fallbackBuild(BuildContext context)=>Directionality(textDirection:TextDirection.rtl,child:Scaffold(backgroundColor:_bg,appBar:AppBar(backgroundColor:_bg,centerTitle:true,title:const Text('♛  ROYAL CLUB',style:TextStyle(color:_gold,letterSpacing:2)),),body:SafeArea(child:LayoutBuilder(builder:(context,c)=>SingleChildScrollView(padding:const EdgeInsets.all(16),child:Column(children:[
  const Text('WEEKLY CHAMPION',style:TextStyle(color:_gold,letterSpacing:3)),
  const SizedBox(height:8),
  panel(child:const Column(children:[Text('جایزه نفر اول هر هفته',style:TextStyle(color:_gold,fontWeight:FontWeight.bold,fontSize:17)),SizedBox(height:7),Text('RV LOUNGE IMPERIAL',style:TextStyle(fontWeight:FontWeight.bold)),SizedBox(height:4),Text('سلف‌سرویس اختصاصی برای ۶ نفر\nبرنده به همراه ۵ مهمان',textAlign:TextAlign.center),SizedBox(height:5),Text('رتبه‌بندی بر اساس XP؛ تیکت جوایز مستقل است',textAlign:TextAlign.center,style:TextStyle(fontSize:11,color:Colors.white70))])),
