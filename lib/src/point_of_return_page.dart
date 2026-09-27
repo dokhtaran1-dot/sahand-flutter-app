@@ -26,6 +26,22 @@ class PointOfReturnPage extends StatelessWidget {
  SizedBox(height:14),
  Text('مسئله ← مشکل ← بحران ← فروپاشی ← مرگ ← مدیریت ← احیا',textAlign:TextAlign.center,style:TextStyle(color:gold,height:1.8,fontSize:13))
  ])),
+ const SizedBox(height:26),
+ const Text('پکیج‌های مشاوره مدیریت مرگ',style:TextStyle(color:gold,fontSize:21,fontWeight:FontWeight.bold)),
+ const SizedBox(height:7),
+ const Text('مشاوره راهبردی، مدیریت بحران و بازسازی کسب‌وکار',style:TextStyle(color:Colors.white70,height:1.7)),
+ const SizedBox(height:15),
+ ...const [
+ ('گشایش شاه','۱۰','شناخت مسئله و ارزیابی وضعیت'),
+ ('چینش قدرت','۲۰','اولویت‌بندی منابع و طراحی ساختار تصمیم‌گیری'),
+ ('حرکت سرنوشت','۴۰','تدوین استراتژی و برنامه اجرایی'),
+ ('بازگشت از کیش','۸۰','مدیریت بحران و برنامه بازگشت'),
+ ('مات مرگ','۱۵۰','پکیج اختصاصی با همراهی ویژه')
+ ].map((p)=>Container(margin:const EdgeInsets.only(bottom:12),padding:const EdgeInsets.all(16),decoration:BoxDecoration(color:const Color(0xff261b17),border:Border.all(color:gold),borderRadius:BorderRadius.circular(14)),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
+ Row(children:[Expanded(child:Text(p.$1,style:const TextStyle(color:gold,fontSize:18,fontWeight:FontWeight.bold))),Text('${p.$2} میلیون تومان',style:const TextStyle(color:gold,fontSize:17,fontWeight:FontWeight.bold))]),
+ const SizedBox(height:9),Text(p.$3,style:const TextStyle(color:Colors.white70,height:1.6))
+ ]))),
+ const Text('مدت جلسات و جزئیات خدمات هر پکیج هنگام هماهنگی اعلام می‌شود. رزرو و پرداخت آنلاین هنوز فعال نیست.',style:TextStyle(color:Colors.white60,height:1.7,fontSize:12)),
  const SizedBox(height:24),
  const Text('فهرست کتاب • ۹ فصل',style:TextStyle(color:gold,fontWeight:FontWeight.bold,fontSize:20)),
  const SizedBox(height:8),
