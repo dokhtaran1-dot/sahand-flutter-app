@@ -57,6 +57,14 @@ jobs:
           fi
           unzip -tq assets/image/Royal_Village_App_Upload.zip
 
+      - name: Restore approved ultra RC home poster from main
+        run: |
+          if [ ! -s assets/image/RoyalOne_Home_RC_Ultra.png ]; then
+            git fetch --no-tags --depth=1 origin main
+            git show FETCH_HEAD:assets/image/RoyalOne_Home_RC_Ultra.png > assets/image/RoyalOne_Home_RC_Ultra.png
+          fi
+          test -s assets/image/RoyalOne_Home_RC_Ultra.png
+
       - name: Verify active artwork
         run: |
           test -s assets/image/Home.png
