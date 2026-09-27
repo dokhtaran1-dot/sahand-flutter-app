@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'royal_village_page.dart';
 import 'royal_club_page.dart';
 import 'royal_mall_page.dart';
@@ -21,7 +22,18 @@ class HomePage extends StatelessWidget {
  ]))));
  }
  Widget nav(BuildContext context,IconData icon,String label,VoidCallback tap)=>Expanded(child:InkWell(onTap:tap,child:Column(mainAxisSize:MainAxisSize.min,children:[Icon(icon,color:gold,size:24),const SizedBox(height:4),Text(label,style:const TextStyle(color:Colors.white70,fontSize:10))])));
- @override Widget build(BuildContext context)=>Scaffold(backgroundColor:dark,body:SafeArea(child:LayoutBuilder(builder:(context,c)=>SingleChildScrollView(child:ConstrainedBox(constraints:BoxConstraints(minHeight:c.maxHeight),child:Container(
+ Widget approvedPoster(BuildContext context)=>Scaffold(backgroundColor:dark,body:SafeArea(child:LayoutBuilder(builder:(context,c){const w=941.0,h=1672.0;final scale=(c.maxWidth/w<c.maxHeight/h)?c.maxWidth/w:c.maxHeight/h;return Center(child:SizedBox(width:w*scale,height:h*scale,child:FittedBox(fit:BoxFit.fill,child:SizedBox(width:w,height:h,child:Stack(children:[Image.asset('assets/image/ROYAL_ONE_Home_RC.png',width:w,height:h,fit:BoxFit.fill),
+ hotspot(context,const Rect.fromLTWH(0,525,303,935),const RoyalMallPage()),
+ hotspot(context,const Rect.fromLTWH(314,525,307,935),const RoyalClubPage()),
+ hotspot(context,const Rect.fromLTWH(634,525,307,935),const RoyalVillagePage()),
+ hotspot(context,const Rect.fromLTWH(223,1490,170,155),const RoyalMallPage()),
+ hotspot(context,const Rect.fromLTWH(405,1490,145,155),const RoyalClubPage()),
+ hotspot(context,const Rect.fromLTWH(570,1490,155,155),const RoyalVillagePage()),
+ Positioned.fromRect(rect:const Rect.fromLTWH(824,5,112,108),child:GestureDetector(onTap:()=>open(context,const PointOfReturnPage()),behavior:HitTestBehavior.opaque,child:const SizedBox.expand())),
+ ])))));})));
+ Widget hotspot(BuildContext context,Rect rect,Widget page)=>Positioned.fromRect(rect:rect,child:GestureDetector(behavior:HitTestBehavior.opaque,onTap:()=>open(context,page),child:const SizedBox.expand()));
+ @override Widget build(BuildContext context)=>FutureBuilder<bool>(future:rootBundle.load('assets/image/ROYAL_ONE_Home_RC.png').then((_)=>true).catchError((_)=>false),builder:(context,s)=>s.data==true?approvedPoster(context):fallbackHome(context));
+ Widget fallbackHome(BuildContext context)=>Scaffold(backgroundColor:dark,body:SafeArea(child:LayoutBuilder(builder:(context,c)=>SingleChildScrollView(child:ConstrainedBox(constraints:BoxConstraints(minHeight:c.maxHeight),child:Container(
  decoration:const BoxDecoration(gradient:LinearGradient(begin:Alignment.topCenter,end:Alignment.bottomCenter,colors:[Color(0xff100b09),Color(0xff332012),Color(0xff080706)])),
  padding:const EdgeInsets.fromLTRB(14,14,14,16),child:Column(children:[
  Row(children:[const Text('SC',style:TextStyle(color:gold,fontSize:26,fontWeight:FontWeight.bold,fontFamily:'serif')),const SizedBox(width:8),const Expanded(child:Text('SAHAND CONSORTIUM\nSINCE 1971',style:TextStyle(color:gold,fontSize:9,letterSpacing:1.1))),TextButton.icon(onPressed:()=>open(context,const PointOfReturnPage()),icon:const Icon(Icons.menu_book,color:gold,size:18),label:const Text('آموزش مدیریت',style:TextStyle(color:gold,fontSize:11)))]),
