@@ -67,7 +67,7 @@ jobs:
 
       - name: Verify active artwork
         run: |
-          test -s assets/image/Home.png
+          test -s assets/image/royal1_home_ultra.webp
           test -s assets/image/Welcome.png
           test -s assets/image/Rv_page2.png
           test -s assets/image/Rc_page2.png
