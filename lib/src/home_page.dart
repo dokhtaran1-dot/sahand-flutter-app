@@ -1,168 +1,29 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
-
-import 'royal_mall_page.dart';
 import 'royal_village_page.dart';
-import 'royal_club_game_page.dart';
+import 'royal_club_page.dart';
+import 'royal_mall_page.dart';
+import 'point_of_return_page.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  static const double _artWidth = 941;
-  static const double _artHeight = 1672;
-  static const String _art = 'assets/image/Home.png';
-
-  void _openRoyalMall(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const RoyalMallPage()),
-    );
-  }
-
-  void _openRoyalVillage(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const RoyalVillagePage()),
-    );
-  }
-
-  void _openRoyalClub(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const RoyalClubGamePage()),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          ImageFiltered(
-            imageFilter: ui.ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: ColorFiltered(
-              colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(.42),
-                BlendMode.darken,
-              ),
-              child: Image.asset(_art, fit: BoxFit.cover),
-            ),
-          ),
-          Center(
-            child: FractionallySizedBox(
-              widthFactor: .96,
-              heightFactor: .96,
-              child: FittedBox(
-                fit: BoxFit.contain,
-                child: SizedBox(
-                width: _artWidth,
-                height: _artHeight,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image.asset(
-                      _art,
-                      width: _artWidth,
-                      height: _artHeight,
-                      fit: BoxFit.fill,
-                      filterQuality: FilterQuality.high,
-                      isAntiAlias: true,
-                      gaplessPlayback: true,
-                    ),
-
-                    // New Home.png layout — RM / RV / RC.
-                    Positioned(
-                      left: 20,
-                      top: 590,
-                      width: 290,
-                      height: 690,
-                      child: _TapZone(onTap: () => _openRoyalMall(context)),
-                    ),
-                    Positioned(
-                      left: 320,
-                      top: 590,
-                      width: 290,
-                      height: 690,
-                      child: _TapZone(onTap: () => _openRoyalVillage(context)),
-                    ),
-                    Positioned(
-                      left: 620,
-                      top: 590,
-                      width: 290,
-                      height: 690,
-                      child: _TapZone(onTap: () => _openRoyalClub(context)),
-                    ),
-
-                    // Bottom navigation.
-                    Positioned(
-                      left: 20,
-                      top: 1480,
-                      width: 180,
-                      height: 150,
-                      child: _TapZone(onTap: () {}),
-                    ),
-                    Positioned(
-                      left: 200,
-                      top: 1480,
-                      width: 185,
-                      height: 150,
-                      child: _TapZone(onTap: () => _openRoyalClub(context)),
-                    ),
-                    Positioned(
-                      left: 385,
-                      top: 1450,
-                      width: 175,
-                      height: 185,
-                      child: _TapZone(onTap: () {}),
-                    ),
-                    Positioned(
-                      left: 560,
-                      top: 1480,
-                      width: 185,
-                      height: 150,
-                      child: _TapZone(onTap: () => _openRoyalVillage(context)),
-                    ),
-                    Positioned(
-                      left: 745,
-                      top: 1480,
-                      width: 176,
-                      height: 150,
-                      child: _TapZone(onTap: () => _openRoyalClub(context)),
-                    ),
-
-                    // Top menu.
-                    Positioned(
-                      left: 825,
-                      top: 15,
-                      width: 105,
-                      height: 105,
-                      child: _TapZone(onTap: () => _openRoyalClub(context)),
-                    ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TapZone extends StatelessWidget {
-  final VoidCallback onTap;
-  const _TapZone({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-      ),
-    );
-  }
+ const HomePage({super.key});
+ static const art='assets/image/royal1_home_ultra.webp';
+ static const w=1024.0,h=1536.0;
+ void open(BuildContext c,Widget p)=>Navigator.of(c).push(MaterialPageRoute(builder:(_)=>p));
+ Widget hit(BuildContext c,Rect r,Widget p)=>Positioned.fromRect(rect:r,child:GestureDetector(behavior:HitTestBehavior.opaque,onTap:()=>open(c,p),child:const SizedBox.expand()));
+ @override Widget build(BuildContext context)=>Scaffold(backgroundColor:Colors.black,body:SafeArea(child:LayoutBuilder(builder:(context,c){
+   final scale=(c.maxWidth/w<c.maxHeight/h)?c.maxWidth/w:c.maxHeight/h;
+   return Stack(children:[
+    Center(child:SizedBox(width:w*scale,height:h*scale,child:FittedBox(fit:BoxFit.fill,child:SizedBox(width:w,height:h,child:Stack(children:[
+      Image.asset(art,width:w,height:h,fit:BoxFit.fill,filterQuality:FilterQuality.high),
+      hit(context,const Rect.fromLTWH(20,450,315,760),const RoyalMallPage()),
+      hit(context,const Rect.fromLTWH(355,450,315,760),const RoyalClubPage()),
+      hit(context,const Rect.fromLTWH(690,450,315,760),const RoyalVillagePage()),
+      hit(context,const Rect.fromLTWH(160,1350,150,150),const RoyalClubPage()),
+      hit(context,const Rect.fromLTWH(435,1325,155,175),const RoyalClubPage()),
+      hit(context,const Rect.fromLTWH(600,1350,175,150),const RoyalVillagePage()),
+      hit(context,const Rect.fromLTWH(800,1350,190,150),const RoyalClubPage()),
+    ]))))),
+    Positioned(top:4,right:8,child:IconButton(icon:const Icon(Icons.menu_book,color:Color(0xffe7c47d),size:22),tooltip:'آموزش مدیریت',onPressed:()=>open(context,const PointOfReturnPage())))
+   ]);
+ })));
 }
