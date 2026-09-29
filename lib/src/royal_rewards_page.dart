@@ -13,35 +13,27 @@ class RoyalRewardsPage extends StatelessWidget {
   static const Color burgundy = Color(0xFF4D0D17);
 
   static const List<_Reward> grand = [
-    _Reward('iPhone 18 Pro Max', '۹۰٬۰۰۰', Icons.phone_iphone_rounded,
-        'APPLE', 'جایزه بزرگ'),
-    _Reward('Galaxy Z Fold8 Ultra', '۸۰٬۰۰۰', Icons.tablet_android_rounded,
-        'SAMSUNG', 'جایزه بزرگ'),
-    _Reward('Galaxy S26 Ultra', '۶۵٬۰۰۰', Icons.smartphone_rounded,
-        'SAMSUNG', 'جایزه ویژه'),
-    _Reward('Galaxy Z Flip7', '۴۵٬۰۰۰', Icons.flip_to_front_rounded,
-        'SAMSUNG', 'جایزه ویژه'),
-    _Reward('PlayStation 5', '۳۰٬۰۰۰', Icons.sports_esports_rounded,
-        'SONY', 'جایزه ویژه'),
+    _Reward('iPhone 18 Pro Max', 'COMING SOON', Icons.phone_iphone_rounded, 'APPLE', 'GRAND PRIZE'),
+    _Reward('Galaxy Z Fold8', 'COMING SOON', Icons.tablet_android_rounded, 'SAMSUNG', 'GRAND PRIZE'),
+    _Reward('Galaxy Z Flip8', 'COMING SOON', Icons.flip_rounded, 'SAMSUNG', 'GRAND PRIZE'),
+    _Reward('Galaxy Z Flip7', 'COMING SOON', Icons.flip_rounded, 'SAMSUNG', 'GRAND PRIZE'),
+    _Reward('PlayStation 5', 'COMING SOON', Icons.sports_esports_rounded, 'SONY', 'GAMING'),
+    _Reward('DualSense PS5', 'COMING SOON', Icons.gamepad_rounded, 'SONY', 'GAMING'),
+    _Reward('DJI Avata 2 + Goggles', 'COMING SOON', Icons.flight_rounded, 'DJI', 'FLY MORE'),
+    _Reward('iPhone 17', 'COMING SOON', Icons.phone_iphone_rounded, 'APPLE', 'PRIZE'),
+    _Reward('iPhone 17 Pro Max', 'COMING SOON', Icons.phone_iphone_rounded, 'APPLE', 'GRAND PRIZE'),
+    _Reward('۸۰٪ تخفیف خرید', 'VIP', Icons.percent_rounded, 'ROYAL MALL', 'مغازه‌های مشارکت‌کننده'),
   ];
 
   static const List<_Reward> more = [
-    _Reward('آبمیوه مخصوص سالن', '۱۰۰', Icons.local_drink_outlined,
-        'ROYAL VILLAGE', 'پذیرایی'),
-    _Reward('دسر یا کیک کوچک', '۲۰۰', Icons.cake_outlined,
-        'ROYAL VILLAGE', 'پذیرایی'),
-    _Reward('سورپرایز میز', '۳۵۰', Icons.celebration_outlined,
-        'ROYAL VILLAGE', 'تجربه'),
-    _Reward('تردستی دونفره', '۵۰۰', Icons.auto_awesome_rounded,
-        'ROYAL VILLAGE', 'تجربه'),
-    _Reward('ارتقای VIP', '۷۵۰', Icons.star_border_rounded,
-        'ROYAL CLUB', 'VIP'),
-    _Reward('Royal Gift Box', '۱٬۰۰۰', Icons.card_giftcard_rounded,
-        'ROYAL CLUB', 'هدیه'),
-    _Reward('تجربه اختصاصی Royal Club', '۱٬۵۰۰',
-        Icons.workspace_premium_outlined, 'ROYAL CLUB', 'VIP'),
-    _Reward('دعوت اختصاصی', '۲٬۵۰۰', Icons.diamond_outlined,
-        'ROYAL CLUB', 'VIP'),
+    _Reward('PlayStation Portal', 'GAMING', Icons.sports_esports_rounded, 'SONY', 'Gaming'),
+    _Reward('PlayStation VR2', 'VR', Icons.view_in_ar_rounded, 'SONY', 'Gaming'),
+    _Reward('DualSense Edge', 'PRO', Icons.gamepad_rounded, 'SONY', 'Gaming'),
+    _Reward('Nintendo Switch 2', 'GAMING', Icons.videogame_asset_rounded, 'NINTENDO', 'Gaming'),
+    _Reward('Xbox Series X', 'GAMING', Icons.sports_esports_rounded, 'XBOX', 'Gaming'),
+    _Reward('Steam Deck OLED', 'OLED', Icons.tablet_android_rounded, 'STEAM', 'Gaming'),
+    _Reward('Logitech G29', 'RACING', Icons.sports_motorsports_rounded, 'LOGITECH', 'Gaming'),
+    _Reward('PULSE Elite', 'AUDIO', Icons.headphones_rounded, 'SONY', 'Gaming'),
   ];
 
   @override
@@ -93,7 +85,7 @@ class RoyalRewardsPage extends StatelessWidget {
                         textDirection: TextDirection.rtl,
                         style: TextStyle(color: Colors.white70, fontSize: 15)),
                     SizedBox(height: 10),
-                    Text('تیکت‌ها بدون سقف روزانه جمع می‌شوند.',
+                    Text('جوایز منتخب ROYAL CLUB',
                         textDirection: TextDirection.rtl,
                         style: TextStyle(color: gold, fontSize: 13)),
                   ],
@@ -107,7 +99,7 @@ class RoyalRewardsPage extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               const Text(
-                'هدف‌های پیشنهادی تیکت؛ فعال‌سازی هر جایزه پس از تأیید مدیریت و موجودی.',
+                'فهرست جوایز منتخب؛ شرایط دریافت هر جایزه پس از تأیید نهایی اعلام می‌شود.',
                 textDirection: TextDirection.rtl,
                 textAlign: TextAlign.right,
                 style: TextStyle(color: Colors.white60, fontSize: 12),
@@ -160,7 +152,7 @@ class RoyalRewardsPage extends StatelessWidget {
                             fontSize: 13, height: 1.6)),
                     SizedBox(height: 12),
                     Text(
-                      'این صفحه پیش‌نمایش کاتالوگ است. دریافت جایزه پس از فعال‌سازی کیف تیکت امن، اعلام شرایط و تأیید موجودی انجام می‌شود. تیکت ارزش نقدی ندارد.',
+                      'این کاتالوگ برای نمایش جوایز منتخب است؛ موجودی و شرایط دریافت هر جایزه پیش از فعال‌سازی نهایی تأیید می‌شود.',
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white54,
@@ -273,7 +265,7 @@ class _GrandPrizeCard extends StatelessWidget {
                     style: const TextStyle(
                         color: Colors.white54, fontSize: 11)),
                 const SizedBox(height: 4),
-                Text(reward.tickets + '  RC TICKETS',
+                Text(reward.tickets,
                     style: const TextStyle(
                         color: RoyalRewardsPage.gold,
                         fontSize: 15,
@@ -313,7 +305,7 @@ class _SmallPrizeCard extends StatelessWidget {
               style: const TextStyle(color: Colors.white,
                   fontSize: 13, fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
-          Text(reward.tickets + ' TICKETS',
+          Text(reward.tickets,
               textAlign: TextAlign.center,
               style: const TextStyle(color: RoyalRewardsPage.gold,
                   fontSize: 13, fontWeight: FontWeight.w700)),
