@@ -6,7 +6,7 @@ import 'point_of_return_page.dart';
 
 class HomePage extends StatelessWidget {
  const HomePage({super.key});
- static const art='assets/image/royal1_home_ultra.webp';
+ static const art='assets/image/Home.png';
  static const w=1024.0,h=1536.0;
  void open(BuildContext c,Widget p)=>Navigator.of(c).push(MaterialPageRoute(builder:(_)=>p));
  Widget hit(BuildContext c,Rect r,Widget p)=>Positioned.fromRect(rect:r,child:GestureDetector(behavior:HitTestBehavior.opaque,onTap:()=>open(c,p),child:const SizedBox.expand()));
