@@ -30,7 +30,7 @@ class RoyalGamesPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(
                 horizontal: 22, vertical: 14),
             decoration: BoxDecoration(
-              color: const Color(0xFF301D14),
+              color: const Color(0xFF130D0B),
               borderRadius: BorderRadius.circular(23),
               border: Border.all(color: gold, width: 1.3),
             ),
@@ -93,7 +93,7 @@ class RoyalGamesPage extends StatelessWidget {
                       fontSize: 24, fontWeight: FontWeight.w900,
                       letterSpacing: 3)),
               const SizedBox(height: 5),
-              const Text('سه بازی، یک باشگاه، امتیازهای ماندگار',
+              const Text('سه تجربه اختصاصی • یک باشگاه رویال',
                   textAlign: TextAlign.center,
                   textDirection: TextDirection.rtl,
                   style: TextStyle(color: Colors.white,
@@ -104,24 +104,24 @@ class RoyalGamesPage extends StatelessWidget {
               _GameOption(
                 index: '01',
                 title: 'DEAL OR NO DEAL',
-                description: 'چمدان انتخاب کن و پیشنهاد بانکدار را بپذیر یا ادامه بده',
-                image: 'assets/image/deal_case.png',
+                description: '۲۰ صندوق رویال • انتخاب صندوق اختصاصی • پیشنهاد بانکدار',
+                symbol: '♛',
                 onTap: () => _open(context, const RoyalDealPage()),
               ),
               const SizedBox(height: 13),
               _GameOption(
                 index: '02',
                 title: 'THE ROYAL CROWN',
-                description: 'چالش ۶۰ ثانیه‌ای تاج و ثبت امتیاز',
-                symbol: '👑',
+                description: 'چالش سرعت و تمرکز ۶۰ ثانیه‌ای رویال',
+                symbol: '♕',
                 onTap: () => _open(context, const RoyalCrownGamePage()),
               ),
               const SizedBox(height: 13),
               _GameOption(
                 index: '03',
                 title: 'FIND THE DIFFERENCE',
-                description: '۵ تفاوت در عکس‌های ۳ سالن رویال ویلیج پیدا کن',
-                image: 'assets/image/salon_jardin.png',
+                description: 'سه سالن رویال ویلیج • پنج تفاوت در هر مرحله',
+                symbol: '✦',
                 onTap: () => _open(
                     context, const RoyalFindDifferencePage()),
               ),
@@ -203,11 +203,7 @@ class _GameOption extends StatelessWidget {
           padding: const EdgeInsets.all(13),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [
-                Color(0xFF392616),
-                Color(0xFF130D0D),
-                Color(0xFF35121E),
-              ],
+              colors: [Color(0xFF080808),Color(0xFF291B0D),Color(0xFF17080D)],
             ),
             borderRadius: BorderRadius.circular(22),
             border: Border.all(color: gold.withOpacity(.75), width: 1.2),
@@ -225,7 +221,7 @@ class _GameOption extends StatelessWidget {
                 clipBehavior: Clip.antiAlias,
                 child: symbol != null
                     ? Center(child: Text(symbol!,
-                        style: const TextStyle(fontSize: 59)))
+                        style: const TextStyle(fontSize: 54,color: gold)))
                     : Image.asset(image!, fit: BoxFit.cover,
                         filterQuality: FilterQuality.high),
               ),
