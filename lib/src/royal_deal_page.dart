@@ -170,7 +170,7 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
         backgroundColor: Colors.black,
         foregroundColor: gold,
         centerTitle: true,
-        title: const Text('👑 ROYAL DEAL'),
+        title: const Text('ROYAL DEAL',style:TextStyle(letterSpacing:2,fontWeight:FontWeight.w800)),
         actions: [
           IconButton(
             onPressed: _toggleSound,
@@ -188,7 +188,7 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
                   gradient: RadialGradient(
                     center: Alignment.topCenter,
                     radius: 1.1,
-                    colors: [Color(0xFF3B0710), Color(0xFF090909), Colors.black],
+                    colors: [Color(0xFF25160A), Color(0xFF0A0807), Colors.black],
                   ),
                 ),
               ),
@@ -251,14 +251,8 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
                                       )
                                     else
                                       Padding(
-                                        padding: const EdgeInsets.all(7),
-                                        child: Image.asset(
-                                          'assets/image/deal_case.png',
-                                          fit: BoxFit.contain,
-                                          filterQuality: FilterQuality.high,
-                                          color: Colors.white.withOpacity(.22),
-                                          colorBlendMode: BlendMode.modulate,
-                                        ),
+                                        padding: const EdgeInsets.all(14),
+                                        child: const Icon(Icons.lock_open_rounded,color:gold,size:42),
                                       ),
                                     Positioned(
                                       left: 4,
@@ -287,12 +281,8 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
                                   fit: StackFit.expand,
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsets.all(5),
-                                      child: Image.asset(
-                                        'assets/image/deal_case.png',
-                                        fit: BoxFit.contain,
-                                        filterQuality: FilterQuality.high,
-                                      ),
+                                      padding: const EdgeInsets.all(14),
+                                      child: const Icon(Icons.business_center_rounded,color:gold,size:48),
                                     ),
                                     Center(
                                       child: Container(
