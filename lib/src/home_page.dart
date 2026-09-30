@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
 
   static const double artWidth = 941;
   static const double artHeight = 1672;
-  static const String artwork = 'assets/image/royal1_home_ultra.webp';
+  static const String artwork = 'assets/image/Home.png';
 
   void _push(BuildContext context, Widget page) {
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
