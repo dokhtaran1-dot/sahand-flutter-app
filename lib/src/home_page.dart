@@ -70,7 +70,7 @@ class HomePage extends StatelessWidget {
                       gaplessPlayback: true,
                     ),
 
-                    // New Home.png layout — RM / RV / RC.
+                    // Current Home.png layout — RM / RC / RV.
                     Positioned(
                       left: 20,
                       top: 590,
@@ -83,14 +83,14 @@ class HomePage extends StatelessWidget {
                       top: 590,
                       width: 290,
                       height: 690,
-                      child: _TapZone(onTap: () => _openRoyalVillage(context)),
+                      child: _TapZone(onTap: () => _openRoyalClub(context)),
                     ),
                     Positioned(
                       left: 620,
                       top: 590,
                       width: 290,
                       height: 690,
-                      child: _TapZone(onTap: () => _openRoyalClub(context)),
+                      child: _TapZone(onTap: () => _openRoyalVillage(context)),
                     ),
 
                     // Bottom navigation.
