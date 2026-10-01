@@ -126,35 +126,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
 
-          Positioned(
-            top: 10,
-            right: 10,
-            child: SafeArea(
-              child: Material(
-                color: const Color(0xB8140E0A),
-                borderRadius: BorderRadius.circular(28),
-                child: TextButton.icon(
-                  onPressed: () => _push(
-                    context,
-                    const PointOfReturnPage(),
-                  ),
-                  icon: const Icon(
-                    Icons.menu_book,
-                    color: Color(0xFFE8C478),
-                    size: 18,
-                  ),
-                  label: const Text(
-                    'آموزش مدیریت',
-                    style: TextStyle(
-                      color: Color(0xFFE8C478),
-                      fontSize: 11,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+                  ],
       ),
     );
   }
