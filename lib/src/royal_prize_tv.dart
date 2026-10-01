@@ -44,7 +44,7 @@ class _RoyalPrizeTvState extends State<RoyalPrizeTv> {
     _Prize(
       'PlayStation 5',
       'DISC EDITION',
-      'https://gmedia.playstation.com/is/image/SIEPDC/ps5-slim-edition-left-image-block-01-en-24jun24?%24100px--t%24=',
+      'https://gmedia.playstation.com/is/image/SIEPDC/ps5-slim-edition-left-image-block-01-en-24jun24?%24native%24=',
     ),
     _Prize(
       'PS5 HD Camera',
@@ -64,7 +64,7 @@ class _RoyalPrizeTvState extends State<RoyalPrizeTv> {
     _Prize(
       'iPhone 17 Pro Max',
       'COSMIC ORANGE',
-      'https://www.mwave.com.au/images/400/apple-iphone-17-pro-max-256gb-cosmic-orange-ac89347.jpg',
+      'https://shopaz.vteximg.com.br/arquivos/ids/741984/-assets-vtex.catalog-images-products-8732184073ltclmZUaM5VUqorH67Dtfh3mAHxTsdbtZwqqJs___34d9314a05fc715eee14d5382788f364.jpg',
     ),
     _Prize.discount(),
   ];
