@@ -6,6 +6,7 @@ import 'royal_games_page.dart';
 import 'royal_leaderboard_page.dart';
 import 'royal_rewards_page.dart';
 import 'royal_club_membership_page.dart';
+import 'royal_prize_tv.dart';
 
 class RoyalClubGamePage extends StatelessWidget {
   const RoyalClubGamePage({super.key});
@@ -159,13 +160,15 @@ class RoyalClubGamePage extends StatelessWidget {
                       ),
                     ),
 
-                    // Left prize TV
+                    // Left prize TV — 10 approved prizes, aspect ratio preserved.
                     Positioned(
-                      left: 20,
-                      top: 650,
-                      width: 455,
-                      height: 485,
-                      child: _TapZone(onTap: () => _openRewards(context)),
+                      left: 30,
+                      top: 662,
+                      width: 432,
+                      height: 458,
+                      child: RoyalPrizeTv(
+                        onOpenRewards: () => _openRewards(context),
+                      ),
                     ),
 
                     // Right Top 10 TV
