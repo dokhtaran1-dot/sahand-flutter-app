@@ -5,7 +5,7 @@ import 'royal_club_page.dart';
 import 'royal_mall_page.dart';
 import 'point_of_return_page.dart';
 
-/// Final Home poster layout:
+/// Final Home poster layout (approved RC center artwork):
 /// left = RM, center = RC, right = RV.
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
