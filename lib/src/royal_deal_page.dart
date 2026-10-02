@@ -461,114 +461,187 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
   }
 
   Widget _closedCase(int i, bool isMine) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(4, 5, 4, 3),
-          child: Image.asset(
-            'assets/image/deal_case.png',
-            fit: BoxFit.contain,
-            filterQuality: FilterQuality.high,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(5, 8, 5, 5),
+      child: Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            top: -7,
+            width: 34,
+            height: 13,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(7),
+                ),
+                border: Border.all(
+                  color: isMine ? const Color(0xFFFF5A6A) : _gold,
+                  width: 1.5,
+                ),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF0C0A08), Color(0xFF3A2A13)],
+                ),
+              ),
+            ),
           ),
-        ),
-        Center(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(11),
+                border: Border.all(
+                  color: isMine ? const Color(0xFFFF5A6A) : _gold,
+                  width: isMine ? 2.0 : 1.25,
+                ),
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF3A210E),
+                    Color(0xFF120A07),
+                    Color(0xFF050505),
+                  ],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: (isMine ? const Color(0xFFFF2441) : _gold)
+                        .withOpacity(isMine ? .42 : .18),
+                    blurRadius: isMine ? 14 : 7,
+                    spreadRadius: isMine ? 1 : 0,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            left: 7,
+            right: 7,
+            top: 9,
+            height: 2,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(2),
+                gradient: const LinearGradient(
+                  colors: [Colors.transparent, _gold, Colors.transparent],
+                ),
+              ),
+            ),
+          ),
+          Container(
+            width: 46,
+            height: 38,
+            alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(.78),
-              borderRadius: BorderRadius.circular(9),
-              border: Border.all(color: _gold.withOpacity(.86)),
+              color: const Color(0xFF090807).withOpacity(.94),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isMine ? const Color(0xFFFF6C78) : _gold,
+                width: 1.4,
+              ),
+              boxShadow: const [
+                BoxShadow(color: Color(0x553F250D), blurRadius: 8),
+              ],
             ),
             child: Text(
               '${i + 1}',
               style: const TextStyle(
                 color: _goldBright,
-                fontSize: 16,
+                fontSize: 20,
                 fontWeight: FontWeight.w900,
               ),
             ),
           ),
-        ),
-        if (isMine)
           const Positioned(
-            left: 2,
-            right: 2,
-            bottom: 2,
-            child: Text(
-              'MY CASE',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Color(0xFFFF6C78),
-                fontSize: 7.8,
-                fontWeight: FontWeight.w900,
-                letterSpacing: .5,
-              ),
+            left: 8,
+            bottom: 7,
+            child: Icon(
+              Icons.diamond_outlined,
+              color: Color(0xFFB88D42),
+              size: 10,
             ),
           ),
-      ],
+          const Positioned(
+            right: 8,
+            bottom: 7,
+            child: Icon(
+              Icons.diamond_outlined,
+              color: Color(0xFFB88D42),
+              size: 10,
+            ),
+          ),
+          if (isMine)
+            const Positioned(
+              left: 2,
+              right: 2,
+              bottom: -15,
+              child: Text(
+                'MY CASE',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Color(0xFFFF6C78),
+                  fontSize: 8.2,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: .8,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
   Widget _openedCase(int i) {
-    final rewardImage = _rewardImage(_caseValues[i]);
+    final value = _caseValues[i];
+    final jackpot = value == 10000;
 
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        if (rewardImage != null)
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              rewardImage,
-              fit: BoxFit.cover,
-              filterQuality: FilterQuality.high,
-            ),
-          )
-        else
-          Opacity(
-            opacity: .18,
-            child: Padding(
-              padding: const EdgeInsets.all(7),
-              child: Image.asset(
-                'assets/image/deal_case.png',
-                fit: BoxFit.contain,
-                filterQuality: FilterQuality.high,
-              ),
-            ),
-          ),
-        Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                '${_caseValues[i]}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            ),
-          ),
+    return Container(
+      margin: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(11),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: jackpot
+              ? const [Color(0xFF7A1320), Color(0xFF26080C)]
+              : const [Color(0xFF381018), Color(0xFF100607)],
         ),
-        const Positioned(
-          left: 1,
-          right: 1,
-          bottom: 3,
-          child: Text(
+        border: Border.all(color: _gold.withOpacity(.72)),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            jackpot
+                ? Icons.workspace_premium_rounded
+                : Icons.confirmation_number_outlined,
+            color: jackpot ? _goldBright : _gold,
+            size: 22,
+          ),
+          const SizedBox(height: 5),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              '$value',
+              style: TextStyle(
+                color: jackpot ? _goldBright : Colors.white,
+                fontSize: 19,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          const SizedBox(height: 1),
+          const Text(
             'R1',
-            textAlign: TextAlign.center,
             style: TextStyle(
               color: _gold,
-              fontSize: 8,
+              fontSize: 9,
               fontWeight: FontWeight.w900,
-              letterSpacing: 1,
+              letterSpacing: 1.4,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -780,21 +853,6 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
                 ),
               ),
             ),
-            Positioned(
-              left: -70,
-              right: -70,
-              top: -130,
-              height: 340,
-              child: IgnorePointer(
-                child: Opacity(
-                  opacity: .10,
-                  child: Image.asset(
-                    'assets/image/deal_case.png',
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ),
             Column(
               children: [
                 _topBar(),
@@ -802,18 +860,39 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
                 _gameHeading(),
                 const SizedBox(height: 13),
                 Expanded(
-                  child: GridView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(11, 2, 11, 6),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5,
-                      crossAxisSpacing: 7,
-                      mainAxisSpacing: 8,
-                      childAspectRatio: .86,
-                    ),
-                    itemCount: 20,
-                    itemBuilder: (_, i) => _caseTile(i),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      const columns = 4;
+                      const rows = 5;
+                      const hGap = 10.0;
+                      const vGap = 11.0;
+                      const hPad = 14.0;
+                      const vPad = 5.0;
+
+                      final cellW =
+                          (constraints.maxWidth - (hPad * 2) - (hGap * 3)) /
+                              columns;
+                      final cellH =
+                          (constraints.maxHeight - (vPad * 2) - (vGap * 4)) /
+                              rows;
+
+                      return GridView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: hPad,
+                          vertical: vPad,
+                        ),
+                        gridDelegate:
+                            SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: columns,
+                          crossAxisSpacing: hGap,
+                          mainAxisSpacing: vGap,
+                          childAspectRatio: cellW / cellH,
+                        ),
+                        itemCount: 20,
+                        itemBuilder: (_, i) => _caseTile(i),
+                      );
+                    },
                   ),
                 ),
                 Padding(
