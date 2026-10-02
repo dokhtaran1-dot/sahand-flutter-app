@@ -230,7 +230,7 @@ class _RoyalCrownGamePageState extends State<RoyalCrownGamePage>
   Future<void> _finish() async {
     _moveTimer?.cancel();
     _rushPulse.stop();
-    final tickets = 2 + math.min(5, _score ~/ 500);
+    final tickets = (2 + math.min(5, _score ~/ 500)).toInt();
     _ticketsEarned = tickets;
 
     await RoyalScoreStore.recordScore(
