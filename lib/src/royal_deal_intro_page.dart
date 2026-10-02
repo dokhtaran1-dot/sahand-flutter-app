@@ -176,7 +176,9 @@ class _RoyalDealIntroPageState extends State<RoyalDealIntroPage>
   }
 
   double _ease(double start, double end, {Curve curve = Curves.easeOutCubic}) {
-    final raw = ((_intro.value - start) / (end - start)).clamp(0.0, 1.0);
+    final raw = ((_intro.value - start) / (end - start))
+        .clamp(0.0, 1.0)
+        .toDouble();
     return curve.transform(raw);
   }
 
