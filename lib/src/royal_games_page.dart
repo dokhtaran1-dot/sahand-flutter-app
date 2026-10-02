@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'royal_crown_game_page.dart';
-import 'royal_deal_page.dart';
+import 'royal_deal_intro_page.dart';
 import 'royal_find_difference_page.dart';
 import 'royal_leaderboard_page.dart';
 import 'royal_rewards_page.dart';
@@ -106,7 +106,7 @@ class RoyalGamesPage extends StatelessWidget {
                 title: 'DEAL OR NO DEAL',
                 description: 'چمدان انتخاب کن و پیشنهاد بانکدار را بپذیر یا ادامه بده',
                 image: 'assets/image/deal_case.png',
-                onTap: () => _open(context, const RoyalDealPage()),
+                onTap: () => _open(context, const RoyalDealIntroPage()),
               ),
               const SizedBox(height: 13),
               _GameOption(

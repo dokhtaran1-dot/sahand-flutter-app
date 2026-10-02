@@ -10,7 +10,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -33,6 +33,22 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.5'
+
+      - name: Install Royal Deal intro artwork
+        if: github.event_name != 'pull_request'
+        env:
+          ROYAL_DEAL_INTRO_URL: 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/dba02775-8301-4be0-933b-1daba8c4edfc.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiYWRhNDVjN2EzN2ViYjUxNiIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTA2Njc0Nn0.i6yC6WPfQH2i2ltf_Yr-892ffOXskXozJyNEuVEAONU'
+        run: |
+          target="assets/image/royal_deal_intro.png"
+          if [ ! -s "$target" ]; then
+            curl --fail --location --retry 3 "$ROYAL_DEAL_INTRO_URL" -o "$target"
+            test -s "$target"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "$target"
+            git commit -m "Store Royal Deal intro artwork"
+            git push origin HEAD:main
+          fi
 
       - name: Install Royal 1 launcher icon
         run: |
@@ -67,6 +83,7 @@ jobs:
           test -s assets/image/deal_case.png
           test -s assets/image/deal_banker.png
           test -s assets/image/deal_jackpot.png
+          test -s assets/image/royal_deal_intro.png
           test -s assets/image/Royal_Village_App_Upload.zip
           test -s assets/image/screen_01.png
           test -s assets/image/screen_02.png
