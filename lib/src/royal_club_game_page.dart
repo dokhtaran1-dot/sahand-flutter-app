@@ -13,8 +13,7 @@ class RoyalClubGamePage extends StatelessWidget {
 
   static const double _artWidth = 941;
   static const double _artHeight = 1672;
-  static const String _art =
-      'assets/image/ROYAL_ONE_Home_RC_Ultra_Final.png';
+  static const String _art = 'assets/image/RC_Approved.jpg';
   static const Color _gold = Color(0xFFE8C36A);
 
   void _openGames(BuildContext context) {

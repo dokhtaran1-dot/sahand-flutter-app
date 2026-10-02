@@ -10,7 +10,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -33,6 +33,22 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.5'
+
+      - name: Install approved Royal Club artwork
+        if: github.event_name != 'pull_request'
+        env:
+          RC_ART_URL: 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/721adfce-113e-434c-aff1-5db6cea8d538.jpg?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMmNhODQzZjViMWZiNzNmYyIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTAzNjE0OX0.RODgKqebxdmXbWljGYbrNV58eKXsV0lEFA0dsOorc3w'
+        run: |
+          target="assets/image/RC_Approved.jpg"
+          if [ ! -s "$target" ]; then
+            curl --fail --location --retry 3 "$RC_ART_URL" -o "$target"
+            test -s "$target"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "$target"
+            git commit -m "Store approved Royal Club artwork"
+            git push origin HEAD:main
+          fi
 
       - name: Install Royal 1 launcher icon
         run: |
@@ -63,6 +79,7 @@ jobs:
           test -s assets/image/Welcome.png
           test -s assets/image/Rv_page2.png
           test -s assets/image/Rc_page2.png
+          test -s assets/image/RC_Approved.jpg
           test -s assets/image/deal_case.png
           test -s assets/image/deal_banker.png
           test -s assets/image/deal_jackpot.png
