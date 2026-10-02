@@ -6,6 +6,10 @@ import 'royal_games_page.dart';
 import 'royal_leaderboard_page.dart';
 import 'royal_rewards_page.dart';
 import 'royal_club_membership_page.dart';
+import 'royal_club_privileges_page.dart';
+import 'royal_club_photo_album_page.dart';
+import 'royal_club_explore_page.dart';
+import 'royal_club_profile_page.dart';
 import 'royal_prize_tv.dart';
 
 class RoyalClubGamePage extends StatelessWidget {
@@ -34,19 +38,104 @@ class RoyalClubGamePage extends StatelessWidget {
     );
   }
 
+  void _openMembership(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RoyalClubMembershipPage()),
+    );
+  }
+
+  void _openPrivileges(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RoyalClubPrivilegesPage()),
+    );
+  }
+
+  void _openPhotoAlbum(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RoyalClubPhotoAlbumPage()),
+    );
+  }
+
+  void _openExplore(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RoyalClubExplorePage()),
+    );
+  }
+
   void _openProfile(BuildContext context) {
-    const configured =
-        bool.fromEnvironment('ROYAL_CLUB_BACKEND_READY', defaultValue: false);
-    if (configured) {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const RoyalClubMembershipPage()),
-      );
-      return;
-    }
-    _showInfo(
-      context,
-      'ROYAL CLUB',
-      'فرم عضویت آماده است و پس از اتصال سرویس عضویت فعال می‌شود.',
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RoyalClubProfilePage()),
+    );
+  }
+
+  void _openMenu(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: const Color(0xFF0A0705),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        side: BorderSide(color: _gold),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'ROYAL CLUB',
+                style: TextStyle(
+                  color: _gold,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 2,
+                ),
+              ),
+              const SizedBox(height: 14),
+              _MenuAction(
+                icon: Icons.workspace_premium_outlined,
+                title: 'عضویت کلاب',
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _openMembership(context);
+                },
+              ),
+              _MenuAction(
+                icon: Icons.sports_esports_rounded,
+                title: 'بازی‌ها',
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _openGames(context);
+                },
+              ),
+              _MenuAction(
+                icon: Icons.diamond_outlined,
+                title: 'امتیازات و مزایا',
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _openPrivileges(context);
+                },
+              ),
+              _MenuAction(
+                icon: Icons.photo_library_outlined,
+                title: 'آلبوم عکس',
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _openPhotoAlbum(context);
+                },
+              ),
+              _MenuAction(
+                icon: Icons.person_outline_rounded,
+                title: 'پروفایل من',
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _openProfile(context);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -135,13 +224,7 @@ class RoyalClubGamePage extends StatelessWidget {
                       top: 10,
                       width: 91,
                       height: 105,
-                      child: _TapZone(
-                        onTap: () => _showInfo(
-                          context,
-                          'ROYAL CLUB',
-                          'Membership • Games • Privileges • Photo Album',
-                        ),
-                      ),
+                      child: _TapZone(onTap: () => _openMenu(context)),
                     ),
 
                     // Language selector
@@ -185,7 +268,7 @@ class RoyalClubGamePage extends StatelessWidget {
                       top: 1140,
                       width: 218,
                       height: 300,
-                      child: _TapZone(onTap: () => _openProfile(context)),
+                      child: _TapZone(onTap: () => _openMembership(context)),
                     ),
 
                     // Games
@@ -203,7 +286,7 @@ class RoyalClubGamePage extends StatelessWidget {
                       top: 1140,
                       width: 225,
                       height: 300,
-                      child: _TapZone(onTap: () => _openRewards(context)),
+                      child: _TapZone(onTap: () => _openPrivileges(context)),
                     ),
 
                     // Photo Album
@@ -212,13 +295,7 @@ class RoyalClubGamePage extends StatelessWidget {
                       top: 1140,
                       width: 223,
                       height: 300,
-                      child: _TapZone(
-                        onTap: () => _showInfo(
-                          context,
-                          'PHOTO ALBUM',
-                          'آلبوم تصاویر اختصاصی Royal Club',
-                        ),
-                      ),
+                      child: _TapZone(onTap: () => _openPhotoAlbum(context)),
                     ),
 
                     // Bottom Home
@@ -238,13 +315,7 @@ class RoyalClubGamePage extends StatelessWidget {
                       top: 1440,
                       width: 340,
                       height: 190,
-                      child: _TapZone(
-                        onTap: () => _showInfo(
-                          context,
-                          'EXPLORE',
-                          'دنیای Royal Club',
-                        ),
-                      ),
+                      child: _TapZone(onTap: () => _openExplore(context)),
                     ),
 
                     // Bottom Profile
@@ -278,6 +349,62 @@ class _TapZone extends StatelessWidget {
         onTap: onTap,
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
+      ),
+    );
+  }
+}
+
+
+class _MenuAction extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+
+  const _MenuAction({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 9),
+      child: Material(
+        color: const Color(0xFF18100D),
+        borderRadius: BorderRadius.circular(17),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(17),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 14),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(17),
+              border: Border.all(color: const Color(0x66E8C36A)),
+            ),
+            child: Row(
+              textDirection: TextDirection.rtl,
+              children: [
+                Icon(icon, color: const Color(0xFFE8C36A)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    title,
+                    textDirection: TextDirection.rtl,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                const Icon(
+                  Icons.chevron_left_rounded,
+                  color: Color(0xFFE8C36A),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
