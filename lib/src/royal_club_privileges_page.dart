@@ -65,7 +65,7 @@ class _RoyalClubPrivilegesPageState extends State<RoyalClubPrivilegesPage> {
   Widget build(BuildContext context) {
     final progress = nextTarget <= 0
         ? 1.0
-        : (lifetime / nextTarget).clamp(0.0, 1.0);
+        : (lifetime / nextTarget).clamp(0.0, 1.0).toDouble();
 
     return Scaffold(
       backgroundColor: Colors.black,
