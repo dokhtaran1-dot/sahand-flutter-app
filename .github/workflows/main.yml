@@ -10,7 +10,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -33,6 +33,22 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.5'
+
+      - name: Install RC Games approved artwork
+        if: github.event_name != 'pull_request'
+        env:
+          RC_GAMES_ART_URL: 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/08dde366-7dc4-44ea-bbf1-da99a9ee3f42.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMTgxMDg1YThmZTMzMDBiZiIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTE0NzE3Nn0.srrhOdJgkuuXmZczdPrD3HauF1wm9KVJOg7dubgyzio'
+        run: |
+          target="assets/image/RC_Games_Luxury.png"
+          if [ ! -s "$target" ]; then
+            curl --fail --location --retry 3 "$RC_GAMES_ART_URL" -o "$target"
+            test -s "$target"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "$target"
+            git commit -m "Store approved RC Games luxury artwork"
+            git push origin HEAD:main
+          fi
 
       - name: Install Royal 1 launcher icon
         run: |
@@ -64,6 +80,7 @@ jobs:
           test -s assets/image/Rv_page2.png
           test -s assets/image/Rc_page2.png
           test -s assets/image/RC_Approved.jpg
+          test -s assets/image/RC_Games_Luxury.png
           test -s assets/image/deal_case.png
           test -s assets/image/deal_banker.png
           test -s assets/image/deal_jackpot.png
