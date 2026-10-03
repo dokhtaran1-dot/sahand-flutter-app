@@ -56,8 +56,8 @@ class RoyalGamesPage extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           // Soft blurred fill so the approved artwork always feels full-screen.
-          ImageFiltered(
-            imageFilter: const ColorFilter.mode(
+          ColorFiltered(
+            colorFilter: const ColorFilter.mode(
               Color(0x55000000),
               BlendMode.darken,
             ),
