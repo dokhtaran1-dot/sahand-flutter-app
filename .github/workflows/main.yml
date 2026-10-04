@@ -10,7 +10,7 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -33,22 +33,6 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.5'
-
-      - name: Install approved Royal Deal anime artwork
-        if: github.event_name != 'pull_request'
-        env:
-          ROYAL_DEAL_ANIME_URL: 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/8c2fadfb-b6b9-45af-9bee-37b367e5bb29.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiZmM5NGM0NGQ4ZWEzODdmNSIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTE5MjAxM30.sO4UY-NuSrdeWqxi2bvqadykxOdvsDKvKymowEtNQew'
-        run: |
-          target="assets/image/royal_deal_anime_intro.png"
-          if [ ! -s "$target" ]; then
-            curl --fail --location --retry 3 "$ROYAL_DEAL_ANIME_URL" -o "$target"
-            test -s "$target"
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add "$target"
-            git commit -m "Store approved Royal Deal anime artwork"
-            git push origin HEAD:main
-          fi
 
       - name: Install Royal 1 launcher icon
         run: |
