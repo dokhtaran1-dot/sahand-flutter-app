@@ -20,7 +20,7 @@ class _RoyalDealIntroPageState extends State<RoyalDealIntroPage>
     with TickerProviderStateMixin {
   static const double _artWidth = 941;
   static const double _artHeight = 1672;
-  static const String _art = 'assets/image/royal_deal_intro.png';
+  static const String _art = 'assets/image/royal_deal_anime_intro.png';
   static const Color _gold = Color(0xFFE8C36A);
 
   late final AnimationController _intro;
