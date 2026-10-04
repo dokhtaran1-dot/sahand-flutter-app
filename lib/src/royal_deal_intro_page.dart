@@ -82,7 +82,7 @@ class _RoyalDealIntroPageState extends State<RoyalDealIntroPage>
     try {
       await _music.stop();
       await _music.setReleaseMode(ReleaseMode.loop);
-      await _music.setVolume(.22);
+      await _music.setVolume(.32);
       await _music.play(BytesSource(RoyalDealAudio.theme()));
     } catch (_) {}
   }
