@@ -10,7 +10,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -34,17 +34,35 @@ jobs:
         with:
           flutter-version: '3.24.5'
 
+      - name: Store approved round Royal 1 icon
+        if: github.event_name != 'pull_request'
+        env:
+          ROYAL1_ROUND_ICON_URL: 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/7f0bc057-bf5c-42be-812e-e490fcfcffeb.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMDM4YTgxOWRmZDY0MjI4ZCIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTIxMDM5N30.LAebflw_Jutw4Q9VXiFdBUoIZpHRkCxAYaJY8F5Lvjg'
+        run: |
+          target="tooling/royal1_icon_round.png"
+          if [ ! -s "$target" ]; then
+            curl --fail --location --retry 3 "$ROYAL1_ROUND_ICON_URL" -o "$target"
+            test -s "$target"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "$target"
+            git commit -m "Store approved round Royal 1 icon"
+            git push origin HEAD:main
+          fi
+
       - name: Install Royal 1 launcher icon
         run: |
-          test -s tooling/royal1_icon_locked.jpg
+          test -s tooling/royal1_icon_round.png
           for dir in \
             android/app/src/main/res/mipmap-mdpi \
             android/app/src/main/res/mipmap-hdpi \
             android/app/src/main/res/mipmap-xhdpi \
             android/app/src/main/res/mipmap-xxhdpi \
             android/app/src/main/res/mipmap-xxxhdpi; do
-            rm -f "$dir/ic_launcher.png"
-            cp tooling/royal1_icon_locked.jpg "$dir/ic_launcher.jpg"
+            rm -f "$dir/ic_launcher.jpg" "$dir/ic_launcher.png" "$dir/ic_launcher_round.png" "$dir/ic_launcher_foreground.png"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher.png"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher_round.png"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher_foreground.png"
           done
 
       # A previous edit removed the large original zip from the current tree.
