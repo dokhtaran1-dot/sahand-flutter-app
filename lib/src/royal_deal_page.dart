@@ -61,7 +61,7 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
     try {
       await _music.stop();
       await _music.setReleaseMode(ReleaseMode.loop);
-      await _music.setVolume(.28);
+      await _music.setVolume(.30);
       await _music.play(BytesSource(RoyalDealAudio.theme()));
     } catch (_) {}
   }
