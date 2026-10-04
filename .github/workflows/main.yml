@@ -10,7 +10,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -34,16 +34,32 @@ jobs:
         with:
           flutter-version: '3.24.5'
 
+      - name: Store Royal 1 launcher icon
+        if: github.event_name != 'pull_request'
+        env:
+          ROYAL1_ICON_URL: 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/1be47dca-7bce-45dd-ac1a-92f952661513.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMjQ4YThkZjRhZjE3MTgyNCIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTIxMDQ4NH0.tAQeWsy_8tzb_1ccX1ooBhhie26YtUKs_5bVVOOVvYk'
+        run: |
+          target="tooling/royal1_icon.png"
+          if [ ! -s "$target" ]; then
+            curl --fail --location --retry 3 "$ROYAL1_ICON_URL" -o "$target"
+            test -s "$target"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "$target"
+            git commit -m "Store Royal 1 launcher icon"
+            git push origin HEAD:main
+          fi
+
       - name: Install Royal 1 launcher icon
         run: |
-          base64 --decode tooling/royal1_icon.b64 > /tmp/royal1_icon.png
+          test -s tooling/royal1_icon.png
           for dir in \
             android/app/src/main/res/mipmap-mdpi \
             android/app/src/main/res/mipmap-hdpi \
             android/app/src/main/res/mipmap-xhdpi \
             android/app/src/main/res/mipmap-xxhdpi \
             android/app/src/main/res/mipmap-xxxhdpi; do
-            cp /tmp/royal1_icon.png "$dir/ic_launcher.png"
+            cp tooling/royal1_icon.png "$dir/ic_launcher.png"
           done
 
       # A previous edit removed the large original zip from the current tree.
