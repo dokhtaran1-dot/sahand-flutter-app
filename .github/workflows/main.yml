@@ -10,7 +10,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -33,6 +33,22 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.5'
+
+      - name: Store final Royal Deal gameplay artwork
+        if: github.event_name != 'pull_request'
+        env:
+          ROYAL_DEAL_FINAL_URL: 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/ca900e64-40c5-4755-98af-c315af461595.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMDUwOWYyNTc3YWYyNzBiNCIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTI4MzU0M30.TIt2epIidgHvJuGqhcDuj1oPEtwcoDQKg7rNHMr13Gs'
+        run: |
+          target="assets/image/royal_deal_game_final.png"
+          if [ ! -s "$target" ]; then
+            curl --fail --location --retry 3 "$ROYAL_DEAL_FINAL_URL" -o "$target"
+            test -s "$target"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "$target"
+            git commit -m "Store final Royal Deal gameplay artwork"
+            git push origin HEAD:main
+          fi
 
       - name: Install Royal 1 launcher icon
         run: |
@@ -62,6 +78,7 @@ jobs:
 
       - name: Verify active artwork
         run: |
+          test -s assets/image/royal_deal_game_final.png
           test -s assets/image/Home.png
           test -s assets/image/Welcome.png
           test -s assets/image/Rv_page2.png

@@ -1071,32 +1071,32 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
   Widget _lockedGameArtwork() {
     const artW = 941.0;
     const artH = 1672.0;
-    const art = 'assets/image/royal_deal_game_locked.png';
+    const art = 'assets/image/royal_deal_game_final.png';
 
     final boxes = <Rect>[
-      const Rect.fromLTWH(105, 807, 132, 112),
-      const Rect.fromLTWH(257, 807, 132, 112),
-      const Rect.fromLTWH(409, 807, 132, 112),
-      const Rect.fromLTWH(560, 807, 132, 112),
-      const Rect.fromLTWH(712, 807, 132, 112),
+      const Rect.fromLTWH(18, 900, 170, 182),
+      const Rect.fromLTWH(195, 900, 170, 182),
+      const Rect.fromLTWH(380, 900, 170, 182),
+      const Rect.fromLTWH(555, 900, 170, 182),
+      const Rect.fromLTWH(738, 900, 170, 182),
 
-      const Rect.fromLTWH(105, 929, 132, 112),
-      const Rect.fromLTWH(257, 929, 132, 112),
-      const Rect.fromLTWH(409, 929, 132, 112),
-      const Rect.fromLTWH(560, 929, 132, 112),
-      const Rect.fromLTWH(712, 929, 132, 112),
+      const Rect.fromLTWH(18, 1075, 170, 160),
+      const Rect.fromLTWH(195, 1075, 170, 160),
+      const Rect.fromLTWH(380, 1075, 170, 160),
+      const Rect.fromLTWH(555, 1075, 170, 160),
+      const Rect.fromLTWH(738, 1075, 170, 160),
 
-      const Rect.fromLTWH(105, 1053, 132, 112),
-      const Rect.fromLTWH(257, 1053, 132, 112),
-      const Rect.fromLTWH(409, 1053, 132, 112),
-      const Rect.fromLTWH(560, 1053, 132, 112),
-      const Rect.fromLTWH(712, 1053, 132, 112),
+      const Rect.fromLTWH(18, 1240, 170, 170),
+      const Rect.fromLTWH(195, 1240, 170, 170),
+      const Rect.fromLTWH(380, 1240, 170, 170),
+      const Rect.fromLTWH(555, 1240, 170, 170),
+      const Rect.fromLTWH(738, 1240, 170, 170),
 
-      const Rect.fromLTWH(105, 1178, 132, 120),
-      const Rect.fromLTWH(257, 1178, 132, 120),
-      const Rect.fromLTWH(409, 1178, 132, 120),
-      const Rect.fromLTWH(560, 1178, 132, 120),
-      const Rect.fromLTWH(712, 1178, 132, 120),
+      const Rect.fromLTWH(18, 1415, 170, 170),
+      const Rect.fromLTWH(195, 1415, 170, 170),
+      const Rect.fromLTWH(380, 1415, 170, 170),
+      const Rect.fromLTWH(555, 1415, 170, 170),
+      const Rect.fromLTWH(738, 1415, 170, 170),
     ];
 
     return FittedBox(
@@ -1148,45 +1148,6 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
 
             for (var i = 0; i < boxes.length; i++)
               _lockedCaseHotspot(i, boxes[i]),
-
-            if (_myCase != null)
-              Positioned(
-                left: 186,
-                right: 186,
-                top: 1390,
-                height: 76,
-                child: IgnorePointer(
-                  child: Container(
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: const Color(0xD70A0806),
-                      borderRadius: BorderRadius.circular(26),
-                      border: Border.all(
-                        color: _goldBright.withOpacity(.82),
-                        width: 1.6,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: _gold.withOpacity(.20),
-                          blurRadius: 22,
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      bankerOffer != null
-                          ? 'THE BANKER IS CALLING'
-                          : 'ROUND $round   •   OPEN $_remainingToOpen CASES',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: _goldBright,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1.4,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
 
             if (!soundOn)
               const Positioned(
