@@ -946,72 +946,276 @@ class _RoyalDealPageState extends State<RoyalDealPage> {
     );
   }
 
+  Widget _lockedCaseHotspot(int i, Rect r) {
+    final isMine = i == _myCase;
+    final isOpen = _opened.contains(i);
+    final value = _caseValues[i];
+
+    return Positioned(
+      left: r.left,
+      top: r.top,
+      width: r.width,
+      height: r.height,
+      child: Semantics(
+        button: true,
+        label: 'Case ${i + 1}',
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => _pick(i),
+            borderRadius: BorderRadius.circular(18),
+            splashColor: _goldBright.withOpacity(.12),
+            highlightColor: Colors.transparent,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOutCubic,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(18),
+                color: isOpen
+                    ? const Color(0xCC2A070C)
+                    : Colors.transparent,
+                border: Border.all(
+                  color: isMine
+                      ? const Color(0xFFFF4056)
+                      : isOpen
+                          ? _goldBright.withOpacity(.85)
+                          : Colors.transparent,
+                  width: isMine ? 4 : isOpen ? 2.5 : 0,
+                ),
+                boxShadow: [
+                  if (isMine)
+                    BoxShadow(
+                      color: const Color(0xFFFF2943).withOpacity(.60),
+                      blurRadius: 24,
+                      spreadRadius: 5,
+                    ),
+                  if (isOpen)
+                    BoxShadow(
+                      color: _gold.withOpacity(.26),
+                      blurRadius: 18,
+                      spreadRadius: 2,
+                    ),
+                ],
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                clipBehavior: Clip.none,
+                children: [
+                  if (isOpen)
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          value == 10000
+                              ? Icons.workspace_premium_rounded
+                              : Icons.confirmation_number_rounded,
+                          color: value == 10000 ? _goldBright : _gold,
+                          size: 25,
+                        ),
+                        const SizedBox(height: 2),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            '$value',
+                            style: TextStyle(
+                              color: value == 10000
+                                  ? _goldBright
+                                  : Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
+                        const Text(
+                          'R1',
+                          style: TextStyle(
+                            color: _gold,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (isMine && !isOpen)
+                    const Positioned(
+                      left: -8,
+                      right: -8,
+                      bottom: -22,
+                      child: Text(
+                        'MY CASE',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFFFFD7DD),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.5,
+                          shadows: [
+                            Shadow(
+                              color: Color(0xFFFF243E),
+                              blurRadius: 10,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _lockedGameArtwork() {
+    const artW = 941.0;
+    const artH = 1672.0;
+    const art = 'assets/image/royal_deal_game_locked.png';
+
+    final boxes = <Rect>[
+      const Rect.fromLTWH(105, 807, 132, 112),
+      const Rect.fromLTWH(257, 807, 132, 112),
+      const Rect.fromLTWH(409, 807, 132, 112),
+      const Rect.fromLTWH(560, 807, 132, 112),
+      const Rect.fromLTWH(712, 807, 132, 112),
+
+      const Rect.fromLTWH(105, 929, 132, 112),
+      const Rect.fromLTWH(257, 929, 132, 112),
+      const Rect.fromLTWH(409, 929, 132, 112),
+      const Rect.fromLTWH(560, 929, 132, 112),
+      const Rect.fromLTWH(712, 929, 132, 112),
+
+      const Rect.fromLTWH(105, 1053, 132, 112),
+      const Rect.fromLTWH(257, 1053, 132, 112),
+      const Rect.fromLTWH(409, 1053, 132, 112),
+      const Rect.fromLTWH(560, 1053, 132, 112),
+      const Rect.fromLTWH(712, 1053, 132, 112),
+
+      const Rect.fromLTWH(105, 1178, 132, 120),
+      const Rect.fromLTWH(257, 1178, 132, 120),
+      const Rect.fromLTWH(409, 1178, 132, 120),
+      const Rect.fromLTWH(560, 1178, 132, 120),
+      const Rect.fromLTWH(712, 1178, 132, 120),
+    ];
+
+    return FittedBox(
+      fit: BoxFit.fill,
+      child: SizedBox(
+        width: artW,
+        height: artH,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              art,
+              width: artW,
+              height: artH,
+              fit: BoxFit.fill,
+              filterQuality: FilterQuality.high,
+              isAntiAlias: true,
+              gaplessPlayback: true,
+            ),
+
+            Positioned(
+              left: 22,
+              top: 28,
+              width: 105,
+              height: 104,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => Navigator.of(context).pop(),
+                  customBorder: const CircleBorder(),
+                  splashColor: _gold.withOpacity(.08),
+                ),
+              ),
+            ),
+            Positioned(
+              right: 22,
+              top: 28,
+              width: 105,
+              height: 104,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _toggleSound,
+                  customBorder: const CircleBorder(),
+                  splashColor: _gold.withOpacity(.08),
+                ),
+              ),
+            ),
+
+            for (var i = 0; i < boxes.length; i++)
+              _lockedCaseHotspot(i, boxes[i]),
+
+            if (_myCase != null)
+              Positioned(
+                left: 186,
+                right: 186,
+                top: 1390,
+                height: 76,
+                child: IgnorePointer(
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: const Color(0xD70A0806),
+                      borderRadius: BorderRadius.circular(26),
+                      border: Border.all(
+                        color: _goldBright.withOpacity(.82),
+                        width: 1.6,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: _gold.withOpacity(.20),
+                          blurRadius: 22,
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      bankerOffer != null
+                          ? 'THE BANKER IS CALLING'
+                          : 'ROUND $round   •   OPEN $_remainingToOpen CASES',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: _goldBright,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.4,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+            if (!soundOn)
+              const Positioned(
+                right: 52,
+                top: 58,
+                child: IgnorePointer(
+                  child: Icon(
+                    Icons.volume_off_rounded,
+                    color: Color(0xFFFFE49A),
+                    size: 33,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Container(
-                decoration: const BoxDecoration(
-                  gradient: RadialGradient(
-                    center: Alignment(0, -.35),
-                    radius: 1.15,
-                    colors: [
-                      Color(0xFF4A0813),
-                      Color(0xFF160708),
-                      Color(0xFF050505),
-                      Colors.black,
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Column(
-              children: [
-                _topBar(),
-                const SizedBox(height: 6),
-                _gameHeading(),
-                const SizedBox(height: 13),
-                Expanded(child: _luxuryCaseStage()),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 5, 16, 12),
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 1,
-                        margin: const EdgeInsets.symmetric(horizontal: 24),
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.transparent,
-                              _gold,
-                              Colors.transparent,
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        '20 CASES  •  ONE CHOICE  •  A ROYAL MOMENT',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: _gold,
-                          fontSize: 9.5,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1.25,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            if (bankerOffer != null) _bankerOverlay(),
-          ],
-        ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          SafeArea(child: _lockedGameArtwork()),
+          if (bankerOffer != null) _bankerOverlay(),
+        ],
       ),
     );
   }

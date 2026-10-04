@@ -10,7 +10,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -34,16 +34,48 @@ jobs:
         with:
           flutter-version: '3.24.5'
 
+      - name: Store locked Royal Deal artwork and Royal 1 icon
+        if: github.event_name != 'pull_request'
+        env:
+          ROYAL_DEAL_LOCKED_URL: 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/aca9bd4b-5c7c-41f9-9034-830febc1d557.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiZGVjZTdhMzc2N2Y2YjJjZSIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTIyMjQ1NX0.OwKPIMxut89zhY2GncZp9LlYi8oU-oRQhGwJoQVZTmc'
+          ROYAL1_LOCKED_ICON_URL: 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/f09c778c-3276-49ea-8b7d-71ba60717352.jpg?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMmJkZjZlMGE5ZGQ4YzY0NiIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTI2NjE4Nn0.YSLYzTMVp7Tr3Ds9gqK3KChqhVQ0usfLjgKrTiXLUoI'
+        run: |
+          changed=0
+
+          game_art="assets/image/royal_deal_game_locked.png"
+          if [ ! -s "$game_art" ]; then
+            curl --fail --location --retry 3 "$ROYAL_DEAL_LOCKED_URL" -o "$game_art"
+            test -s "$game_art"
+            git add "$game_art"
+            changed=1
+          fi
+
+          icon_art="tooling/royal1_icon_locked.jpg"
+          if [ ! -s "$icon_art" ]; then
+            curl --fail --location --retry 3 "$ROYAL1_LOCKED_ICON_URL" -o "$icon_art"
+            test -s "$icon_art"
+            git add "$icon_art"
+            changed=1
+          fi
+
+          if [ "$changed" = "1" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Lock Royal Deal screen and Royal 1 icon artwork"
+            git push origin HEAD:main
+          fi
+
       - name: Install Royal 1 launcher icon
         run: |
-          test -s tooling/royal1_icon.png
+          test -s tooling/royal1_icon_locked.jpg
           for dir in \
             android/app/src/main/res/mipmap-mdpi \
             android/app/src/main/res/mipmap-hdpi \
             android/app/src/main/res/mipmap-xhdpi \
             android/app/src/main/res/mipmap-xxhdpi \
             android/app/src/main/res/mipmap-xxxhdpi; do
-            cp tooling/royal1_icon.png "$dir/ic_launcher.png"
+            rm -f "$dir/ic_launcher.png"
+            cp tooling/royal1_icon_locked.jpg "$dir/ic_launcher.jpg"
           done
 
       # A previous edit removed the large original zip from the current tree.
@@ -70,6 +102,8 @@ jobs:
           test -s assets/image/deal_jackpot.png
           test -s assets/image/royal_deal_intro.png
           test -s assets/image/royal_deal_anime_intro.png
+          test -s assets/image/royal_deal_game_locked.png
+          test -s tooling/royal1_icon_locked.jpg
           test -s assets/image/Royal_Village_App_Upload.zip
           test -s assets/image/screen_01.png
           test -s assets/image/screen_02.png
