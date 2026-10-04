@@ -62,35 +62,116 @@ class RoyalDealAudio {
   }
 
   static Uint8List _makeTheme() {
+    // High-energy Royal Deal game-show loop:
+    // orchestral low brass + driving pulse + cinematic impacts + gold shimmer.
     const duration = 8.0;
+    const bpm = 126.0;
+    const beat = 60.0 / bpm;
     final n = (sampleRate * duration).round();
     final samples = List<double>.filled(n, 0);
+
     const chords = <List<double>>[
-      [110.00, 138.59, 164.81],
-      [98.00, 123.47, 146.83],
-      [87.31, 110.00, 130.81],
-      [98.00, 123.47, 146.83],
+      [146.83, 174.61, 220.00], // Dm
+      [130.81, 164.81, 196.00], // C
+      [116.54, 146.83, 174.61], // Bb
+      [130.81, 164.81, 220.00], // A tension
     ];
+
+    const bassRoots = <double>[73.42, 65.41, 58.27, 55.00];
+
+    var seed = 1971;
+
     for (var i = 0; i < n; i++) {
       final t = i / sampleRate;
-      final bar = (t / 2).floor().clamp(0, 3);
-      final local = t % 2;
+      final section = (t / 2).floor().clamp(0, 3);
+      final local2 = t % 2.0;
+      final localBeat = t % beat;
+      final beatIndex = (t / beat).floor();
+
       var v = 0.0;
-      for (final f in chords[bar]) {
-        v += math.sin(2 * math.pi * f * t) * .075;
-        v += math.sin(2 * math.pi * f * 2 * t) * .018;
+
+      // Dark orchestral/brass bed.
+      for (final f in chords[section]) {
+        v += math.sin(2 * math.pi * f * t) * .042;
+        v += math.sin(2 * math.pi * f * 2 * t) * .017;
+        v += math.sin(2 * math.pi * f * 3 * t) * .006;
       }
-      for (final beat in const [0.0, .75, 1.5]) {
-        final d = local - beat;
-        if (d >= 0 && d < .33) {
-          final f = 64 - 30 * (d / .33);
-          v += math.sin(2 * math.pi * f * d) * .25 * math.exp(-9 * d);
+
+      // Driving bass ostinato, stronger in the second half.
+      final bass = bassRoots[section];
+      final bassEnv = math.exp(-8.0 * localBeat / beat);
+      final bassAmp = t < 2 ? .12 : t < 4 ? .15 : .18;
+      v += math.sin(2 * math.pi * bass * localBeat) * bassAmp * bassEnv;
+      v += math.sin(2 * math.pi * bass * 2 * localBeat) *
+          (bassAmp * .24) *
+          bassEnv;
+
+      // Big cinematic kick every beat.
+      if (localBeat < .16) {
+        final x = localBeat / .16;
+        final kickFreq = 84.0 - (46.0 * x);
+        v += math.sin(2 * math.pi * kickFreq * localBeat) *
+            .34 *
+            math.exp(-11 * localBeat);
+      }
+
+      // Metallic/snare hit on beats 2 and 4.
+      if (beatIndex % 2 == 1 && localBeat < .12) {
+        seed = (1664525 * seed + 1013904223) & 0x7fffffff;
+        final noise = (seed / 0x7fffffff) * 2 - 1;
+        v += noise * .075 * math.exp(-26 * localBeat);
+        v += math.sin(2 * math.pi * 210 * localBeat) *
+            .055 *
+            math.exp(-18 * localBeat);
+      }
+
+      // Fast royal arpeggio gives the "game show" tension.
+      const arp = <double>[
+        293.66, 349.23, 440.00, 523.25,
+        440.00, 349.23, 523.25, 659.25,
+      ];
+      final stepDur = beat / 2;
+      final step = (t / stepDur).floor() % arp.length;
+      final stepLocal = t % stepDur;
+      final arpEnv = math.exp(-10 * stepLocal / stepDur);
+      final arpGain = t < 2 ? .025 : t < 4 ? .035 : .047;
+      v += math.sin(2 * math.pi * arp[step] * stepLocal) *
+          arpGain *
+          arpEnv;
+
+      // Gold shimmer / high strings.
+      final shimmer =
+          math.sin(2 * math.pi * (1174.66 + 35 * math.sin(t * 2.1)) * t);
+      v += shimmer * (.010 + .006 * math.sin(math.pi * local2).abs());
+
+      // Rising tension through each 2-second phrase.
+      final phraseRise = (local2 / 2.0).clamp(0.0, 1.0);
+      v += math.sin(
+            2 *
+                math.pi *
+                (220 + 420 * phraseRise) *
+                t,
+          ) *
+          .013 *
+          phraseRise;
+
+      // Huge impact entering the final 2 seconds.
+      if (t >= 6.0) {
+        final d = t - 6.0;
+        if (d < .65) {
+          v += math.sin(2 * math.pi * 52 * d) *
+              .28 *
+              math.exp(-4.5 * d);
         }
       }
-      final fadeIn = (t / .18).clamp(0.0, 1.0);
-      final fadeOut = ((duration - t) / .18).clamp(0.0, 1.0);
-      samples[i] = v * fadeIn * fadeOut;
+
+      final fadeIn = (t / .10).clamp(0.0, 1.0);
+      final fadeOut = ((duration - t) / .16).clamp(0.0, 1.0);
+      final master = .88 * fadeIn * fadeOut;
+
+      samples[i] = (v * master).clamp(-.96, .96).toDouble();
     }
+
     return _wav(samples);
   }
 
