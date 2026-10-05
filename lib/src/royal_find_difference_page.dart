@@ -30,11 +30,14 @@ class _Spot {
 }
 
 class _Level {
-  const _Level(this.title, this.image, this.spots);
+  const _Level(this.title, this.image, this.spots,
+      {required this.seconds, required this.requiredDifferences});
 
   final String title;
   final String image;
   final List<_Spot> spots;
+  final int seconds;
+  final int requiredDifferences;
 }
 
 const _gold = Color(0xFFE8C36A);
@@ -54,7 +57,7 @@ const List<_Level> _levels = [
         _ivory, _gold),
     _Spot(Offset(.79, .76), Icons.spa, Icons.star,
         _ruby, _gold),
-  ]),
+  ], seconds: 60, requiredDifferences: 5),
   _Level('SALON LUMIÈRE', 'assets/image/Salon_lumiere.png', [
     _Spot(Offset(.22, .23), Icons.lightbulb, Icons.auto_awesome,
         _gold, _ivory),
@@ -66,7 +69,11 @@ const List<_Level> _levels = [
         _jade, _gold),
     _Spot(Offset(.78, .77), Icons.cake, Icons.local_cafe,
         _ruby, _ivory),
-  ]),
+    _Spot(Offset(.36, .64), Icons.circle, Icons.circle_outlined,
+        _gold, _ivory),
+    _Spot(Offset(.66, .61), Icons.circle_outlined, Icons.circle,
+        _ivory, _gold),
+  ], seconds: 50, requiredDifferences: 7),
   _Level('SALON NOIR', 'assets/image/Salon_noir.png', [
     _Spot(Offset(.18, .24), Icons.favorite, Icons.local_florist,
         _ruby, _ivory),
@@ -78,16 +85,25 @@ const List<_Level> _levels = [
         _ivory, _gold),
     _Spot(Offset(.79, .76), Icons.celebration, Icons.spa,
         _jade, _ruby),
-  ]),
+    _Spot(Offset(.39, .20), Icons.circle, Icons.circle_outlined,
+        _gold, _ivory),
+    _Spot(Offset(.67, .31), Icons.circle_outlined, Icons.circle,
+        _ivory, _gold),
+    _Spot(Offset(.37, .54), Icons.star_border, Icons.star,
+        _ivory, _gold),
+    _Spot(Offset(.68, .57), Icons.diamond_outlined, Icons.diamond,
+        _gold, _ruby),
+    _Spot(Offset(.50, .80), Icons.circle, Icons.circle_outlined,
+        _jade, _ivory),
+  ], seconds: 40, requiredDifferences: 10),
 ];
 
 class _RoyalFindDifferencePageState
     extends State<RoyalFindDifferencePage> {
-  static const int _roundSeconds = 60;
   Timer? _timer;
 
   int _level = 0;
-  int _remaining = _roundSeconds;
+  int _remaining = _levels.first.seconds;
   int _lives = 3;
   int _score = 0;
   int _fastRounds = 0;
@@ -119,7 +135,7 @@ class _RoyalFindDifferencePageState
   void _tapImage(TapDownDetails tap, Size imageSize) {
     if (!_playing || _finished) return;
     final point = tap.localPosition;
-    final decorations = _current.spots;
+    final decorations = _current.spots.take(_current.requiredDifferences).toList();
     int? hit;
 
     for (int i = 0; i < decorations.length; i++) {
@@ -128,7 +144,11 @@ class _RoyalFindDifferencePageState
         decorations[i].position.dx * imageSize.width,
         decorations[i].position.dy * imageSize.height,
       );
-      final hitRadius = math.max(27.0, imageSize.width * .085);
+      final hitRadius = _level == 0
+          ? math.max(24.0, imageSize.width * .072)
+          : _level == 1
+              ? math.max(20.0, imageSize.width * .058)
+              : math.max(16.0, imageSize.width * .045);
       if ((target - point).distance <= hitRadius) {
         hit = i;
         break;
@@ -139,9 +159,10 @@ class _RoyalFindDifferencePageState
       HapticFeedback.mediumImpact();
       setState(() {
         _lives--;
+        _remaining = math.max(0, _remaining - 5);
         _score = math.max(0, _score - 25);
       });
-      if (_lives == 0) _finishGame(completed: false);
+      if (_lives == 0 || _remaining == 0) _finishGame(completed: false);
       return;
     }
 
@@ -150,13 +171,13 @@ class _RoyalFindDifferencePageState
       _found.add(hit!);
       _score += 100;
     });
-    if (_found.length == decorations.length) _completeRound();
+    if (_found.length == _current.requiredDifferences) _completeRound();
   }
 
   void _hint() {
     if (!_playing || _hintUsed) return;
     int? next;
-    for (int i = 0; i < _current.spots.length; i++) {
+    for (int i = 0; i < _current.requiredDifferences; i++) {
       if (!_found.contains(i)) {
         next = i;
         break;
@@ -169,7 +190,7 @@ class _RoyalFindDifferencePageState
       _hintUsed = true;
       _score = math.max(0, _score - 50);
     });
-    if (_found.length == _current.spots.length) _completeRound();
+    if (_found.length == _current.requiredDifferences) _completeRound();
   }
 
   void _completeRound() {
@@ -191,14 +212,14 @@ class _RoyalFindDifferencePageState
       barrierDismissible: false,
       builder: (dialogContext) => _RoyalDialog(
         title: 'LEVEL COMPLETE',
-        subtitle: 'تمام ۵ تفاوت پیدا شد!',
+        subtitle: 'تمام ${_current.requiredDifferences} تفاوت پیدا شد!',
         score: _score,
         button: 'مرحله بعد',
         onPressed: () {
           Navigator.pop(dialogContext);
           setState(() {
             _level++;
-            _remaining = _roundSeconds;
+            _remaining = _levels[_level].seconds;
             _lives = 3;
             _found.clear();
             _hintUsed = false;
@@ -359,7 +380,7 @@ class _RoyalFindDifferencePageState
                         _metric(Icons.favorite,
                             '$_lives', 'جان', color: _ruby),
                         _metric(Icons.find_replace_rounded,
-                            '${_found.length}/${level.spots.length}',
+                            '${_found.length}/${level.requiredDifferences}',
                             'تفاوت'),
                         _metric(Icons.stars_rounded, '$_score', 'امتیاز'),
                       ],
@@ -372,7 +393,7 @@ class _RoyalFindDifferencePageState
                   padding: const EdgeInsets.fromLTRB(14, 6, 14, 22),
                   children: [
                     const Text(
-                      'در هر دو تصویر، روی ۵ تفاوت بزن',
+                      'در دو تصویر، ${level.requiredDifferences} تفاوت را پیدا کن',
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white,
@@ -381,7 +402,7 @@ class _RoyalFindDifferencePageState
                     const SizedBox(height: 9),
                     _DifferencePhoto(
                       image: level.image,
-                      spots: level.spots,
+                      spots: level.spots.take(level.requiredDifferences).toList(),
                       altered: false,
                       found: _found,
                       onTap: _tapImage,
@@ -390,18 +411,18 @@ class _RoyalFindDifferencePageState
                     const SizedBox(height: 10),
                     _DifferencePhoto(
                       image: level.image,
-                      spots: level.spots,
+                      spots: level.spots.take(level.requiredDifferences).toList(),
                       altered: true,
                       found: _found,
                       onTap: _tapImage,
-                      title: 'FIND 5 DIFFERENCES',
+                      title: 'FIND ${level.requiredDifferences} DIFFERENCES',
                     ),
                     const SizedBox(height: 15),
                     if (!_playing && !_finished)
                       FilledButton.icon(
                         onPressed: _startRound,
                         icon: const Icon(Icons.play_arrow_rounded),
-                        label: Text(_remaining == _roundSeconds
+                        label: Text(_remaining == level.seconds
                             ? 'شروع مرحله' : 'ادامه بازی'),
                         style: FilledButton.styleFrom(
                           backgroundColor: const Color(0xFF801429),
@@ -425,8 +446,8 @@ class _RoyalFindDifferencePageState
                       ),
                     const SizedBox(height: 11),
                     const Text(
-                      'هر تفاوت +۱۰۰ امتیاز • اشتباه: یک جان و ۲۵ امتیاز • '
-                      'سه سالن متفاوت • تیکت‌ها بدون سقف جمع می‌شوند',
+                      'مرحله ۱: ۵ تفاوت / ۶۰ ثانیه • مرحله ۲: ۷ تفاوت / ۵۰ ثانیه • '
+                      'مرحله ۳: ۱۰ تفاوت / ۴۰ ثانیه • هر اشتباه: یک جان، ۲۵ امتیاز و ۵ ثانیه جریمه',
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white60,
@@ -500,33 +521,6 @@ class _DifferencePhoto extends StatelessWidget {
                       fit: BoxFit.cover,
                       filterQuality: FilterQuality.high,
                     ),
-                    for (int i = 0; i < spots.length; i++)
-                      Positioned(
-                        left: spots[i].position.dx * width - diameter / 2,
-                        top: spots[i].position.dy * height - diameter / 2,
-                        child: IgnorePointer(
-                          child: Container(
-                            width: diameter,
-                            height: diameter,
-                            decoration: BoxDecoration(
-                              color: const Color(0xD1221915),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: _gold.withOpacity(.9), width: 1,
-                              ),
-                            ),
-                            child: Icon(
-                              altered
-                                  ? spots[i].changed
-                                  : spots[i].original,
-                              color: altered
-                                  ? spots[i].changedColor
-                                  : spots[i].originalColor,
-                              size: diameter * .56,
-                            ),
-                          ),
-                        ),
-                      ),
                     for (final index in found)
                       Positioned(
                         left: spots[index].position.dx * width -
