@@ -10,143 +10,94 @@ import 'royal_leaderboard_page.dart';
 class RoyalClubExplorePage extends StatelessWidget {
   const RoyalClubExplorePage({super.key});
 
-  static const gold = Color(0xFFE8C36A);
-
   void _open(BuildContext context, Widget page) {
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
   }
 
   @override
   Widget build(BuildContext context) {
-    final items = <_ExploreItem>[
-      _ExploreItem(
-        'عضویت کلاب',
-        'MEMBERSHIP',
-        Icons.workspace_premium_outlined,
-        const RoyalClubMembershipPage(),
-      ),
-      _ExploreItem(
-        'بازی‌ها',
-        'GAMES',
-        Icons.sports_esports_rounded,
-        const RoyalGamesPage(),
-      ),
-      _ExploreItem(
-        'امتیازات و مزایا',
-        'PRIVILEGES',
-        Icons.diamond_outlined,
-        const RoyalClubPrivilegesPage(),
-      ),
-      _ExploreItem(
-        '۱۰ نفر برتر',
-        'TOP 10',
-        Icons.leaderboard_rounded,
-        const RoyalLeaderboardPage(),
-      ),
-      _ExploreItem(
-        'آلبوم عکس',
-        'PHOTO ALBUM',
-        Icons.photo_library_outlined,
-        const RoyalClubPhotoAlbumPage(),
-      ),
-      _ExploreItem(
-        'پروفایل من',
-        'PROFILE',
-        Icons.person_outline_rounded,
-        const RoyalClubProfilePage(),
-      ),
+    final pages = <Widget>[
+      const RoyalClubMembershipPage(),
+      const RoyalGamesPage(),
+      const RoyalClubPrivilegesPage(),
+      const RoyalLeaderboardPage(),
+      const RoyalClubPhotoAlbumPage(),
+      const RoyalClubProfilePage(),
     ];
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF16090B),
-        foregroundColor: gold,
-        centerTitle: true,
-        title: const Text(
-          'EXPLORE ROYAL CLUB',
-          style: TextStyle(letterSpacing: 1.4, fontSize: 16),
-        ),
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment.topCenter,
-            radius: 1.2,
-            colors: [Color(0xFF50101A), Color(0xFF16090B), Colors.black],
-          ),
-        ),
-        child: SafeArea(
-          child: GridView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: items.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: .93,
-            ),
-            itemBuilder: (context, index) {
-              final item = items[index];
-              return Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => _open(context, item.page),
-                  borderRadius: BorderRadius.circular(24),
-                  child: Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: gold.withOpacity(.62)),
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Color(0xFF34151A), Color(0xFF0B0807)],
-                      ),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            const artW = 768.0;
+            const artH = 1365.0;
+            return FittedBox(
+              fit: BoxFit.fill,
+              child: SizedBox(
+                width: artW,
+                height: artH,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.asset(
+                      'assets/image/royal_club_explore_luxury.png',
+                      fit: BoxFit.fill,
+                      filterQuality: FilterQuality.high,
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(item.icon, color: gold, size: 45),
-                        const SizedBox(height: 13),
-                        Text(
-                          item.title,
-                          textDirection: TextDirection.rtl,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          item.english,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: gold,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 1.3,
-                          ),
-                        ),
-                      ],
+                    Positioned(
+                      left: 22, top: 38, width: 92, height: 92,
+                      child: _Hotspot(onTap: () => Navigator.of(context).pop()),
                     ),
-                  ),
+                    _HotspotPosition(left: 24, top: 235, width: 356, height: 328,
+                        onTap: () => _open(context, pages[0])),
+                    _HotspotPosition(left: 388, top: 235, width: 356, height: 328,
+                        onTap: () => _open(context, pages[1])),
+                    _HotspotPosition(left: 24, top: 580, width: 356, height: 328,
+                        onTap: () => _open(context, pages[2])),
+                    _HotspotPosition(left: 388, top: 580, width: 356, height: 328,
+                        onTap: () => _open(context, pages[3])),
+                    _HotspotPosition(left: 24, top: 925, width: 356, height: 328,
+                        onTap: () => _open(context, pages[4])),
+                    _HotspotPosition(left: 388, top: 925, width: 356, height: 328,
+                        onTap: () => _open(context, pages[5])),
+                  ],
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
   }
 }
 
-class _ExploreItem {
-  final String title;
-  final String english;
-  final IconData icon;
-  final Widget page;
-  const _ExploreItem(this.title, this.english, this.icon, this.page);
+class _HotspotPosition extends StatelessWidget {
+  const _HotspotPosition({
+    required this.left, required this.top, required this.width,
+    required this.height, required this.onTap,
+  });
+  final double left, top, width, height;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Positioned(
+    left: left, top: top, width: width, height: height,
+    child: _Hotspot(onTap: onTap),
+  );
+}
+
+class _Hotspot extends StatelessWidget {
+  const _Hotspot({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Material(
+    color: Colors.transparent,
+    child: InkWell(
+      onTap: onTap,
+      splashColor: const Color(0x22E8C36A),
+      highlightColor: Colors.transparent,
+    ),
+  );
 }
