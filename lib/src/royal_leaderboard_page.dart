@@ -15,7 +15,7 @@ class _RoyalLeaderboardPageState extends State<RoyalLeaderboardPage> {
   static const Color gold = Color(0xFFE8C36A);
   static const Color dark = Color(0xFF100B09);
   RoyalScoreGame? _selected;
-  late Future<List<RoyalPlayerScore>> _future;
+  late Stream<List<RoyalPlayerScore>> _stream;
 
   @override
   void initState() {
@@ -24,7 +24,7 @@ class _RoyalLeaderboardPageState extends State<RoyalLeaderboardPage> {
   }
 
   void _refresh() {
-    _future = RoyalScoreStore.topTen(game: _selected);
+    _stream = RoyalScoreStore.liveTopTen(game: _selected);
   }
 
   void _filter(RoyalScoreGame? game) {
@@ -167,8 +167,10 @@ class _RoyalLeaderboardPageState extends State<RoyalLeaderboardPage> {
                         textDirection: TextDirection.rtl,
                         style: TextStyle(color: Colors.white, fontSize: 17)),
                     const SizedBox(height: 12),
-                    const Text(
-                      'نسخه آزمایشی: فعلاً فقط امتیازهای ثبت‌شده در همین دستگاه نمایش داده می‌شود.',
+                    Text(
+                      RoyalScoreStore.backendReady
+                          ? 'LIVE • رتبه‌بندی آنلاین با به‌روزرسانی لحظه‌ای'
+                          : 'OFFLINE • اتصال سرور فعال نیست؛ امتیازهای همین دستگاه نمایش داده می‌شود.',
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white60,
@@ -197,8 +199,8 @@ class _RoyalLeaderboardPageState extends State<RoyalLeaderboardPage> {
                 ],
               ),
               const SizedBox(height: 19),
-              FutureBuilder<List<RoyalPlayerScore>>(
-                future: _future,
+              StreamBuilder<List<RoyalPlayerScore>>(
+                stream: _stream,
                 builder: (context, snap) {
                   if (!snap.hasData) {
                     return const Padding(
@@ -251,8 +253,10 @@ class _RoyalLeaderboardPageState extends State<RoyalLeaderboardPage> {
                 },
               ),
               const SizedBox(height: 20),
-              const Text(
-                'امتیاز مسابقات از موجودی تیکت قابل خرج کردن جداست. جدول سراسری و جوایز رسمی به حساب کاربری و ثبت امن امتیازات روی سرور نیاز دارند.',
+              Text(
+                RoyalScoreStore.backendReady
+                    ? 'LIVE TOP 10 • امتیاز بازیکنان متصل به حساب کاربری به‌صورت لحظه‌ای رتبه‌بندی می‌شود.'
+                    : 'برای فعال شدن LIVE TOP 10 باید اتصال Supabase در نسخه نهایی فعال باشد.',
                 textDirection: TextDirection.rtl,
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.white54,
