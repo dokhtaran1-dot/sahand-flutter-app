@@ -152,18 +152,56 @@ class RoyalScoreStore {
       'crown': RoyalPlayerScore._nonnegative(row['crown']),
       'difference': RoyalPlayerScore._nonnegative(row['difference']),
       'first_played': row['first_played'],
+      'ticket_balance': await ticketBalance(),
+      'lifetime_tickets': await lifetimeTickets(),
       'updated_at': DateTime.now().toUtc().toIso8601String(),
     }, onConflict: 'user_id');
   }
 
   static Future<int> ticketBalance() async {
     final prefs = await SharedPreferences.getInstance();
+    if (backendReady && _db.auth.currentUser != null) {
+      try {
+        final row = await _db.from('royal_club_scores')
+            .select('ticket_balance')
+            .eq('user_id', _db.auth.currentUser!.id).maybeSingle();
+        final remote = RoyalPlayerScore._nonnegative(row?['ticket_balance']);
+        await prefs.setInt(_ticketKey, remote);
+        return remote;
+      } catch (_) {}
+    }
     return prefs.getInt(_ticketKey) ?? 0;
   }
 
   static Future<int> lifetimeTickets() async {
     final prefs = await SharedPreferences.getInstance();
+    if (backendReady && _db.auth.currentUser != null) {
+      try {
+        final row = await _db.from('royal_club_scores')
+            .select('lifetime_tickets')
+            .eq('user_id', _db.auth.currentUser!.id).maybeSingle();
+        final remote = RoyalPlayerScore._nonnegative(row?['lifetime_tickets']);
+        await prefs.setInt(_earnedKey, remote);
+        return remote;
+      } catch (_) {}
+    }
     return prefs.getInt(_earnedKey) ?? 0;
+  }
+
+  static Stream<Map<String, int>> liveTicketStats() {
+    if (!backendReady || _db.auth.currentUser == null) {
+      return Stream.fromFuture(Future.wait([ticketBalance(), lifetimeTickets()])
+          .then((v) => {'balance': v[0], 'lifetime': v[1]}));
+    }
+    final uid = _db.auth.currentUser!.id;
+    return _db.from('royal_club_scores').stream(primaryKey: ['user_id'])
+        .eq('user_id', uid).map((rows) {
+      if (rows.isEmpty) return {'balance': 0, 'lifetime': 0};
+      return {
+        'balance': RoyalPlayerScore._nonnegative(rows.first['ticket_balance']),
+        'lifetime': RoyalPlayerScore._nonnegative(rows.first['lifetime_tickets']),
+      };
+    });
   }
 
   static Future<void> _creditTickets(
