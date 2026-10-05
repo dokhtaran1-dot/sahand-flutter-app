@@ -10,7 +10,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -33,6 +33,19 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.5'
+
+      - name: Store luxury Explore artwork
+        if: github.event_name != 'pull_request'
+        run: |
+          target="assets/image/royal_club_explore_luxury.png"
+          if [ ! -s "$target" ]; then
+            curl --fail --location --retry 3 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/2b623423-ddf3-401c-aeef-4065e5be40b5.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNWIzN2NiZmZiMjRjZmE1ZSIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTMxMTM1OX0.pgGmdEzh5W8_uu-PVm6R4Tc8deauEvc93FMAS1Wz7tc' -o "$target"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "$target"
+            git commit -m "Store luxury Explore artwork"
+            git push origin HEAD:main
+          fi
 
       - name: Install Royal 1 launcher icon
         run: |
