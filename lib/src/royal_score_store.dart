@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Local prototype score store. NOT a cross-device leaderboard or a basis
 /// for awarding real prizes; production requires authenticated server writes
@@ -85,6 +86,75 @@ class RoyalScoreStore {
   static const _pendingKey = 'rc_pending_scores_v1';
   static const _ticketKey = 'rc_local_ticket_balance_v1';
   static const _earnedKey = 'rc_local_ticket_earned_v1';
+  static const backendReady =
+      bool.fromEnvironment('ROYAL_CLUB_BACKEND_READY', defaultValue: false);
+
+  static SupabaseClient get _db => Supabase.instance.client;
+
+  static RoyalPlayerScore _fromRemote(Map<String, dynamic> row) =>
+      RoyalPlayerScore(
+        name: (row['display_name'] ?? 'Royal Player').toString(),
+        deal: RoyalPlayerScore._nonnegative(row['deal']),
+        crown: RoyalPlayerScore._nonnegative(row['crown']),
+        difference: RoyalPlayerScore._nonnegative(row['difference']),
+        firstPlayed: DateTime.tryParse(
+                    (row['first_played'] ?? '').toString())
+                ?.millisecondsSinceEpoch ??
+            0,
+      );
+
+  static Stream<List<RoyalPlayerScore>> liveTopTen(
+      {RoyalScoreGame? game}) {
+    if (!backendReady) {
+      return Stream.fromFuture(topTen(game: game));
+    }
+    return _db
+        .from('royal_club_scores')
+        .stream(primaryKey: ['user_id'])
+        .map((rows) {
+          final scores = rows
+              .map((row) => _fromRemote(Map<String, dynamic>.from(row)))
+              .where((score) => score.pointsFor(game) > 0)
+              .toList()
+            ..sort((a, b) {
+              final order =
+                  b.pointsFor(game).compareTo(a.pointsFor(game));
+              return order != 0
+                  ? order
+                  : a.firstPlayed.compareTo(b.firstPlayed);
+            });
+          return scores.take(10).toList(growable: false);
+        });
+  }
+
+  static Future<void> _syncRemoteScore(
+      RoyalScoreGame game, int points, String name) async {
+    if (!backendReady) return;
+    final user = _db.auth.currentUser;
+    if (user == null) return;
+    final existing = await _db
+        .from('royal_club_scores')
+        .select('deal,crown,difference,first_played')
+        .eq('user_id', user.id)
+        .maybeSingle();
+    final row = existing == null
+        ? <String, dynamic>{
+            'deal': 0, 'crown': 0, 'difference': 0,
+            'first_played': DateTime.now().toUtc().toIso8601String(),
+          }
+        : Map<String, dynamic>.from(existing);
+    final key = game.name;
+    row[key] = RoyalPlayerScore._nonnegative(row[key]) + points;
+    await _db.from('royal_club_scores').upsert({
+      'user_id': user.id,
+      'display_name': name,
+      'deal': RoyalPlayerScore._nonnegative(row['deal']),
+      'crown': RoyalPlayerScore._nonnegative(row['crown']),
+      'difference': RoyalPlayerScore._nonnegative(row['difference']),
+      'first_played': row['first_played'],
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
+    }, onConflict: 'user_id');
+  }
 
   static Future<int> ticketBalance() async {
     final prefs = await SharedPreferences.getInstance();
@@ -182,6 +252,11 @@ class RoyalScoreStore {
     await prefs.setString(_scoresKey,
         jsonEncode(players.values.map((p) => p.toJson()).toList()));
     await _creditTickets(prefs, tickets);
+    try {
+      await _syncRemoteScore(game, points, name);
+    } catch (_) {
+      // Keep the completed score locally if the live service is unavailable.
+    }
     revision.value += 1;
   }
 
