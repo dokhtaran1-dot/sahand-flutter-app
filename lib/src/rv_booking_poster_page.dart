@@ -120,7 +120,7 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
       else if (item == 'vip') { vip = !vip; }
       else { drink = drink == null ? 'آبمیوه اختصاصی سالن' : null; } });
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(item == 'magic' ? (magic ? 'تردست دو نفره انتخاب شد' : 'تردست حذف شد')
+      content: Text(item == 'magic' ? (magic ? 'منتالیسم دو نفره انتخاب شد' : 'منتالیسم حذف شد')
         : item == 'vip' ? (vip ? 'VIP انتخاب شد' : 'VIP حذف شد')
         : (drink == null ? 'آبمیوه حذف شد' : 'آبمیوه اختصاصی انتخاب شد'))));
   }
@@ -139,7 +139,7 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
       return;
     }
     final extras = <String>[
-      if (drink != null) drink!, if (magic) 'تردست برای ۲ نفر',
+      if (drink != null) drink!, if (magic) 'منتالیسم برای ۲ نفر',
       if (vip) 'تجربه VIP', if (grandMenu != null) grandMenu!, if (notes.text.trim().isNotEmpty) notes.text.trim(),
     ].join(' | ');
     Navigator.push(context, MaterialPageRoute(builder: (_) => ReservationPage(
