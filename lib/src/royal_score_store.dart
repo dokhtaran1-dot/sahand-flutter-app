@@ -188,20 +188,14 @@ class RoyalScoreStore {
     return prefs.getInt(_earnedKey) ?? 0;
   }
 
-  static Stream<Map<String, int>> liveTicketStats() {
-    if (!backendReady || _db.auth.currentUser == null) {
-      return Stream.fromFuture(Future.wait([ticketBalance(), lifetimeTickets()])
-          .then((v) => {'balance': v[0], 'lifetime': v[1]}));
+  static Stream<Map<String, int>> liveTicketStats() async* {
+    while (true) {
+      final balance = await ticketBalance();
+      final lifetime = await lifetimeTickets();
+      yield {'balance': balance, 'lifetime': lifetime};
+      if (!backendReady || _db.auth.currentUser == null) return;
+      await Future<void>.delayed(const Duration(seconds: 2));
     }
-    final uid = _db.auth.currentUser!.id;
-    return _db.from('royal_club_scores').stream(primaryKey: ['user_id'])
-        .eq('user_id', uid).map((rows) {
-      if (rows.isEmpty) return {'balance': 0, 'lifetime': 0};
-      return {
-        'balance': RoyalPlayerScore._nonnegative(rows.first['ticket_balance']),
-        'lifetime': RoyalPlayerScore._nonnegative(rows.first['lifetime_tickets']),
-      };
-    });
   }
 
   static Future<void> _creditTickets(
