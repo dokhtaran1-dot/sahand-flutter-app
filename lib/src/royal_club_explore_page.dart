@@ -24,62 +24,48 @@ class RoyalClubExplorePage extends StatelessWidget {
       const RoyalClubPhotoAlbumPage(),
       const RoyalClubProfilePage(),
     ];
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            const artW = 768.0;
-            const artH = 1365.0;
-            return FittedBox(
-              fit: BoxFit.fill,
-              child: SizedBox(
-                width: artW,
-                height: artH,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image.asset(
-                      'assets/image/royal_club_explore_luxury.png',
-                      fit: BoxFit.fill,
-                      filterQuality: FilterQuality.high,
-                    ),
-                    Positioned(
-                      left: 22, top: 38, width: 92, height: 92,
-                      child: _Hotspot(onTap: () => Navigator.of(context).pop()),
-                    ),
-                    _HotspotPosition(left: 24, top: 235, width: 356, height: 328,
-                        onTap: () => _open(context, pages[0])),
-                    _HotspotPosition(left: 388, top: 235, width: 356, height: 328,
-                        onTap: () => _open(context, pages[1])),
-                    _HotspotPosition(left: 24, top: 580, width: 356, height: 328,
-                        onTap: () => _open(context, pages[2])),
-                    _HotspotPosition(left: 388, top: 580, width: 356, height: 328,
-                        onTap: () => _open(context, pages[3])),
-                    _HotspotPosition(left: 24, top: 925, width: 356, height: 328,
-                        onTap: () => _open(context, pages[4])),
-                    _HotspotPosition(left: 388, top: 925, width: 356, height: 328,
-                        onTap: () => _open(context, pages[5])),
-                  ],
-                ),
-              ),
-            );
-          },
+        child: FittedBox(
+          fit: BoxFit.fill,
+          child: SizedBox(
+            width: 768, height: 1365,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.asset('assets/image/royal_club_explore_luxury.png',
+                    fit: BoxFit.fill, filterQuality: FilterQuality.high),
+                Positioned(left: 22, top: 38, width: 92, height: 92,
+                  child: _Hotspot(onTap: () => Navigator.of(context).pop())),
+                _PositionedHotspot(left: 24, top: 235, width: 356, height: 328,
+                    onTap: () => _open(context, pages[0])),
+                _PositionedHotspot(left: 388, top: 235, width: 356, height: 328,
+                    onTap: () => _open(context, pages[1])),
+                _PositionedHotspot(left: 24, top: 580, width: 356, height: 328,
+                    onTap: () => _open(context, pages[2])),
+                _PositionedHotspot(left: 388, top: 580, width: 356, height: 328,
+                    onTap: () => _open(context, pages[3])),
+                _PositionedHotspot(left: 24, top: 925, width: 356, height: 328,
+                    onTap: () => _open(context, pages[4])),
+                _PositionedHotspot(left: 388, top: 925, width: 356, height: 328,
+                    onTap: () => _open(context, pages[5])),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-class _HotspotPosition extends StatelessWidget {
-  const _HotspotPosition({
+class _PositionedHotspot extends StatelessWidget {
+  const _PositionedHotspot({
     required this.left, required this.top, required this.width,
     required this.height, required this.onTap,
   });
   final double left, top, width, height;
   final VoidCallback onTap;
-
   @override
   Widget build(BuildContext context) => Positioned(
     left: left, top: top, width: width, height: height,
@@ -90,7 +76,6 @@ class _HotspotPosition extends StatelessWidget {
 class _Hotspot extends StatelessWidget {
   const _Hotspot({required this.onTap});
   final VoidCallback onTap;
-
   @override
   Widget build(BuildContext context) => Material(
     color: Colors.transparent,
