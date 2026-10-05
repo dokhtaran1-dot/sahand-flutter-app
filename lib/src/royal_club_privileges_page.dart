@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'royal_games_page.dart';
@@ -18,12 +19,21 @@ class _RoyalClubPrivilegesPageState extends State<RoyalClubPrivilegesPage> {
   int balance = 0;
   int lifetime = 0;
   bool loading = true;
+  StreamSubscription<Map<String, int>>? _liveTickets;
 
   @override
   void initState() {
     super.initState();
     _load();
     RoyalScoreStore.revision.addListener(_reload);
+    _liveTickets = RoyalScoreStore.liveTicketStats().listen((stats) {
+      if (!mounted) return;
+      setState(() {
+        balance = stats['balance'] ?? 0;
+        lifetime = stats['lifetime'] ?? 0;
+        loading = false;
+      });
+    });
   }
 
   void _reload() => _load();
@@ -44,6 +54,7 @@ class _RoyalClubPrivilegesPageState extends State<RoyalClubPrivilegesPage> {
   @override
   void dispose() {
     RoyalScoreStore.revision.removeListener(_reload);
+    _liveTickets?.cancel();
     super.dispose();
   }
 
