@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,12 +22,21 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
   int tickets = 0;
   int lifetime = 0;
   bool loading = true;
+  StreamSubscription<Map<String, int>>? _liveTickets;
 
   @override
   void initState() {
     super.initState();
     _load();
     RoyalScoreStore.revision.addListener(_load);
+    _liveTickets = RoyalScoreStore.liveTicketStats().listen((stats) {
+      if (!mounted) return;
+      setState(() {
+        tickets = stats['balance'] ?? 0;
+        lifetime = stats['lifetime'] ?? 0;
+        loading = false;
+      });
+    });
   }
 
   Future<void> _load() async {
@@ -49,6 +59,7 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
   @override
   void dispose() {
     RoyalScoreStore.revision.removeListener(_load);
+    _liveTickets?.cancel();
     super.dispose();
   }
 
