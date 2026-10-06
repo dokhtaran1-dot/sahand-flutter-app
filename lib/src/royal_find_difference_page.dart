@@ -280,7 +280,7 @@ class _RoyalFindDifferencePageState
     _timer?.cancel();
     setState(() {
       _level = 0;
-      _remaining = _roundSeconds;
+      _remaining = _levels.first.seconds;
       _lives = 3;
       _score = 0;
       _fastRounds = 0;
@@ -392,7 +392,7 @@ class _RoyalFindDifferencePageState
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(14, 6, 14, 22),
                   children: [
-                    const Text(
+                    Text(
                       'در دو تصویر، ${level.requiredDifferences} تفاوت را پیدا کن',
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.center,
