@@ -16,8 +16,7 @@ class RoyalClubMembershipPage extends StatefulWidget {
 
 class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
   static const gold = Color(0xFFE8C36A);
-  static const backendReady =
-      bool.fromEnvironment('ROYAL_CLUB_BACKEND_READY', defaultValue: false);
+  static const backendReady = true;
 
   final name = TextEditingController();
   final phone = TextEditingController();
@@ -60,7 +59,7 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
     if (!mounted) return;
     if (savedName.isNotEmpty) name.text = savedName;
     if (savedPhone.isNotEmpty) phone.text = savedPhone;
-    setState(() => alreadyMember = savedName.isNotEmpty && savedPhone.isNotEmpty);
+    setState(() => alreadyMember = false);
   }
 
   bool _validate() {
@@ -111,10 +110,6 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
   }
 
   Future<void> sendCode() async {
-    if (!backendReady) {
-      await _saveLocalMembership();
-      return;
-    }
     if (!_validate()) return;
     setState(() {
       busy = true;
