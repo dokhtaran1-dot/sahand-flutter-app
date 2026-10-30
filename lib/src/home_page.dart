@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'royal_mall_page.dart';
 import 'royal_village_page.dart';
 import 'royal_club_game_page.dart';
+import 'royal_signature_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -28,6 +29,75 @@ class HomePage extends StatelessWidget {
   void _openRoyalClub(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const RoyalClubGamePage()),
+    );
+  }
+
+  void _openMore(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: const Color(0xFF0D1710),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 22, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'ROYAL ONE · MORE',
+                style: TextStyle(
+                  fontSize: 11,
+                  letterSpacing: 2.4,
+                  color: Color(0xFFDFC189),
+                ),
+              ),
+              const SizedBox(height: 15),
+              ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: const BorderSide(color: Color(0xFFAD925D)),
+                ),
+                tileColor: const Color(0xFF173325),
+                leading: const Icon(
+                  Icons.diamond_outlined,
+                  color: Color(0xFFDFC189),
+                  size: 30,
+                ),
+                title: const Text(
+                  'RS · ROYAL SIGNATURE',
+                  style: TextStyle(
+                    color: Color(0xFFF3EBDD),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                subtitle: const Text(
+                  'گالری ۱۰ طرح اختصاصی JD',
+                  style: TextStyle(
+                    color: Color(0xFFB5C4B3),
+                    fontSize: 12,
+                  ),
+                ),
+                trailing: const Icon(
+                  Icons.arrow_forward_ios,
+                  color: Color(0xFFDFC189),
+                  size: 15,
+                ),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const RoyalSignaturePage(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -127,7 +197,7 @@ class HomePage extends StatelessWidget {
                       top: 1480,
                       width: 176,
                       height: 150,
-                      child: _TapZone(onTap: () => _openRoyalClub(context)),
+                      child: _TapZone(onTap: () => _openMore(context)),
                     ),
 
                     // Top menu.
