@@ -164,7 +164,12 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
       );
 
       if (!mounted) return;
-      setState(() => alreadyMember = true);
+      setState(() {
+        alreadyMember = true;
+        sent = false;
+        error = null;
+        otp.clear();
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('عضویت شما با موفقیت ثبت شد')),
       );
