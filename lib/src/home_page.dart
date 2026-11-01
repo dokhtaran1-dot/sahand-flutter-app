@@ -108,41 +108,45 @@ class HomePage extends StatelessWidget {
                       child: _TapZone(onTap: () => _openRoyalVillage(context)),
                     ),
 
-                    // Bottom navigation.
+                    // Bottom center navigation — exact order: RE | RS | RH.
                     Positioned(
-                      left: 20,
-                      top: 1480,
-                      width: 180,
-                      height: 150,
-                      child: _TapZone(onTap: () {}),
-                    ),
-                    Positioned(
-                      left: 200,
-                      top: 1480,
-                      width: 185,
-                      height: 150,
-                      child: _TapZone(onTap: () => _openRoyalClub(context)),
-                    ),
-                    Positioned(
-                      left: 360,
-                      top: 1440,
-                      width: 220,
-                      height: 200,
-                      child: _TapZone(onTap: () => _openRoyalSignature(context)),
-                    ),
-                    Positioned(
-                      left: 560,
-                      top: 1480,
-                      width: 185,
-                      height: 150,
-                      child: _TapZone(onTap: () => _openEttehad(context)),
-                    ),
-                    Positioned(
-                      left: 745,
-                      top: 1480,
-                      width: 176,
-                      height: 150,
-                      child: _TapZone(onTap: () => _openRoyalHarmonia(context)),
+                      left: 105,
+                      top: 1438,
+                      width: 731,
+                      height: 178,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: _LuxuryBottomButton(
+                              code: 'RE',
+                              subtitle: 'ETTEHAD',
+                              onTap: () => _openEttehad(context),
+                            ),
+                          ),
+                          const SizedBox(width: 18),
+                          Expanded(
+                            child: Transform.translate(
+                              offset: const Offset(0, -10),
+                              child: _LuxuryBottomButton(
+                                code: 'RS',
+                                subtitle: 'SIGNATURE',
+                                emphasized: true,
+                                onTap: () => _openRoyalSignature(context),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 18),
+                          Expanded(
+                            child: _LuxuryBottomButton(
+                              code: 'RH',
+                              subtitle: 'HARMONIA',
+                              onTap: () => _openRoyalHarmonia(context),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
 
                     // Top menu.
@@ -177,6 +181,84 @@ class _TapZone extends StatelessWidget {
         onTap: onTap,
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
+      ),
+    );
+  }
+}
+
+
+class _LuxuryBottomButton extends StatelessWidget {
+  final String code;
+  final String subtitle;
+  final VoidCallback onTap;
+  final bool emphasized;
+
+  const _LuxuryBottomButton({
+    required this.code,
+    required this.subtitle,
+    required this.onTap,
+    this.emphasized = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const gold = Color(0xFFD7B66D);
+    return SizedBox(
+      height: emphasized ? 160 : 142,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(emphasized ? 30 : 26),
+          child: Ink(
+            decoration: BoxDecoration(
+              color: const Color(0xE615171C),
+              borderRadius: BorderRadius.circular(emphasized ? 30 : 26),
+              border: Border.all(
+                color: gold,
+                width: emphasized ? 2.4 : 1.6,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(.55),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
+                ),
+                if (emphasized)
+                  BoxShadow(
+                    color: gold.withOpacity(.18),
+                    blurRadius: 24,
+                    spreadRadius: 2,
+                  ),
+              ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  code,
+                  style: TextStyle(
+                    color: gold,
+                    fontSize: emphasized ? 42 : 36,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 3.5,
+                    height: 1,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(.78),
+                    fontSize: emphasized ? 12 : 10,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 1.8,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
