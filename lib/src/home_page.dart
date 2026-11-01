@@ -6,6 +6,7 @@ import 'royal_mall_page.dart';
 import 'royal_village_page.dart';
 import 'royal_club_game_page.dart';
 import 'royal_signature_page.dart';
+import 'royal_ettehad_profile_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -90,6 +91,47 @@ class HomePage extends StatelessWidget {
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
                       builder: (_) => const RoyalSignaturePage(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 11),
+              ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: const BorderSide(color: Color(0xFFB69A65)),
+                ),
+                tileColor: const Color(0xFF18395E),
+                leading: const Icon(
+                  Icons.architecture_outlined,
+                  color: Color(0xFFE3C78F),
+                  size: 30,
+                ),
+                title: const Text(
+                  'RE · ROYAL ETTEHAD',
+                  style: TextStyle(
+                    color: Color(0xFFF4F0E8),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                subtitle: const Text(
+                  'رزومهٔ مدیریتی مسعود اتحاد',
+                  style: TextStyle(
+                    color: Color(0xFFCAD9E7),
+                    fontSize: 12,
+                  ),
+                ),
+                trailing: const Icon(
+                  Icons.arrow_forward_ios,
+                  color: Color(0xFFE3C78F),
+                  size: 15,
+                ),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const RoyalEtehadProfilePage(),
                     ),
                   );
                 },
