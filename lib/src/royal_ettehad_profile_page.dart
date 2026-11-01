@@ -71,7 +71,7 @@ class RoyalEtehadProfilePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    'بنیان‌گذار و مدیرعامل اتحاد سازه رویال',
+                    'مالک و مدیرعامل اتحاد سازه رویال',
                     textDirection: TextDirection.rtl,
                     textAlign: TextAlign.center,
                     style: TextStyle(color: _white, fontSize: 14, height: 1.6),
@@ -160,7 +160,7 @@ class RoyalEtehadProfilePage extends StatelessWidget {
             const _RoleCard(
               icon: Icons.apartment_outlined,
               en: 'ROYAL ETTEHAD SAZEH',
-              fa: 'بنیان‌گذار و مدیرعامل',
+              fa: 'مالک و مدیرعامل',
               description: 'مدیریت فعالیت‌های اجرایی، فنی و هماهنگی پروژه‌های ساختمانی.',
             ),
             const SizedBox(height: 10),
