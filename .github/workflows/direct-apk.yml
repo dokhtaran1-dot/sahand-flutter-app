@@ -1,0 +1,68 @@
+name: Build ROYAL1 Direct ARM64 APK
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-arm64:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+
+      - name: Restore required Royal Village salon archive
+        run: |
+          if [ ! -s assets/image/Royal_Village_App_Upload.zip ]; then
+            git fetch --no-tags --depth=1 origin ac94557573e15519e35b3b5f7b99388bb2553bed
+            git show ac94557573e15519e35b3b5f7b99388bb2553bed:assets/image/Royal_Village_App_Upload.zip > assets/image/Royal_Village_App_Upload.zip
+          fi
+          unzip -tq assets/image/Royal_Village_App_Upload.zip
+          rm -rf assets/image/rv_upload
+          mkdir -p assets/image/rv_upload
+          unzip -o assets/image/Royal_Village_App_Upload.zip -d assets/image/rv_upload
+
+      - name: Prepare salon assets
+        run: |
+          if [ -s assets/image/RV_salon_galleries_ready.zip ]; then unzip -o assets/image/RV_salon_galleries_ready.zip -d .; fi
+          if [ -s assets/image/RV_8_final_imperial_ultra.zip ]; then unzip -o assets/image/RV_8_final_imperial_ultra.zip -d .; fi
+
+      - name: Get packages
+        run: flutter pub get
+
+      - name: Work around app_links Android compile SDK bug
+        run: |
+          plugin_gradle="$HOME/.pub-cache/hosted/pub.dev/app_links-6.4.1/android/build.gradle"
+          test -f "$plugin_gradle"
+          sed -i 's/flutter\.compileSdkVersion/34/g; s/flutter\.minSdkVersion/23/g' "$plugin_gradle"
+
+      - name: Build ARM64 APK
+        run: |
+          flutter build apk --release --split-per-abi --build-name 1.0.17 --build-number 19 \
+            --dart-define=SUPABASE_URL=https://jwddfcsikkialxzbrhle.supabase.co \
+            --dart-define=SUPABASE_ANON_KEY=sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve \
+            --dart-define=ROYAL_CLUB_BACKEND_READY=true
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/ROYAL1-v1.0.17-arm64.apk
+
+      - name: Upload direct APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ROYAL1-v1.0.17-arm64
+          path: build/app/outputs/flutter-apk/ROYAL1-v1.0.17-arm64.apk
+          compression-level: 0
