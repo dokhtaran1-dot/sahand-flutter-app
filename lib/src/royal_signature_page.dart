@@ -126,57 +126,56 @@ class RoyalSignaturePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 23),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: AspectRatio(
-                aspectRatio: 1.68,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image.asset(_concepts.first.asset, fit: BoxFit.cover),
-                    const DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            Color(0xE908100A),
-                          ],
-                        ),
-                      ),
+            _BeyondGravityFeature(
+              artwork: _concepts.first.asset,
+              onOpen: () => _openArtwork(context, _concepts.first),
+            ),
+            const SizedBox(height: 21),
+            Container(
+              padding: const EdgeInsets.fromLTRB(19, 18, 19, 18),
+              decoration: BoxDecoration(
+                color: const Color(0xFF101A13),
+                borderRadius: BorderRadius.circular(17),
+                border: Border.all(color: const Color(0x557B694A)),
+              ),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'THE ARTIST',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: _gold,
+                      letterSpacing: 2.8,
                     ),
-                    Positioned(
-                      right: 16,
-                      bottom: 14,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          const Text(
-                            'JD / EDITION 01',
-                            style: TextStyle(
-                              fontSize: 10,
-                              letterSpacing: 2,
-                              color: _gold,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            _concepts.first.titleFa,
-                            textDirection: TextDirection.rtl,
-                            style: const TextStyle(
-                              fontSize: 17,
-                              color: _cream,
-                            ),
-                          ),
-                        ],
-                      ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'استاد جعفر درگاهی',
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: _cream,
                     ),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 9),
+                  Text(
+                    'مجسمه‌سازی، چیدمان هنری و جهانِ جزیره‌های معلق؛ '
+                    'پیوند طبیعت، فرم و خیال در آثاری که جاذبه را به چالش می‌کشند.',
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 13,
+                      height: 1.9,
+                      color: _muted,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 27),
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -325,6 +324,189 @@ class RoyalSignaturePage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Native Royal One artist-edition centerpiece. This is a Flutter widget,
+/// not an embedded website or WebView. The hero image is a concept visual,
+/// while the artist's real documentary photograph is not bundled in this app.
+class _BeyondGravityFeature extends StatelessWidget {
+  final String artwork;
+  final VoidCallback onOpen;
+
+  const _BeyondGravityFeature({
+    required this.artwork,
+    required this.onOpen,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const cream = Color(0xFFF3EBDD);
+    const gold = Color(0xFFDFC189);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final large = constraints.maxWidth >= 640;
+        return Material(
+          color: const Color(0xFF08120C),
+          borderRadius: BorderRadius.circular(22),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onOpen,
+            child: Container(
+              height: large ? 440 : 510,
+              decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xAA95764C), width: 1),
+                borderRadius: BorderRadius.circular(22),
+              ),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    artwork,
+                    fit: BoxFit.cover,
+                    filterQuality: FilterQuality.high,
+                  ),
+                  const DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: [0, 0.3, 0.66, 1],
+                        colors: [
+                          Color(0xD008140C),
+                          Color(0x7108140C),
+                          Color(0xBB07110A),
+                          Color(0xFF07100A),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: large ? 29 : 20,
+                      vertical: 22,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Row(
+                          children: [
+                            Icon(Icons.diamond_outlined, color: gold, size: 18),
+                            SizedBox(width: 8),
+                            Text(
+                              'R1  /  ARTIST EDITION',
+                              style: TextStyle(
+                                color: gold,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.7,
+                              ),
+                            ),
+                            Spacer(),
+                            Icon(Icons.auto_awesome_outlined, color: gold, size: 19),
+                          ],
+                        ),
+                        const Spacer(),
+                        const Text(
+                          'JD',
+                          style: TextStyle(
+                            color: Color(0xC6D7B77B),
+                            fontFamily: 'serif',
+                            fontSize: 68,
+                            fontWeight: FontWeight.w300,
+                            height: 0.9,
+                            letterSpacing: -5,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        const Text(
+                          'BEYOND GRAVITY.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: cream,
+                            fontFamily: 'serif',
+                            fontSize: 30,
+                            letterSpacing: 2.2,
+                          ),
+                        ),
+                        const SizedBox(height: 11),
+                        const Text(
+                          'هنر، فراتر از جاذبه',
+                          textDirection: TextDirection.rtl,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: cream,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 24,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'JAFAR DARGAHI',
+                          style: TextStyle(
+                            color: gold,
+                            fontSize: 13,
+                            letterSpacing: 2.4,
+                          ),
+                        ),
+                        const SizedBox(height: 17),
+                        const Text(
+                          'SCULPTURE  ·  SUSPENSION  ·  NATURE',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Color(0xFFE3D1B0),
+                            fontSize: 9,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 25,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFD3AF71),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'مشاهده مجموعه',
+                                textDirection: TextDirection.rtl,
+                                style: TextStyle(
+                                  color: Color(0xFF121711),
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              SizedBox(width: 12),
+                              Icon(Icons.arrow_forward_ios,
+                                  color: Color(0xFF121711), size: 13),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        const Text(
+                          'CONCEPT VISUAL  /  JD SIGNATURE COLLECTION',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Color(0xFFC0C8BB),
+                            fontSize: 8,
+                            letterSpacing: 1.1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
