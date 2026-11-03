@@ -203,59 +203,81 @@ class _LuxuryBottomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const gold = Color(0xFFD7B66D);
-    return SizedBox(
-      height: emphasized ? 160 : 142,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(emphasized ? 30 : 26),
-          child: Ink(
-            decoration: BoxDecoration(
-              color: const Color(0xE615171C),
-              borderRadius: BorderRadius.circular(emphasized ? 30 : 26),
-              border: Border.all(
-                color: gold,
-                width: emphasized ? 2.4 : 1.6,
+    final diameter = emphasized ? 160.0 : 142.0;
+
+    // Three true circles: RE · RS · RH. RS keeps the larger central accent.
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: SizedBox(
+        width: diameter,
+        height: diameter,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(.65),
+                blurRadius: 18,
+                offset: const Offset(0, 7),
               ),
-              boxShadow: [
+              if (emphasized)
                 BoxShadow(
-                  color: Colors.black.withOpacity(.55),
-                  blurRadius: 18,
-                  offset: const Offset(0, 8),
+                  color: gold.withOpacity(.26),
+                  blurRadius: 23,
+                  spreadRadius: 3,
                 ),
-                if (emphasized)
-                  BoxShadow(
-                    color: gold.withOpacity(.18),
-                    blurRadius: 24,
-                    spreadRadius: 2,
-                  ),
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  code,
-                  style: TextStyle(
-                    color: gold,
-                    fontSize: emphasized ? 42 : 36,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 3.5,
-                    height: 1,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(.78),
-                    fontSize: emphasized ? 12 : 10,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1.8,
+            ],
+          ),
+          child: Semantics(
+            button: true,
+            label: 'ورود به $subtitle',
+            child: Material(
+              color: const Color(0xFF12171A),
+              shape: CircleBorder(
+                side: BorderSide(color: gold, width: emphasized ? 2.8 : 1.8),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Ink(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    center: Alignment(-0.3, -0.5),
+                    radius: 1.15,
+                    colors: [Color(0xFF27302A), Color(0xFF12171A)],
                   ),
                 ),
-              ],
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: onTap,
+                  splashColor: gold.withOpacity(.16),
+                  highlightColor: gold.withOpacity(.08),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        code,
+                        style: TextStyle(
+                          color: gold,
+                          fontSize: emphasized ? 42 : 36,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 3.5,
+                          height: 1,
+                        ),
+                      ),
+                      const SizedBox(height: 9),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(.85),
+                          fontSize: emphasized ? 12 : 10,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
         ),
