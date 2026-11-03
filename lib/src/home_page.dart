@@ -108,44 +108,77 @@ class HomePage extends StatelessWidget {
                       child: _TapZone(onTap: () => _openRoyalVillage(context)),
                     ),
 
-                    // Bottom center navigation — exact order: RE | RS | RH.
+                    // Replace the old image-baked RE/RC/RH navigation
+                    // with an opaque, clearly native RE/RS/RH footer.
                     Positioned(
-                      left: 105,
-                      top: 1438,
-                      width: 731,
-                      height: 178,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Expanded(
-                            child: _LuxuryBottomButton(
-                              code: 'RE',
-                              subtitle: 'ETTEHAD',
-                              onTap: () => _openEttehad(context),
-                            ),
+                      left: 246,
+                      top: 1500,
+                      width: 450,
+                      height: 154,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF070A09),
+                          borderRadius: BorderRadius.circular(27),
+                          border: Border.all(
+                            color: const Color(0xFFB38A45),
+                            width: 1.4,
                           ),
-                          const SizedBox(width: 18),
-                          Expanded(
-                            child: Transform.translate(
-                              offset: const Offset(0, -10),
-                              child: _LuxuryBottomButton(
-                                code: 'RS',
-                                subtitle: 'SIGNATURE',
-                                emphasized: true,
-                                onTap: () => _openRoyalSignature(context),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 8,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Expanded(
+                                child: _LuxuryBottomButton(
+                                  code: 'RE',
+                                  subtitle: 'ETTEHAD',
+                                  onTap: () => _openEttehad(context),
+                                ),
                               ),
-                            ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Transform.translate(
+                                  offset: const Offset(0, -5),
+                                  child: _LuxuryBottomButton(
+                                    code: 'RS',
+                                    subtitle: 'SIGNATURE',
+                                    emphasized: true,
+                                    onTap: () => _openRoyalSignature(context),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: _LuxuryBottomButton(
+                                  code: 'RH',
+                                  subtitle: 'HARMONIA',
+                                  onTap: () => _openRoyalHarmonia(context),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 18),
-                          Expanded(
-                            child: _LuxuryBottomButton(
-                              code: 'RH',
-                              subtitle: 'HARMONIA',
-                              onTap: () => _openRoyalHarmonia(context),
-                            ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 384,
+                      top: 1653,
+                      width: 170,
+                      height: 14,
+                      child: const Center(
+                        child: Text(
+                          'ROYAL ONE  ·  1.0.18',
+                          style: TextStyle(
+                            color: Color(0xFFE7C78E),
+                            fontSize: 10,
+                            letterSpacing: 1.1,
                           ),
-                        ],
+                        ),
                       ),
                     ),
 
@@ -203,7 +236,7 @@ class _LuxuryBottomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const gold = Color(0xFFD7B66D);
-    final diameter = emphasized ? 160.0 : 142.0;
+    final diameter = emphasized ? 116.0 : 102.0;
 
     // Three true circles: RE · RS · RH. RS keeps the larger central accent.
     return Align(
@@ -258,7 +291,7 @@ class _LuxuryBottomButton extends StatelessWidget {
                         code,
                         style: TextStyle(
                           color: gold,
-                          fontSize: emphasized ? 42 : 36,
+                          fontSize: emphasized ? 34 : 29,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 3.5,
                           height: 1,
@@ -269,7 +302,7 @@ class _LuxuryBottomButton extends StatelessWidget {
                         subtitle,
                         style: TextStyle(
                           color: Colors.white.withOpacity(.85),
-                          fontSize: emphasized ? 12 : 10,
+                          fontSize: emphasized ? 9 : 8,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 1.5,
                         ),
