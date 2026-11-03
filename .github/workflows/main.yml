@@ -136,12 +136,12 @@ jobs:
           printf 'ROYAL_CLUB_DART_DEFINES=--dart-define=SUPABASE_URL=https://jwddfcsikkialxzbrhle.supabase.co --dart-define=SUPABASE_ANON_KEY=sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve --dart-define=ROYAL_CLUB_BACKEND_READY=true\\n' >> "$GITHUB_ENV"
 
       - name: Build APK
-        run: flutter build apk --debug --build-name 1.0.16 --build-number 18 $ROYAL_CLUB_DART_DEFINES
+        run: flutter build apk --debug --build-name 1.0.18 --build-number 20 $ROYAL_CLUB_DART_DEFINES
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: royal1-v1.0.16-backend-apk
+          name: ROYAL1-v1.0.18-UPDATED-APK
           path: build/app/outputs/flutter-apk/app-debug.apk
 
       - name: Build Web
