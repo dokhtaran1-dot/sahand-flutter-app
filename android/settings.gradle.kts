@@ -17,13 +17,6 @@ pluginManagement {
         gradlePluginPortal()
     }
 
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.id == "com.android.application") {
-                useModule("com.android.tools.build:gradle:7.3.1")
-            }
-        }
-    }
 }
 
 plugins {

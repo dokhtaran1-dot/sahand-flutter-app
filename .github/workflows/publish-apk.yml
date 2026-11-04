@@ -1,0 +1,54 @@
+name: Publish ROYAL ONE v1.0.18 Direct Download
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/publish-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish-verified-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download verified Android APK from successful workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -fsSL --retry 4 --retry-delay 3 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H 'Accept: application/vnd.github+json' \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/13280444127/zip" \
+            -o verified-android-build.zip
+          unzip -tq verified-android-build.zip
+          mkdir -p extracted
+          unzip -q verified-android-build.zip -d extracted
+          apk_path="$(find extracted -type f -name 'app-debug.apk' -print -quit)"
+          test -n "$apk_path"
+          test -s "$apk_path"
+          cp "$apk_path" ROYAL_ONE_v1.0.18_NEW.apk
+          unzip -tq ROYAL_ONE_v1.0.18_NEW.apk
+          sha256sum ROYAL_ONE_v1.0.18_NEW.apk
+
+      - name: Publish direct APK as a GitHub Release asset
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          tag='royal-one-v1.0.18'
+          apk='ROYAL_ONE_v1.0.18_NEW.apk'
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" "$apk" --clobber
+          else
+            gh release create "$tag" "$apk" \
+              --target "$GITHUB_SHA" \
+              --title 'ROYAL ONE v1.0.18 — Android preview' \
+              --notes 'ROYAL ONE v1.0.18 APK download. Test version ROYAL 1 NEW installs separately, protecting installed app data. Circular RE/RS/RH and Jafar Dargahi Beyond Gravity in RS.' \
+              --prerelease || gh release upload "$tag" "$apk" --clobber
+          fi
+          gh release view "$tag" --json assets --jq '.assets[].name'
