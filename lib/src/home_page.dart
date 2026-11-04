@@ -9,47 +9,44 @@ import 'royal_signature_page.dart';
 import 'ettehad_page.dart';
 import 'royal_harmonia_page.dart';
 
+/// The home artwork contains the old navigation bar in its bottom strip.
+/// Crop that strip and render real, separately clickable Flutter controls.
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   static const double _artWidth = 941;
   static const double _artHeight = 1672;
+  static const double _visibleArtHeight = 1490;
   static const String _art = 'assets/image/Home.png';
 
-  void _openRoyalMall(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const RoyalMallPage()),
-    );
-  }
+  void _openRoyalMall(BuildContext context) => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const RoyalMallPage()),
+      );
 
-  void _openRoyalVillage(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const RoyalVillagePage()),
-    );
-  }
+  void _openRoyalVillage(BuildContext context) => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const RoyalVillagePage()),
+      );
 
-  void _openRoyalClub(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const RoyalClubGamePage()),
-    );
-  }
+  void _openRoyalClub(BuildContext context) => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const RoyalClubGamePage()),
+      );
 
-  void _openEttehad(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const EttehadPage()));
-  }
+  void _openEttehad(BuildContext context) => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const EttehadPage()),
+      );
 
-  void _openRoyalSignature(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RoyalSignaturePage()));
-  }
+  void _openRoyalSignature(BuildContext context) => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const RoyalSignaturePage()),
+      );
 
-  void _openRoyalHarmonia(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RoyalHarmoniaPage()));
-  }
+  void _openRoyalHarmonia(BuildContext context) => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const RoyalHarmoniaPage()),
+      );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFF05070B),
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -57,143 +54,103 @@ class HomePage extends StatelessWidget {
             imageFilter: ui.ImageFilter.blur(sigmaX: 18, sigmaY: 18),
             child: ColorFiltered(
               colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(.42),
+                Colors.black.withOpacity(.55),
                 BlendMode.darken,
               ),
               child: Image.asset(_art, fit: BoxFit.cover),
             ),
           ),
-          Center(
-            child: FractionallySizedBox(
-              widthFactor: .96,
-              heightFactor: .96,
-              child: FittedBox(
-                fit: BoxFit.contain,
-                child: SizedBox(
-                width: _artWidth,
-                height: _artHeight,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image.asset(
-                      _art,
-                      width: _artWidth,
-                      height: _artHeight,
-                      fit: BoxFit.fill,
-                      filterQuality: FilterQuality.high,
-                      isAntiAlias: true,
-                      gaplessPlayback: true,
-                    ),
-
-                    // Current Home.png layout — RM / RC / RV.
-                    Positioned(
-                      left: 20,
-                      top: 590,
-                      width: 290,
-                      height: 690,
-                      child: _TapZone(onTap: () => _openRoyalMall(context)),
-                    ),
-                    Positioned(
-                      left: 320,
-                      top: 590,
-                      width: 290,
-                      height: 690,
-                      child: _TapZone(onTap: () => _openRoyalClub(context)),
-                    ),
-                    Positioned(
-                      left: 620,
-                      top: 590,
-                      width: 290,
-                      height: 690,
-                      child: _TapZone(onTap: () => _openRoyalVillage(context)),
-                    ),
-
-                    // Replace the old image-baked RE/RC/RH navigation
-                    // with an opaque, clearly native RE/RS/RH footer.
-                    Positioned(
-                      left: 246,
-                      top: 1500,
-                      width: 450,
-                      height: 154,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF070A09),
-                          borderRadius: BorderRadius.circular(27),
-                          border: Border.all(
-                            color: const Color(0xFFB38A45),
-                            width: 1.4,
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 8,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            crossAxisAlignment: CrossAxisAlignment.end,
+          SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: Center(
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: SizedBox(
+                        width: _artWidth,
+                        height: _visibleArtHeight,
+                        child: ClipRect(
+                          child: Stack(
                             children: [
-                              Expanded(
-                                child: _LuxuryBottomButton(
-                                  code: 'RE',
-                                  subtitle: 'ETTEHAD',
-                                  onTap: () => _openEttehad(context),
+                              Positioned(
+                                left: 0,
+                                top: 0,
+                                width: _artWidth,
+                                height: _artHeight,
+                                child: Image.asset(
+                                  _art,
+                                  fit: BoxFit.fill,
+                                  filterQuality: FilterQuality.high,
+                                  isAntiAlias: true,
                                 ),
                               ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Transform.translate(
-                                  offset: const Offset(0, -5),
-                                  child: _LuxuryBottomButton(
-                                    code: 'RS',
-                                    subtitle: 'SIGNATURE',
-                                    emphasized: true,
-                                    onTap: () => _openRoyalSignature(context),
+                              // Restore the historical identity. The old
+                              // artwork incorrectly says "Since 1991".
+                              Positioned(
+                                left: 104,
+                                top: 99,
+                                width: 164,
+                                height: 26,
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF0B0809),
+                                    borderRadius: BorderRadius.circular(3),
+                                  ),
+                                  child: const Center(
+                                    child: Text(
+                                      'SINCE 1351',
+                                      style: TextStyle(
+                                        color: Color(0xFFE9D7B2),
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.8,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: _LuxuryBottomButton(
-                                  code: 'RH',
-                                  subtitle: 'HARMONIA',
-                                  onTap: () => _openRoyalHarmonia(context),
-                                ),
+                              Positioned(
+                                left: 20,
+                                top: 590,
+                                width: 290,
+                                height: 690,
+                                child: _TapZone(onTap: () => _openRoyalMall(context)),
+                              ),
+                              Positioned(
+                                left: 320,
+                                top: 590,
+                                width: 290,
+                                height: 690,
+                                child: _TapZone(onTap: () => _openRoyalClub(context)),
+                              ),
+                              Positioned(
+                                left: 620,
+                                top: 590,
+                                width: 290,
+                                height: 690,
+                                child: _TapZone(onTap: () => _openRoyalVillage(context)),
+                              ),
+                              Positioned(
+                                left: 825,
+                                top: 15,
+                                width: 105,
+                                height: 105,
+                                child: _TapZone(onTap: () => _openRoyalClub(context)),
                               ),
                             ],
                           ),
                         ),
                       ),
                     ),
-                    Positioned(
-                      left: 384,
-                      top: 1653,
-                      width: 170,
-                      height: 14,
-                      child: const Center(
-                        child: Text(
-                          'ROYAL ONE  ·  1.0.18',
-                          style: TextStyle(
-                            color: Color(0xFFE7C78E),
-                            fontSize: 10,
-                            letterSpacing: 1.1,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // Top menu.
-                    Positioned(
-                      left: 825,
-                      top: 15,
-                      width: 105,
-                      height: 105,
-                      child: _TapZone(onTap: () => _openRoyalClub(context)),
-                    ),
-                    ],
                   ),
                 ),
-              ),
+                _RoyalNavigation(
+                  onEttehad: () => _openEttehad(context),
+                  onSignature: () => _openRoyalSignature(context),
+                  onHarmonia: () => _openRoyalHarmonia(context),
+                ),
+              ],
             ),
           ),
         ],
@@ -204,21 +161,93 @@ class HomePage extends StatelessWidget {
 
 class _TapZone extends StatelessWidget {
   final VoidCallback onTap;
+
   const _TapZone({required this.onTap});
 
   @override
+  Widget build(BuildContext context) => Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+        ),
+      );
+}
+
+class _RoyalNavigation extends StatelessWidget {
+  final VoidCallback onEttehad;
+  final VoidCallback onSignature;
+  final VoidCallback onHarmonia;
+
+  const _RoyalNavigation({
+    required this.onEttehad,
+    required this.onSignature,
+    required this.onHarmonia,
+  });
+
+  @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(left: 12, right: 12, top: 7, bottom: 3),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF020406), Color(0xFF15201D), Color(0xFF020406)],
+        ),
+        border: Border(
+          top: BorderSide(color: Color(0xFFD6B875), width: 1.3),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: 106,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: _LuxuryBottomButton(
+                    code: 'RE',
+                    subtitle: 'ETTEHAD',
+                    onTap: onEttehad,
+                  ),
+                ),
+                Expanded(
+                  child: _LuxuryBottomButton(
+                    code: 'RS',
+                    subtitle: 'SIGNATURE',
+                    emphasized: true,
+                    onTap: onSignature,
+                  ),
+                ),
+                Expanded(
+                  child: _LuxuryBottomButton(
+                    code: 'RH',
+                    subtitle: 'HARMONIA',
+                    onTap: onHarmonia,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 1),
+          const Text(
+            'ROYAL ONE  ·  V1.0.19  ·  POWERED BY SAHAND CONSORTIUM',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Color(0xFFAF9464),
+              fontSize: 8,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
-
 
 class _LuxuryBottomButton extends StatelessWidget {
   final String code;
@@ -236,9 +265,8 @@ class _LuxuryBottomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const gold = Color(0xFFD7B66D);
-    final diameter = emphasized ? 116.0 : 102.0;
+    final diameter = emphasized ? 104.0 : 92.0;
 
-    // Three true circles: RE · RS · RH. RS keeps the larger central accent.
     return Align(
       alignment: Alignment.bottomCenter,
       child: SizedBox(
@@ -250,15 +278,11 @@ class _LuxuryBottomButton extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(.65),
-                blurRadius: 18,
-                offset: const Offset(0, 7),
+                blurRadius: 14,
+                offset: const Offset(0, 5),
               ),
               if (emphasized)
-                BoxShadow(
-                  color: gold.withOpacity(.26),
-                  blurRadius: 23,
-                  spreadRadius: 3,
-                ),
+                BoxShadow(color: gold.withOpacity(.22), blurRadius: 20, spreadRadius: 2),
             ],
           ),
           child: Semantics(
@@ -267,7 +291,7 @@ class _LuxuryBottomButton extends StatelessWidget {
             child: Material(
               color: const Color(0xFF12171A),
               shape: CircleBorder(
-                side: BorderSide(color: gold, width: emphasized ? 2.8 : 1.8),
+                side: BorderSide(color: gold, width: emphasized ? 2.5 : 1.7),
               ),
               clipBehavior: Clip.antiAlias,
               child: Ink(
@@ -282,8 +306,6 @@ class _LuxuryBottomButton extends StatelessWidget {
                 child: InkWell(
                   customBorder: const CircleBorder(),
                   onTap: onTap,
-                  splashColor: gold.withOpacity(.16),
-                  highlightColor: gold.withOpacity(.08),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -291,20 +313,20 @@ class _LuxuryBottomButton extends StatelessWidget {
                         code,
                         style: TextStyle(
                           color: gold,
-                          fontSize: emphasized ? 34 : 29,
+                          fontSize: emphasized ? 30 : 27,
                           fontWeight: FontWeight.w800,
-                          letterSpacing: 3.5,
+                          letterSpacing: 3,
                           height: 1,
                         ),
                       ),
-                      const SizedBox(height: 9),
+                      const SizedBox(height: 6),
                       Text(
                         subtitle,
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(.85),
-                          fontSize: emphasized ? 9 : 8,
+                        style: const TextStyle(
+                          color: Color(0xFFE9E4D7),
+                          fontSize: 7,
                           fontWeight: FontWeight.w600,
-                          letterSpacing: 1.5,
+                          letterSpacing: 1,
                         ),
                       ),
                     ],
