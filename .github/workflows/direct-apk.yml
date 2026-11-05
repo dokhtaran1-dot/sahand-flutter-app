@@ -1,4 +1,4 @@
-name: Build ROYAL1 v1.0.21 Direct ARM64 APK
+name: Build ROYAL1 v1.0.22 Direct ARM64 APK
 
 on:
   push:
@@ -14,6 +14,8 @@ on:
       - 'lib/src/royal_club_game_page.dart'
       - 'lib/src/royal_games_page.dart'
       - 'lib/src/royal_wallet_page.dart'
+      - 'lib/src/royal_private_suite_page.dart'
+      - 'lib/src/royal_club_profile_page.dart'
       - 'lib/src/royal_club_explore_page.dart'
       - 'lib/src/ettehad_page.dart'
       - 'lib/src/royal_signature_page.dart'
@@ -92,45 +94,45 @@ jobs:
           content = gradle.read_text()
           needle = '        release {\n'
           assert content.count(needle) == 1
-          gradle.write_text(content.replace(needle, needle + '            applicationIdSuffix = ".preview21"\n'))
+          gradle.write_text(content.replace(needle, needle + '            applicationIdSuffix = ".preview22"\n'))
           manifest = Path('android/app/src/main/AndroidManifest.xml')
           content = manifest.read_text()
           assert 'android:label="ROYAL 1"' in content
-          manifest.write_text(content.replace('android:label="ROYAL 1"', 'android:label="ROYAL ONE 1.0.21"'))
+          manifest.write_text(content.replace('android:label="ROYAL 1"', 'android:label="ROYAL ONE 1.0.22"'))
           PY
 
       - name: Build ARM64 APK
         run: |
-          flutter build apk --release --split-per-abi --build-name 1.0.21 --build-number 23 \
+          flutter build apk --release --split-per-abi --build-name 1.0.22 --build-number 24 \
             --dart-define=SUPABASE_URL=https://jwddfcsikkialxzbrhle.supabase.co \
             --dart-define=SUPABASE_ANON_KEY=sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve \
             --dart-define=ROYAL_CLUB_BACKEND_READY=true
-          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.21_ARM64.apk
-          test -s build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.21_ARM64.apk
-          sha256sum build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.21_ARM64.apk
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.22_ARM64.apk
+          test -s build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.22_ARM64.apk
+          sha256sum build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.22_ARM64.apk
 
       - name: Upload direct APK
         uses: actions/upload-artifact@v4
         with:
-          name: ROYAL1-v1.0.21-arm64
-          path: build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.21_ARM64.apk
+          name: ROYAL1-v1.0.22-arm64
+          path: build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.22_ARM64.apk
           compression-level: 0
 
       - name: Publish optimized APK to permanent GitHub Release
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/feat/galaxy-classic-home'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
         run: |
-          tag='royal-one-v1.0.21'
-          apk='build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.21_ARM64.apk'
+          tag='royal-one-v1.0.22'
+          apk='build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.22_ARM64.apk'
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" "$apk" --clobber
           else
             gh release create "$tag" "$apk" \
               --target "$GITHUB_SHA" \
-              --title 'ROYAL ONE v1.0.21 — Android preview' \
-              --notes 'ROYAL ONE v1.0.21 | Full-bleed luxury home, classic RE/RS/RH orbital floating controls with understated galactic particles. Installs separately to protect previous previews.' \
+              --title 'ROYAL ONE v1.0.22 — Android preview' \
+              --notes 'ROYAL ONE v1.0.22 | Private Suite interactive preview: seven room themes, avatar movement, furniture and art customization, local saving. No multiplayer or payment. Installs separately to protect previous versions.' \
               --prerelease || gh release upload "$tag" "$apk" --clobber
           fi
           gh release view "$tag" --json assets --jq '.assets[].name'
