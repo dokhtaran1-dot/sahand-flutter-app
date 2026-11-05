@@ -126,6 +126,26 @@ class RoyalWalletPage extends StatelessWidget {
                       icon: Icons.shield_outlined,
                       text: 'پیش‌نمایش کیف پول — شارژ و کسر وجه واقعی غیرفعال است.',
                     ),
+                    const SizedBox(height: 20),
+                    const _SectionTitle('سه بخش مستقل', 'SEPARATE BALANCES'),
+                    const SizedBox(height: 12),
+                    _walletSection(
+                      icon: Icons.account_balance_wallet_outlined,
+                      name: 'موجودی ریالی',
+                      description: 'صرفاً خدمات و بازی‌های تفریحی مجاز؛ فعلاً غیرفعال.',
+                    ),
+                    const SizedBox(height: 9),
+                    _walletSection(
+                      icon: Icons.sports_esports_outlined,
+                      name: 'بازی تفریحی',
+                      description: 'روزانه یک دست رایگان در طرح نهایی؛ بعد از آن نرخ هر بازی. فعلاً همهٔ ورودها آزمایشی هستند.',
+                    ),
+                    const SizedBox(height: 9),
+                    _walletSection(
+                      icon: Icons.emoji_events_outlined,
+                      name: 'R1 Tickets / جوایز',
+                      description: 'مسابقات دارای جایزه و امتیاز وفاداری مستقل از خرید بازی و شارژ کیف پول؛ نتایج این نسخه مبنای جایزهٔ واقعی نیست.',
+                    ),
                     const SizedBox(height: 29),
                     const _SectionTitle('بسته‌های شارژ پیشنهادی', 'TOP UP'),
                     const SizedBox(height: 13),
@@ -211,9 +231,53 @@ class RoyalWalletPage extends StatelessWidget {
                           'پرداخت تفریحی هیچ امتیازی برای جوایز واقعی ایجاد نمی‌کند. '
                           'R1 Tickets و رقابت‌های جایزه‌دار مستقل هستند.',
                     ),
-                    const SizedBox(height: 17),
+                    const SizedBox(height: 30),
+                    const _SectionTitle('عضویت ویژه', 'VIP  ·  COMING SOON'),
+                    const SizedBox(height: 12),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(17),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(19),
+                        border: Border.all(color: const Color(0x99E8C36A)),
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF193024), Color(0xFF0A1710)],
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Row(children: [
+                            Icon(Icons.diamond_outlined, color: _gold),
+                            SizedBox(width: 9),
+                            Expanded(child: Text('ROYAL BLACK   ·   IMPERIAL',
+                              style: TextStyle(color: _gold, letterSpacing: 1.1,
+                                fontSize: 12, fontWeight: FontWeight.bold))),
+                            Icon(Icons.lock_outline, color: _muted, size: 17),
+                          ]),
+                          const SizedBox(height: 10),
+                          const Text(
+                            'در مرحلهٔ بعد: ظاهر اختصاصی پروفایل، مزایای خدماتی و تجربهٔ ویژهٔ اعضا. '
+                            'قیمت اشتراک هنوز تعیین نشده است و هیچ وجهی دریافت نمی‌شود.',
+                            textDirection: TextDirection.rtl,
+                            textAlign: TextAlign.right,
+                            style: TextStyle(color: _cream, fontSize: 12, height: 1.8),
+                          ),
+                          const SizedBox(height: 12),
+                          OutlinedButton(
+                            onPressed: () => _showNotActive(context),
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: _gold),
+                              foregroundColor: _gold,
+                            ),
+                            child: const Text('مشاهده وضعیت عضویت VIP'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 19),
                     const Text(
-                      'فعالسازی شارژ، پرداخت و برداشت از کیف پول فقط پس از '
+                      'فعالسازی شارژ، پرداخت و برداشت از کیف پول فقط پس از 
                       'تأیید حقوقی، اتصال درگاه رسمی و ثبت امن تراکنش‌ها در سرور انجام می‌شود.',
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.center,
@@ -225,6 +289,41 @@ class RoyalWalletPage extends StatelessWidget {
             );
           },
         ),
+      ),
+    );
+  }
+
+  Widget _walletSection({
+    required IconData icon,
+    required String name,
+    required String description,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(13),
+      decoration: BoxDecoration(
+        color: const Color(0xFF12251A),
+        border: Border.all(color: const Color(0x447E885C)),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        textDirection: TextDirection.rtl,
+        children: [
+          Icon(icon, color: _gold, size: 25),
+          const SizedBox(width: 13),
+          Expanded(child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(name, textDirection: TextDirection.rtl,
+                style: const TextStyle(color: _cream,
+                  fontSize: 14, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 4),
+              Text(description, textDirection: TextDirection.rtl,
+                textAlign: TextAlign.right,
+                style: const TextStyle(color: _muted,
+                  fontSize: 11, height: 1.7)),
+            ],
+          )),
+        ],
       ),
     );
   }
