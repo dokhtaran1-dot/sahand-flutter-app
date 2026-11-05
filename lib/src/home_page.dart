@@ -211,6 +211,7 @@ class _RoyalNavigation extends StatelessWidget {
                   child: _LuxuryBottomButton(
                     code: 'RE',
                     subtitle: 'ETTEHAD',
+                    imageAsset: 'assets/image/monogram_re.webp',
                     onTap: onEttehad,
                   ),
                 ),
@@ -218,6 +219,7 @@ class _RoyalNavigation extends StatelessWidget {
                   child: _LuxuryBottomButton(
                     code: 'RS',
                     subtitle: 'SIGNATURE',
+                    imageAsset: 'assets/image/monogram_rs.webp',
                     emphasized: true,
                     onTap: onSignature,
                   ),
@@ -226,6 +228,7 @@ class _RoyalNavigation extends StatelessWidget {
                   child: _LuxuryBottomButton(
                     code: 'RH',
                     subtitle: 'HARMONIA',
+                    imageAsset: 'assets/image/monogram_rh.webp',
                     onTap: onHarmonia,
                   ),
                 ),
@@ -234,7 +237,7 @@ class _RoyalNavigation extends StatelessWidget {
           ),
           const SizedBox(height: 1),
           const Text(
-            'ROYAL ONE  ·  V1.0.19  ·  POWERED BY SAHAND CONSORTIUM',
+            'ROYAL ONE  ·  V1.0.20  ·  POWERED BY SAHAND CONSORTIUM',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Color(0xFFAF9464),
@@ -252,12 +255,14 @@ class _RoyalNavigation extends StatelessWidget {
 class _LuxuryBottomButton extends StatelessWidget {
   final String code;
   final String subtitle;
+  final String imageAsset;
   final VoidCallback onTap;
   final bool emphasized;
 
   const _LuxuryBottomButton({
     required this.code,
     required this.subtitle,
+    required this.imageAsset,
     required this.onTap,
     this.emphasized = false,
   });
@@ -309,17 +314,25 @@ class _LuxuryBottomButton extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        code,
-                        style: TextStyle(
-                          color: gold,
-                          fontSize: emphasized ? 30 : 27,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 3,
-                          height: 1,
+                      Image.asset(
+                        imageAsset,
+                        width: emphasized ? 66 : 58,
+                        height: emphasized ? 62 : 54,
+                        fit: BoxFit.contain,
+                        filterQuality: FilterQuality.high,
+                        isAntiAlias: true,
+                        errorBuilder: (context, error, stackTrace) => Text(
+                          code,
+                          style: TextStyle(
+                            color: gold,
+                            fontSize: emphasized ? 30 : 27,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 3,
+                            height: 1,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 2),
                       Text(
                         subtitle,
                         style: const TextStyle(
