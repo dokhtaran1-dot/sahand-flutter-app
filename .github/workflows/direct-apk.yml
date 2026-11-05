@@ -13,8 +13,10 @@ on:
       - 'lib/src/galaxy_home_page.dart'
       - 'lib/src/royal_club_game_page.dart'
       - 'lib/src/royal_club_explore_page.dart'
+      - 'lib/src/ettehad_page.dart'
       - 'lib/main.dart'
       - 'assets/image/royal_one_home_classic_full.webp'
+      - 'assets/image/mne_*.jpg'
       - 'pubspec.yaml'
   workflow_dispatch:
 
