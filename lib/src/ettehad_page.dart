@@ -18,6 +18,7 @@ class _PortfolioSlide {
     required this.en,
     required this.ar,
     this.concept = false,
+    this.projectSpecs = false,
   });
 
   final String asset;
@@ -25,6 +26,7 @@ class _PortfolioSlide {
   final String en;
   final String ar;
   final bool concept;
+  final bool projectSpecs;
 }
 
 class _EttehadPageState extends State<EttehadPage>
@@ -64,10 +66,11 @@ class _EttehadPageState extends State<EttehadPage>
     ),
     _PortfolioSlide(
       asset: 'assets/image/mne_06_royal_mall.jpg',
-      fa: 'طرح مفهومی توسعه رویال مال',
-      en: 'ROYAL MALL · CONCEPT VISUAL',
-      ar: 'تصور تصميمي لتطوير رويال مول',
+      fa: 'پروژهٔ در حال ساخت رویال مال',
+      en: 'ROYAL MALL · UNDER CONSTRUCTION',
+      ar: 'مشروع رويال مول قيد الإنشاء',
       concept: true,
+      projectSpecs: true,
     ),
     _PortfolioSlide(
       asset: 'assets/image/mne_07_royal_village.jpg',
@@ -81,6 +84,7 @@ class _EttehadPageState extends State<EttehadPage>
       fa: 'پروفایل اجرایی سه‌زبانه',
       en: 'EXECUTIVE PROFILE · FA / EN / AR',
       ar: 'الملف التنفيذي بثلاث لغات',
+      projectSpecs: true,
     ),
     _PortfolioSlide(
       asset: 'assets/image/mne_09_biography.jpg',
@@ -557,6 +561,54 @@ class _PortfolioVisualPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 13),
+          if (slide.projectSpecs) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0B2B20),
+                border: Border.all(color: _gold.withOpacity(.8)),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Column(
+                children: [
+                  Text(
+                    'مشخصات تأییدشدهٔ پروژه',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: _gold, fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 6),
+                  Text(
+                    '۳۲۰۰ مترمربع  ·  ۲ طبقه  ·  در حال ساخت',
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    '3,200 m²  ·  2 FLOORS  ·  UNDER CONSTRUCTION',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: _gold, fontSize: 10.5, letterSpacing: .25),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    '٣٢٠٠ م²  ·  طابقان  ·  قيد الإنشاء',
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white70, fontSize: 11),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 9),
+            const Text(
+              'اعداد قدیمیِ داخل تصویر، بخشی از طرح اولیه‌اند؛ مشخصات معتبر در کادر بالا درج شده است.',
+              textDirection: TextDirection.rtl,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Color(0xFFB5A88D), fontSize: 10),
+            ),
+            const SizedBox(height: 12),
+          ],
           Semantics(
             button: true,
             label: 'بزرگ‌نمایی تصویر ${slide.fa}',
