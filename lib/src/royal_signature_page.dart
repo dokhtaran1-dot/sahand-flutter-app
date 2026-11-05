@@ -1,9 +1,174 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// RS artist edition: original proposed designs, not fabricated inventory.
+/// First RS screen: a full-viewport entrance. The collection is a separate
+/// scrollable screen so the Fold cover and inner displays can size naturally.
 class RoyalSignaturePage extends StatelessWidget {
   const RoyalSignaturePage({super.key});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        backgroundColor: const Color(0xFF080D09),
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              'assets/image/jd_signature/jd-concept-01.webp',
+              fit: BoxFit.cover,
+              alignment: Alignment.center,
+              filterQuality: FilterQuality.high,
+            ),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: [0, .34, .72, 1],
+                  colors: [
+                    Color(0xD506120B),
+                    Color(0x9F07120C),
+                    Color(0xCC07120C),
+                    Color(0xFF070D09),
+                  ],
+                ),
+              ),
+            ),
+            SafeArea(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final narrow = constraints.maxWidth < 450;
+                  final compactHeight = constraints.maxHeight < 620;
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: narrow ? 22 : 48,
+                          vertical: compactHeight ? 16 : 26,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                IconButton(
+                                  tooltip: 'بازگشت',
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  icon: const Icon(Icons.arrow_back_ios_new,
+                                      color: Color(0xFFDFC189)),
+                                ),
+                                const Spacer(),
+                                const Text(
+                                  'RS  /  ROYAL SIGNATURE',
+                                  style: TextStyle(
+                                    color: Color(0xFFDFC189),
+                                    letterSpacing: 1.6,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: compactHeight ? 28 : 70,
+                              ),
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(maxWidth: 600),
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      width: narrow ? 90 : 118,
+                                      height: narrow ? 90 : 118,
+                                      child: const _JDMonogram(),
+                                    ),
+                                    const SizedBox(height: 23),
+                                    Text(
+                                      'JAFAR DARGAHI',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: const Color(0xFFF3EBDD),
+                                        fontFamily: 'serif',
+                                        fontSize: narrow ? 27 : 40,
+                                        letterSpacing: narrow ? 2.1 : 3.7,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 13),
+                                    Text(
+                                      'BEYOND GRAVITY',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: const Color(0xFFDFC189),
+                                        fontSize: narrow ? 12 : 16,
+                                        letterSpacing: narrow ? 2 : 3,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+                                    Text(
+                                      'هنر، فراتر از جاذبه',
+                                      textDirection: TextDirection.rtl,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: const Color(0xFFF3EBDD),
+                                        fontSize: narrow ? 20 : 28,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    const Text(
+                                      'از مجموعه آثار و ایده‌های هنری تیم کنسرسیوم سهند',
+                                      textDirection: TextDirection.rtl,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Color(0xFFD4D7CC),
+                                        fontSize: 13,
+                                        height: 1.8,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 490),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: FilledButton.icon(
+                                  onPressed: () => Navigator.of(context).push(
+                                    MaterialPageRoute<void>(
+                                      builder: (_) =>
+                                          const _RoyalSignatureCollectionPage(),
+                                    ),
+                                  ),
+                                  icon: const Icon(Icons.arrow_forward_ios, size: 16),
+                                  label: const Text('ورود به مجموعه آثار'),
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: const Color(0xFFDFC189),
+                                    foregroundColor: const Color(0xFF080D09),
+                                    padding: const EdgeInsets.symmetric(vertical: 17),
+                                    textStyle: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+/// RS artist edition: original proposed designs, not fabricated inventory.
+class _RoyalSignatureCollectionPage extends StatelessWidget {
+  const _RoyalSignatureCollectionPage();
 
   static const Color _black = Color(0xFF090D0A);
   static const Color _emerald = Color(0xFF163426);
@@ -72,7 +237,8 @@ class RoyalSignaturePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    final columns = width >= 700 ? 3 : 2;
+    final columns = width >= 1000 ? 4 : (width >= 620 ? 3 : 2);
+    final tileAspectRatio = width < 390 ? .64 : .72;
     return Scaffold(
       backgroundColor: _black,
       appBar: AppBar(
@@ -236,7 +402,7 @@ class RoyalSignaturePage extends StatelessWidget {
                 crossAxisCount: columns,
                 crossAxisSpacing: 11,
                 mainAxisSpacing: 13,
-                childAspectRatio: .69,
+                childAspectRatio: tileAspectRatio,
               ),
               itemBuilder: (context, index) {
                 final concept = _concepts[index];
@@ -584,78 +750,116 @@ class _ArtworkViewer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xFF050906),
-    appBar: AppBar(
-      backgroundColor: const Color(0xFF050906),
-      foregroundColor: gold,
-      centerTitle: true,
-      title: Text('JD · ${concept.number.toString().padLeft(2, '0')}'),
-    ),
-    body: SafeArea(
-      child: Column(
-        children: [
-          Expanded(
-            child: InteractiveViewer(
-              minScale: 1,
-              maxScale: 5,
-              child: Center(
-                child: Hero(
-                  tag: 'jd-art-${concept.number}',
-                  child: Image.asset(concept.asset, fit: BoxFit.contain),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(22, 12, 22, 24),
-            child: Column(
-              children: [
-                Text(
-                  concept.titleFa,
-                  style: TextStyle(color: cream, fontSize: 20),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  concept.titleEn,
-                  style: TextStyle(
-                    fontFamily: 'serif',
-                    color: gold,
-                    fontSize: 17,
+        backgroundColor: const Color(0xFF050906),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF050906),
+          foregroundColor: gold,
+          centerTitle: true,
+          title: Text('JD · ${concept.number.toString().padLeft(2, '0')}'),
+        ),
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final shortScreen = constraints.maxHeight < 600;
+              final narrow = constraints.maxWidth < 400;
+              final artwork = InteractiveViewer(
+                minScale: 1,
+                maxScale: 5,
+                child: SizedBox.expand(
+                  child: Image.asset(
+                    concept.asset,
+                    fit: BoxFit.contain,
+                    filterQuality: FilterQuality.high,
                   ),
                 ),
-                const SizedBox(height: 13),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton.icon(
-                    onPressed: () => onPriceInquiry(context),
-                    icon: const Icon(Icons.chat_outlined, size: 19),
-                    label: const Text('استعلام قیمت در واتساپ'),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: gold,
-                      foregroundColor: const Color(0xFF090D0A),
-                      padding: const EdgeInsets.symmetric(vertical: 13),
-                      textStyle: const TextStyle(fontWeight: FontWeight.w700),
+              );
+              final details = Align(
+                alignment: Alignment.center,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 680),
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      narrow ? 16 : 28,
+                      12,
+                      narrow ? 16 : 28,
+                      20,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          concept.titleFa,
+                          textDirection: TextDirection.rtl,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: cream,
+                            fontSize: narrow ? 17 : 21,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          concept.titleEn,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'serif',
+                            color: gold,
+                            fontSize: narrow ? 14 : 18,
+                          ),
+                        ),
+                        const SizedBox(height: 13),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            onPressed: () => onPriceInquiry(context),
+                            icon: const Icon(Icons.chat_outlined, size: 19),
+                            label: const Text('استعلام قیمت در واتساپ'),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: gold,
+                              foregroundColor: const Color(0xFF090D0A),
+                              padding: const EdgeInsets.symmetric(vertical: 13),
+                              textStyle: const TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 13),
+                        Text(
+                          note,
+                          textDirection: TextDirection.rtl,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Color(0xFFA7B4A8),
+                            fontSize: 10,
+                            height: 1.7,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 13),
-                Text(
-                  note,
-                  textDirection: TextDirection.rtl,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Color(0xFFA7B4A8),
-                    fontSize: 10,
-                    height: 1.7,
+              );
+
+              // Short landscape windows scroll instead of overflowing the
+              // artwork footer; taller windows keep the full image in view.
+              if (shortScreen) {
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: constraints.maxHeight * .72,
+                        child: artwork,
+                      ),
+                      details,
+                    ],
                   ),
-                ),
-              ],
-            ),
+                );
+              }
+              return Column(
+                children: [Expanded(child: artwork), details],
+              );
+            },
           ),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 }
 
 /// Native Flutter painter for the original JD monogram, no SVG dependency.
