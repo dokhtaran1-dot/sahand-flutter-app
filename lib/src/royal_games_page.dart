@@ -20,6 +20,79 @@ class RoyalGamesPage extends StatelessWidget {
     );
   }
 
+  void _openGamePreview(BuildContext context, {
+    required String title,
+    required String price,
+    required Widget page,
+  }) {
+    const gold = Color(0xFFE8C36A);
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: const Color(0xFF10251A),
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+        side: BorderSide(color: gold),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 25, 20, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.sports_esports_rounded, color: gold, size: 38),
+              const SizedBox(height: 11),
+              Text(title, textAlign: TextAlign.center,
+                style: const TextStyle(color: gold,
+                  fontWeight: FontWeight.w900, fontSize: 21)),
+              const SizedBox(height: 12),
+              Text('نرخ پیشنهادی هر دست: $price تومان',
+                textDirection: TextDirection.rtl,
+                style: const TextStyle(color: Colors.white, fontSize: 16)),
+              const SizedBox(height: 9),
+              const Text(
+                'طرح نهایی: یک بازی رایگان در روز، سپس پرداخت با Royal Wallet. '
+                'در این نسخه آزمایشی، نه هزینه‌ای کسر می‌شود و نه نتایج '
+                'مبنای دریافت جایزهٔ واقعی هستند.',
+                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Color(0xFFBFC7BD),
+                  height: 1.7, fontSize: 12),
+              ),
+              const SizedBox(height: 19),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.of(sheetContext).pop();
+                    _open(context, page);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: gold,
+                    foregroundColor: const Color(0xFF17271B),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                  ),
+                  icon: const Icon(Icons.play_arrow_rounded),
+                  label: const Text('شروع آزمایشی — بدون پرداخت'),
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextButton.icon(
+                onPressed: () {
+                  Navigator.of(sheetContext).pop();
+                  _open(context, const RoyalWalletPage());
+                },
+                icon: const Icon(Icons.account_balance_wallet_outlined),
+                label: const Text('مشاهده کیف پول و بسته‌های شارژ'),
+                style: TextButton.styleFrom(foregroundColor: gold),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _hotspot({
     required double left,
     required double top,
@@ -102,9 +175,10 @@ class RoyalGamesPage extends StatelessWidget {
                       width: 868,
                       height: 278,
                       label: 'Deal or No Deal',
-                      onTap: () => _open(
-                        context,
-                        const RoyalDealIntroPage(),
+                      onTap: () => _openGamePreview(context,
+                        title: 'ROYAL DEAL',
+                        price: '۲۰٬۰۰۰',
+                        page: const RoyalDealIntroPage(),
                       ),
                     ),
 
@@ -114,9 +188,10 @@ class RoyalGamesPage extends StatelessWidget {
                       width: 868,
                       height: 273,
                       label: 'The Royal Crown',
-                      onTap: () => _open(
-                        context,
-                        const RoyalCrownGamePage(),
+                      onTap: () => _openGamePreview(context,
+                        title: 'ROYAL CROWN',
+                        price: '۱۵٬۰۰۰',
+                        page: const RoyalCrownGamePage(),
                       ),
                     ),
 
@@ -126,9 +201,10 @@ class RoyalGamesPage extends StatelessWidget {
                       width: 868,
                       height: 278,
                       label: 'Find the Difference',
-                      onTap: () => _open(
-                        context,
-                        const RoyalFindDifferencePage(),
+                      onTap: () => _openGamePreview(context,
+                        title: 'FIND THE DIFFERENCE',
+                        price: '۱۰٬۰۰۰',
+                        page: const RoyalFindDifferencePage(),
                       ),
                     ),
 
