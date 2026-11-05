@@ -37,18 +37,27 @@ class RoyalClubExplorePage extends StatelessWidget {
                 Image.asset('assets/image/royal_club_explore_luxury.png',
                     fit: BoxFit.fill, filterQuality: FilterQuality.high),
                 Positioned(left: 22, top: 38, width: 92, height: 92,
-                  child: _Hotspot(onTap: () => Navigator.of(context).pop())),
+                  child: _Hotspot(
+                    label: 'بازگشت به رویال کلاب',
+                    onTap: () => Navigator.of(context).pop(),
+                  )),
                 _PositionedHotspot(left: 24, top: 235, width: 356, height: 328,
+                    label: 'عضویت رویال کلاب',
                     onTap: () => _open(context, pages[0])),
                 _PositionedHotspot(left: 388, top: 235, width: 356, height: 328,
+                    label: 'بازی‌های رویال کلاب',
                     onTap: () => _open(context, pages[1])),
                 _PositionedHotspot(left: 24, top: 580, width: 356, height: 328,
+                    label: 'مزایای اعضا',
                     onTap: () => _open(context, pages[2])),
                 _PositionedHotspot(left: 388, top: 580, width: 356, height: 328,
+                    label: 'جدول ۱۰ نفر برتر',
                     onTap: () => _open(context, pages[3])),
                 _PositionedHotspot(left: 24, top: 925, width: 356, height: 328,
+                    label: 'آلبوم عکس رویال کلاب',
                     onTap: () => _open(context, pages[4])),
                 _PositionedHotspot(left: 388, top: 925, width: 356, height: 328,
+                    label: 'پروفایل من',
                     onTap: () => _open(context, pages[5])),
               ],
             ),
@@ -62,27 +71,33 @@ class RoyalClubExplorePage extends StatelessWidget {
 class _PositionedHotspot extends StatelessWidget {
   const _PositionedHotspot({
     required this.left, required this.top, required this.width,
-    required this.height, required this.onTap,
+    required this.height, required this.label, required this.onTap,
   });
   final double left, top, width, height;
+  final String label;
   final VoidCallback onTap;
   @override
   Widget build(BuildContext context) => Positioned(
     left: left, top: top, width: width, height: height,
-    child: _Hotspot(onTap: onTap),
+    child: _Hotspot(label: label, onTap: onTap),
   );
 }
 
 class _Hotspot extends StatelessWidget {
-  const _Hotspot({required this.onTap});
+  const _Hotspot({required this.label, required this.onTap});
+  final String label;
   final VoidCallback onTap;
   @override
-  Widget build(BuildContext context) => Material(
-    color: Colors.transparent,
-    child: InkWell(
-      onTap: onTap,
-      splashColor: const Color(0x22E8C36A),
-      highlightColor: Colors.transparent,
+  Widget build(BuildContext context) => Semantics(
+    label: label,
+    button: true,
+    child: Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        splashColor: const Color(0x22E8C36A),
+        highlightColor: Colors.transparent,
+      ),
     ),
   );
 }
