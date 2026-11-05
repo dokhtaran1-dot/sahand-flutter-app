@@ -277,7 +277,7 @@ class RoyalWalletPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 19),
                     const Text(
-                      'فعالسازی شارژ، پرداخت و برداشت از کیف پول فقط پس از 
+                      'فعالسازی شارژ، پرداخت و برداشت از کیف پول فقط پس از '
                       'تأیید حقوقی، اتصال درگاه رسمی و ثبت امن تراکنش‌ها در سرور انجام می‌شود.',
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.center,
