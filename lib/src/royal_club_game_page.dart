@@ -12,6 +12,7 @@ import 'royal_club_explore_page.dart';
 import 'royal_club_profile_page.dart';
 import 'royal_prize_tv.dart';
 import 'royal_score_store.dart';
+import 'royal_wallet_page.dart';
 
 class RoyalClubGamePage extends StatelessWidget {
   const RoyalClubGamePage({super.key});
@@ -24,6 +25,12 @@ class RoyalClubGamePage extends StatelessWidget {
   void _openGames(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const RoyalGamesPage()),
+    );
+  }
+
+  void _openWallet(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RoyalWalletPage()),
     );
   }
 
@@ -113,6 +120,14 @@ class RoyalClubGamePage extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(sheetContext);
                   _openGames(context);
+                },
+              ),
+              _MenuAction(
+                icon: Icons.account_balance_wallet_outlined,
+                title: 'کیف پول رویال | Royal Wallet',
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _openWallet(context);
                 },
               ),
               _MenuAction(
