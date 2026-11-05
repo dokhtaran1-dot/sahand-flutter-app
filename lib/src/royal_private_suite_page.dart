@@ -61,11 +61,11 @@ class _RoyalPrivateSuitePageState extends State<RoyalPrivateSuitePage> {
     final prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
     setState(() {
-      theme = (prefs.getInt(_keyStyle) ?? 0).clamp(0, 6);
-      avatar = (prefs.getInt(_keyAvatar) ?? 0).clamp(0, 3);
-      chair = (prefs.getInt(_keyChair) ?? 0).clamp(0, 2);
-      painting = (prefs.getInt(_keyArt) ?? 0).clamp(0, 2);
-      light = (prefs.getInt(_keyLight) ?? 0).clamp(0, 2);
+      theme = (prefs.getInt(_keyStyle) ?? 0).clamp(0, 6).toInt();
+      avatar = (prefs.getInt(_keyAvatar) ?? 0).clamp(0, 3).toInt();
+      chair = (prefs.getInt(_keyChair) ?? 0).clamp(0, 2).toInt();
+      painting = (prefs.getInt(_keyArt) ?? 0).clamp(0, 2).toInt();
+      light = (prefs.getInt(_keyLight) ?? 0).clamp(0, 2).toInt();
       avatarX = (prefs.getDouble(_keyX) ?? .49).clamp(.16, .84).toDouble();
       avatarY = (prefs.getDouble(_keyY) ?? .79).clamp(.64, .88).toDouble();
       loaded = true;
