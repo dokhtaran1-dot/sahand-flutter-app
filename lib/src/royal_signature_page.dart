@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// RS artist edition: original proposed designs, not fabricated inventory.
 class RoyalSignaturePage extends StatelessWidget {
@@ -9,6 +10,7 @@ class RoyalSignaturePage extends StatelessWidget {
   static const Color _gold = Color(0xFFDFC189);
   static const Color _cream = Color(0xFFF3EBDD);
   static const Color _muted = Color(0xFFA8B5A8);
+  static const String _priceInquiryWhatsApp = '989141159263';
 
   static const List<_ArtConcept> _concepts = [
     _ArtConcept(1, 'دهکدهٔ آلپی نیمه‌شب', 'Midnight Alpine Village'),
@@ -27,6 +29,31 @@ class RoyalSignaturePage extends StatelessWidget {
       'این تصاویر ایده‌های مفهومی پیشنهادی برای بررسی و ساخت احتمالی هستند؛ '
       'آثار ساخته‌شده یا تأییدشدهٔ استاد جعفر درگاهی محسوب نمی‌شوند.';
 
+  static Future<void> _openPriceInquiry(
+    BuildContext context, {
+    _ArtConcept? concept,
+  }) async {
+    final reference = concept == null
+        ? 'مجموعه آثار هنری جعفر درگاهی در Royal Signature'
+        : 'طرح «${concept.titleFa}» (${concept.titleEn})، کد '
+            'JD-${concept.number.toString().padLeft(2, '0')}';
+    final link = Uri.https('wa.me', '/$_priceInquiryWhatsApp', {
+      'text': 'سلام، برای استعلام قیمت و شرایط سفارش $reference پیام می‌دهم.',
+    });
+
+    try {
+      if (await launchUrl(link, mode: LaunchMode.externalApplication)) return;
+    } catch (_) {
+      // A customer may not have an app available to open the WhatsApp link.
+    }
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('واتساپ باز نشد؛ لطفاً نصب یا اتصال اینترنت را بررسی کنید.'),
+      ),
+    );
+  }
+
   void _openArtwork(BuildContext context, _ArtConcept concept) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -35,6 +62,8 @@ class RoyalSignaturePage extends StatelessWidget {
           gold: _gold,
           cream: _cream,
           note: _note,
+          onPriceInquiry: (viewerContext) =>
+              _openPriceInquiry(viewerContext, concept: concept),
         ),
       ),
     );
@@ -163,6 +192,7 @@ class RoyalSignaturePage extends StatelessWidget {
                   SizedBox(height: 9),
                   Text(
                     'مجسمه‌سازی، چیدمان هنری و جهانِ جزیره‌های معلق؛ '
+                    'عضو تیم هنری کنسرسیوم سهند و مجری آثار هنری در رویال مال تبریز؛ '
                     'پیوند طبیعت، فرم و خیال در آثاری که جاذبه را به چالش می‌کشند.',
                     textDirection: TextDirection.rtl,
                     textAlign: TextAlign.center,
@@ -319,6 +349,21 @@ class RoyalSignaturePage extends StatelessWidget {
                   fontSize: 11,
                   height: 1.85,
                 ),
+              ),
+            ),
+            const SizedBox(height: 18),
+            FilledButton.icon(
+              onPressed: () => _openPriceInquiry(context),
+              icon: const Icon(Icons.chat_outlined, size: 19),
+              label: const Text(
+                'استعلام قیمت فقط از طریق واتساپ',
+                textDirection: TextDirection.rtl,
+              ),
+              style: FilledButton.styleFrom(
+                backgroundColor: _gold,
+                foregroundColor: _black,
+                padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 12),
+                textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
               ),
             ),
           ],
@@ -527,12 +572,14 @@ class _ArtworkViewer extends StatelessWidget {
   final Color gold;
   final Color cream;
   final String note;
+  final Future<void> Function(BuildContext) onPriceInquiry;
 
   const _ArtworkViewer({
     required this.concept,
     required this.gold,
     required this.cream,
     required this.note,
+    required this.onPriceInquiry,
   });
 
   @override
@@ -574,6 +621,21 @@ class _ArtworkViewer extends StatelessWidget {
                     fontFamily: 'serif',
                     color: gold,
                     fontSize: 17,
+                  ),
+                ),
+                const SizedBox(height: 13),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: () => onPriceInquiry(context),
+                    icon: const Icon(Icons.chat_outlined, size: 19),
+                    label: const Text('استعلام قیمت در واتساپ'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: gold,
+                      foregroundColor: const Color(0xFF090D0A),
+                      padding: const EdgeInsets.symmetric(vertical: 13),
+                      textStyle: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 13),
