@@ -12,6 +12,8 @@ on:
       - 'lib/src/home_page.dart'
       - 'lib/src/galaxy_home_page.dart'
       - 'lib/src/royal_club_game_page.dart'
+      - 'lib/src/royal_games_page.dart'
+      - 'lib/src/royal_wallet_page.dart'
       - 'lib/src/royal_club_explore_page.dart'
       - 'lib/src/ettehad_page.dart'
       - 'lib/src/royal_signature_page.dart'
