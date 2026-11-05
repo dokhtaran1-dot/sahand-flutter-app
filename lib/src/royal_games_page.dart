@@ -5,6 +5,7 @@ import 'royal_deal_intro_page.dart';
 import 'royal_find_difference_page.dart';
 import 'royal_leaderboard_page.dart';
 import 'royal_rewards_page.dart';
+import 'royal_wallet_page.dart';
 
 class RoyalGamesPage extends StatelessWidget {
   const RoyalGamesPage({super.key});
@@ -155,6 +156,24 @@ class RoyalGamesPage extends StatelessWidget {
                       ),
                     ),
                   ],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 9,
+            right: 12,
+            child: SafeArea(
+              child: Material(
+                color: const Color(0xEE102219),
+                shape: const CircleBorder(
+                  side: BorderSide(color: Color(0xFFE8C36A)),
+                ),
+                child: IconButton(
+                  tooltip: 'کیف پول رویال',
+                  icon: const Icon(Icons.account_balance_wallet_outlined,
+                      color: Color(0xFFE8C36A)),
+                  onPressed: () => _open(context, const RoyalWalletPage()),
                 ),
               ),
             ),
