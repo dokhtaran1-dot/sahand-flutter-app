@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'royal_club_membership_page.dart';
 import 'royal_club_privileges_page.dart';
+import 'royal_private_suite_page.dart';
 import 'royal_score_store.dart';
 
 class RoyalClubProfilePage extends StatefulWidget {
@@ -221,6 +222,15 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
                   ? 'ثبت نام نمایشی بازی‌ها'
                   : 'نام نمایشی: $displayName',
               onTap: _editDisplayName,
+            ),
+            _Action(
+              icon: Icons.meeting_room_outlined,
+              title: 'سوئیت خصوصی من · MY PRIVATE SUITE',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const RoyalPrivateSuitePage(),
+                ),
+              ),
             ),
             _Action(
               icon: Icons.diamond_outlined,
