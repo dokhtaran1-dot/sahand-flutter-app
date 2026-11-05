@@ -586,9 +586,22 @@ class _PortfolioVisualPage extends StatelessWidget {
                   ),
                   SizedBox(height: 5),
                   Text(
+                    'موقعیت: طبقهٔ سوم رویال مال (مجتمع ۴ طبقه)',
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontSize: 11.5),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
                     '3,200 m²  ·  2 FLOORS  ·  UNDER CONSTRUCTION',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: _gold, fontSize: 10.5, letterSpacing: .25),
+                  ),
+                  SizedBox(height: 3),
+                  Text(
+                    'Located on Floor 3 of the 4-floor Royal Mall',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: _gold, fontSize: 10.5),
                   ),
                   SizedBox(height: 4),
                   Text(
@@ -596,6 +609,13 @@ class _PortfolioVisualPage extends StatelessWidget {
                     textDirection: TextDirection.rtl,
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.white70, fontSize: 11),
+                  ),
+                  SizedBox(height: 3),
+                  Text(
+                    'الموقع: الطابق الثالث من رويال مول المكوّن من ٤ طوابق',
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white70, fontSize: 10.5),
                   ),
                 ],
               ),
