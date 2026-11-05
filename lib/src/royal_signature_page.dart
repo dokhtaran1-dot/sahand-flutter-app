@@ -426,7 +426,7 @@ class _RoyalSignatureCollectionPage extends StatelessWidget {
                               children: [
                                 Image.asset(
                                   concept.asset,
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.contain,
                                   filterQuality: FilterQuality.high,
                                 ),
                                 Positioned(
