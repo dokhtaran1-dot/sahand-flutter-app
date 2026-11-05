@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'welcome_page.dart';
-import 'src/home_page.dart';
+import 'src/galaxy_home_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,7 +51,7 @@ class _EntryGateState extends State<_EntryGate> {
 
   @override
   Widget build(BuildContext context) {
-    if (entered) return const HomePage();
+    if (entered) return const GalaxyHomePage();
     return WelcomePage(onEnter: () => setState(() => entered = true));
   }
 }
