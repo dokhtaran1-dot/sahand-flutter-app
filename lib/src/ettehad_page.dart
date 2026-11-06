@@ -15,16 +15,14 @@ class _PortfolioSlide {
   const _PortfolioSlide({
     required this.asset,
     required this.fa,
-    required this.en,
-    required this.ar,
+    required this.description,
     this.concept = false,
     this.projectSpecs = false,
   });
 
   final String asset;
   final String fa;
-  final String en;
-  final String ar;
+  final String description;
   final bool concept;
   final bool projectSpecs;
 }
@@ -38,59 +36,51 @@ class _EttehadPageState extends State<EttehadPage>
   static const _slides = <_PortfolioSlide>[
     _PortfolioSlide(
       asset: 'assets/image/mne_02_overview.jpg',
-      fa: 'نمای کلی مجموعه صفحات',
-      en: 'PORTFOLIO OVERVIEW',
-      ar: 'نظرة عامة على الملف',
+      fa: 'نمای کلی مجموعه',
+      description: 'مروری بر بخش‌های معرفی، خدمات تخصصی، پروژه‌ها و سوابق اجرایی این مجموعه.',
       concept: true,
     ),
     _PortfolioSlide(
       asset: 'assets/image/mne_03_home.jpg',
       fa: 'معرفی مسعود اتحاد‌نژاد',
-      en: 'BEYOND CONSTRUCTION',
-      ar: 'التعريف بمسعود اتحاد نجاد',
+      description: 'معرفی مسعود اتحادنژاد و نقش او در هماهنگی، مدیریت و اجرای امور ساختمانی.',
       concept: true,
     ),
     _PortfolioSlide(
       asset: 'assets/image/mne_04_services.jpg',
       fa: 'خدمات تخصصی',
-      en: 'OUR SERVICES',
-      ar: 'خدماتنا المتخصصة',
+      description: 'معرفی خدمات فنی، اجرایی و هماهنگی مراحل ساخت و توسعهٔ پروژه‌ها.',
       concept: true,
     ),
     _PortfolioSlide(
       asset: 'assets/image/mne_05_vision.jpg',
       fa: 'چشم‌انداز مدیریت و توسعه',
-      en: 'CONSTRUCTION & DEVELOPMENT',
-      ar: 'رؤية الإدارة والتطوير',
+      description: 'نگاهی به رویکرد مدیریتی در توسعهٔ مجموعه، کیفیت اجرا و برنامه‌ریزی پروژه‌ها.',
       concept: true,
     ),
     _PortfolioSlide(
       asset: 'assets/image/mne_06_royal_mall.jpg',
       fa: 'پروژهٔ در حال ساخت رویال مال',
-      en: 'ROYAL MALL · UNDER CONSTRUCTION',
-      ar: 'مشروع رويال مول قيد الإنشاء',
+      description: 'معرفی پروژهٔ رویال مال و بخش‌های مرتبط با عملیات ساخت و توسعهٔ آن.',
       concept: true,
       projectSpecs: true,
     ),
     _PortfolioSlide(
       asset: 'assets/image/mne_07_royal_village.jpg',
       fa: 'رویال ویلاژ کافه',
-      en: 'ROYAL VILLAGE CAFÉ',
-      ar: 'مقهى رويال فيلاج',
+      description: 'معرفی رویال ویلاژ کافه و بخشی از فعالیت‌های مرتبط با اجرای فضاهای مجموعه.',
       concept: true,
     ),
     _PortfolioSlide(
       asset: 'assets/image/mne_08_executive_profile.jpg',
-      fa: 'پروفایل اجرایی سه‌زبانه',
-      en: 'EXECUTIVE PROFILE · FA / EN / AR',
-      ar: 'الملف التنفيذي بثلاث لغات',
+      fa: 'پروفایل اجرایی و مدیریتی',
+      description: 'مروری بر مسئولیت‌ها، حوزه‌های کاری و سوابق مدیریتی مسعود اتحادنژاد.',
       projectSpecs: true,
     ),
     _PortfolioSlide(
       asset: 'assets/image/mne_09_biography.jpg',
       fa: 'زندگی‌نامه و تخصص‌ها',
-      en: 'BIOGRAPHY & EXPERTISE',
-      ar: 'السيرة والخبرات',
+      description: 'معرفی زندگی‌نامهٔ حرفه‌ای، تخصص‌ها و تجربه‌های اجرایی.',
     ),
   ];
 
@@ -213,7 +203,7 @@ class _EttehadPageState extends State<EttehadPage>
                 ),
                 const Expanded(
                   child: Text(
-                    'RE   ·   ETTEHAD SAZEH ROYAL',
+                    'اتحاد سازه رویال',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: _mutedGold,
@@ -253,7 +243,7 @@ class _EttehadPageState extends State<EttehadPage>
             child: Column(
               children: [
                 Text(
-                  'MASOUD NEJHAD ETEHAD',
+                  'مسعود اتحادنژاد',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: _gold,
@@ -264,7 +254,7 @@ class _EttehadPageState extends State<EttehadPage>
                 ),
                 SizedBox(height: 6),
                 Text(
-                  'Construction  •  Project Management',
+                  'امور اجرایی ساختمان  •  مدیریت پروژه',
                   style: TextStyle(color: Colors.white70, fontSize: 12),
                 ),
               ],
@@ -289,7 +279,7 @@ class _EttehadPageState extends State<EttehadPage>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'ورود  |  ENTER  |  دخول',
+                      'ورود به مجموعه',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
@@ -305,7 +295,7 @@ class _EttehadPageState extends State<EttehadPage>
           ),
           const SizedBox(height: 17),
           const Text(
-            'Powered by Sahand Consortium',
+            'زیر نظر کنسرسیوم سهند',
             style: TextStyle(
               color: _mutedGold,
               fontSize: 10,
@@ -344,14 +334,14 @@ class _EttehadPageState extends State<EttehadPage>
                 const Expanded(
                   child: Column(
                     children: [
-                      Text('MNE',
+                      Text('مسعود اتحادنژاد',
                           style: TextStyle(
                             color: _gold,
                             fontSize: 24,
                             fontFamily: 'serif',
                             fontWeight: FontWeight.bold,
                           )),
-                      Text('ETTEHAD SAZEH ROYAL',
+                      Text('اتحاد سازه رویال',
                           style: TextStyle(
                             color: _mutedGold,
                             fontSize: 9,
@@ -432,7 +422,7 @@ class _EttehadPageState extends State<EttehadPage>
                   child: Column(
                     children: [
                       Text(
-                        current.en,
+                        current.fa,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
@@ -500,7 +490,7 @@ class _EttehadPageState extends State<EttehadPage>
               title: Text(_slides[index].fa,
                   textDirection: TextDirection.rtl,
                   style: const TextStyle(color: Colors.white)),
-              subtitle: Text(_slides[index].en,
+              subtitle: Text(_slides[index].description,
                   style: const TextStyle(color: _mutedGold)),
               trailing: const Icon(Icons.chevron_right_rounded, color: _gold),
               onTap: () {
@@ -540,7 +530,7 @@ class _PortfolioVisualPage extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            slide.en,
+            slide.fa,
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: _gold,
@@ -551,7 +541,7 @@ class _PortfolioVisualPage extends StatelessWidget {
           ),
           const SizedBox(height: 7),
           Text(
-            '${slide.fa}   ·   ${slide.ar}',
+            slide.description,
             textAlign: TextAlign.center,
             textDirection: TextDirection.rtl,
             style: const TextStyle(
@@ -591,32 +581,7 @@ class _PortfolioVisualPage extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.white, fontSize: 11.5),
                   ),
-                  SizedBox(height: 5),
-                  Text(
-                    '3,200 m²  ·  2 FLOORS  ·  UNDER CONSTRUCTION',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: _gold, fontSize: 10.5, letterSpacing: .25),
-                  ),
-                  SizedBox(height: 3),
-                  Text(
-                    'Located on Floor 3 of the 4-floor Royal Mall',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: _gold, fontSize: 10.5),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    '٣٢٠٠ م²  ·  طابقان  ·  قيد الإنشاء',
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white70, fontSize: 11),
-                  ),
-                  SizedBox(height: 3),
-                  Text(
-                    'الموقع: الطابق الثالث من رويال مول المكوّن من ٤ طوابق',
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white70, fontSize: 10.5),
-                  ),
+
                 ],
               ),
             ),
@@ -676,7 +641,7 @@ class _PortfolioVisualPage extends StatelessWidget {
           if (overview) ...[
             const SizedBox(height: 17),
             const Text(
-              'انتخاب صفحه  ·  EXPLORE',
+              'انتخاب بخش موردنظر',
               style: TextStyle(
                 color: _gold,
                 letterSpacing: 1.1,
