@@ -514,160 +514,123 @@ class _PortfolioVisualPage extends StatelessWidget {
     required this.onOpenPage,
     required this.allSlides,
   });
-
   final _PortfolioSlide slide;
   final bool overview;
   final VoidCallback onZoom;
   final void Function(int) onOpenPage;
   final List<_PortfolioSlide> allSlides;
-
   static const _gold = Color(0xFFE9C88A);
 
   @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(10, 12, 10, 26),
-      child: Column(
-        children: [
-          Text(
-            slide.fa,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: _gold,
-              fontSize: 16,
-              letterSpacing: 1.2,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 7),
-          Text(
-            slide.description,
-            textAlign: TextAlign.center,
-            textDirection: TextDirection.rtl,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 12,
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 13),
-          if (slide.projectSpecs) ...[
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
-              decoration: BoxDecoration(
-                color: const Color(0xFF0B2B20),
-                border: Border.all(color: _gold.withOpacity(.8)),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Column(
-                children: [
-                  Text(
-                    'مشخصات تأییدشدهٔ پروژه',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: _gold, fontSize: 15, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    '۳۲۰۰ مترمربع  ·  ۲ طبقه  ·  در حال ساخت',
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    'موقعیت: طبقهٔ سوم رویال مال (مجتمع ۴ طبقه)',
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white, fontSize: 11.5),
-                  ),
-
-                ],
-              ),
-            ),
-            const SizedBox(height: 9),
-            const Text(
-              'اعداد قدیمیِ داخل تصویر، بخشی از طرح اولیه‌اند؛ مشخصات معتبر در کادر بالا درج شده است.',
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, bounds) {
+      final compact = bounds.maxHeight < 470;
+      final tiny = bounds.maxHeight < 330;
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(slide.fa,
               textDirection: TextDirection.rtl,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Color(0xFFB5A88D), fontSize: 10),
-            ),
-            const SizedBox(height: 12),
-          ],
-          Semantics(
-            button: true,
-            label: 'بزرگ‌نمایی تصویر ${slide.fa}',
-            child: GestureDetector(
-              onTap: onZoom,
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: _gold.withOpacity(.7), width: 1),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: const [
-                    BoxShadow(color: Color(0x463A2F10), blurRadius: 16),
-                  ],
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: Image.asset(
-                  slide.asset,
-                  width: double.infinity,
-                  fit: BoxFit.fitWidth,
-                  filterQuality: FilterQuality.high,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextButton.icon(
-            onPressed: onZoom,
-            icon: const Icon(Icons.zoom_in_rounded),
-            label: const Text('بزرگ‌نمایی و مشاهدهٔ جزئیات'),
-            style: TextButton.styleFrom(foregroundColor: _gold),
-          ),
-          if (slide.concept)
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              child: Text(
-                'تصاویر مفهومی و ارائهٔ بصری؛ مشخصات پروژه و تصاویر اجرایی باید جداگانه تأیید شوند.',
-                textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: _gold, fontSize: 15, fontWeight: FontWeight.bold)),
+            if (!tiny) ...[
+              const SizedBox(height: 3),
+              Text(slide.description,
+                maxLines: compact ? 1 : 2,
+                overflow: TextOverflow.ellipsis,
                 textDirection: TextDirection.rtl,
-                style: TextStyle(
-                  color: Color(0xFFB5A88D),
-                  fontSize: 10,
-                  height: 1.7,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white70,
+                  fontSize: 11, height: 1.4)),
+            ],
+            if (slide.projectSpecs && !tiny) ...[
+              const SizedBox(height: 5),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0B2B20),
+                  border: Border.all(color: _gold),
+                  borderRadius: BorderRadius.circular(10)),
+                child: const Text(
+                  'مشخصات پروژه: ۳۲۰۰ مترمربع · ۲ طبقه · در حال ساخت'
+                  ' · طبقهٔ سوم رویال مال',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.white, fontSize: 11)),
+              ),
+            ],
+            const SizedBox(height: 7),
+            Expanded(
+              child: Semantics(
+                button: true,
+                label: 'بزرگ‌نمایی تصویر ${slide.fa}',
+                child: GestureDetector(
+                  onTap: onZoom,
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF06120D),
+                      border: Border.all(color: _gold, width: 1),
+                      borderRadius: BorderRadius.circular(12)),
+                    clipBehavior: Clip.antiAlias,
+                    child: Image.asset(
+                      slide.asset,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.contain,
+                      alignment: Alignment.center,
+                      filterQuality: FilterQuality.high),
+                  ),
                 ),
               ),
             ),
-          if (overview) ...[
-            const SizedBox(height: 17),
-            const Text(
-              'انتخاب بخش موردنظر',
-              style: TextStyle(
-                color: _gold,
-                letterSpacing: 1.1,
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 13),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (var i = 1; i < allSlides.length; i++)
-                  OutlinedButton(
-                    onPressed: () => onOpenPage(i),
+            const SizedBox(height: 4),
+            if (overview && !compact)
+              SizedBox(
+                height: 35,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: allSlides.length - 1,
+                  separatorBuilder: (_, __) => const SizedBox(width: 6),
+                  itemBuilder: (context, index) => OutlinedButton(
+                    onPressed: () => onOpenPage(index + 1),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: _gold,
-                      side: BorderSide(color: _gold.withOpacity(.5)),
-                    ),
-                    child: Text(allSlides[i].fa),
+                      padding: const EdgeInsets.symmetric(horizontal: 8)),
+                    child: Text(allSlides[index + 1].fa,
+                      style: const TextStyle(fontSize: 10)),
                   ),
-              ],
-            ),
+                ),
+              )
+            else
+              SizedBox(
+                height: 34,
+                child: TextButton.icon(
+                  onPressed: onZoom,
+                  icon: const Icon(Icons.zoom_in_rounded, size: 18),
+                  label: const Text('بزرگ‌نمایی عکس'),
+                  style: TextButton.styleFrom(foregroundColor: _gold),
+                ),
+              ),
+            if (slide.concept && !compact)
+              const Text(
+                'تصویر مفهومی است؛ اطلاعات اجرایی نیاز به تأیید دارد.',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Color(0xFFB5A88D), fontSize: 9)),
           ],
-        ],
-      ),
-    );
-  }
+        ),
+      );
+    },
+  );
 }
