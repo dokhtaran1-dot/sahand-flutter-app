@@ -1,10 +1,17 @@
-import 'package:flutter/material.dart';
+import 'dart:typed_data';
 
-import 'royal_club_membership_page.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'royal_club_member_service.dart';
+import 'royal_club_membership_page.dart';
 import 'royal_club_privileges_page.dart';
 import 'royal_score_store.dart';
 
+/// The private member card only renders when a verified remote member exists.
 class RoyalClubProfilePage extends StatefulWidget {
   const RoyalClubProfilePage({super.key});
 
@@ -14,332 +21,483 @@ class RoyalClubProfilePage extends StatefulWidget {
 
 class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
   static const gold = Color(0xFFE8C36A);
+  static const cream = Color(0xFFF4EAD8);
+  static const dark = Color(0xFF110D0B);
+  static const bucket = 'royal-club-avatars';
 
-  String name = '';
-  String phone = '';
-  String displayName = '';
+  RoyalClubMember? member;
+  String? imageUrl;
+  Uint8List? avatarBytes;
+  String? error;
+  bool loading = true;
+  bool working = false;
   int tickets = 0;
   int lifetime = 0;
-  bool loading = true;
-  bool loadFailed = false;
-  String membershipCode = '';
+
+  SupabaseClient get db => RoyalClubMemberService.client;
 
   @override
   void initState() {
     super.initState();
     _load();
+    RoyalScoreStore.revision.addListener(_refreshCounters);
+  }
+
+  Future<void> _refreshCounters() async {
+    try {
+      final b = await RoyalScoreStore.ticketBalance();
+      final l = await RoyalScoreStore.lifetimeTickets();
+      if (mounted && member != null) {
+        setState(() { tickets = b; lifetime = l; });
+      }
+    } catch (_) {}
   }
 
   Future<void> _load() async {
-    if (!mounted) return;
-    setState(() { loading = true; loadFailed = false; });
+    if (mounted) setState(() { loading = true; error = null; });
     try {
-      final profile = await RoyalClubMemberService.loadCurrent();
-      String display = '';
-      int currentTickets = 0;
-      int currentLifetime = 0;
-      if (profile != null) {
-        try {
-          display = await RoyalScoreStore.displayName() ?? '';
-          currentTickets = await RoyalScoreStore.ticketBalance();
-          currentLifetime = await RoyalScoreStore.lifetimeTickets();
-        } catch (_) {
-          // Ticket prototypes are independent of verified membership.
-        }
-      }
+      final row = await RoyalClubMemberService.loadCurrent();
       if (!mounted) return;
       setState(() {
-        name = profile?.fullName ?? '';
-        phone = profile?.phone ?? '';
-        membershipCode = profile?.membershipCode ?? '';
-        displayName = display;
-        tickets = currentTickets;
-        lifetime = currentLifetime;
+        member = row;
+        imageUrl = null;
+        avatarBytes = null;
         loading = false;
       });
+      if (row != null) {
+        await _refreshCounters();
+        await _loadAvatar(row);
+      }
     } catch (_) {
-      if (!mounted) return;
-      setState(() {
+      if (mounted) setState(() {
+        member = null;
         loading = false;
-        loadFailed = true;
-        membershipCode = '';
-        name = '';
-        phone = '';
-        tickets = 0;
-        lifetime = 0;
+        error = 'بررسی عضویت انجام نشد. اینترنت را بررسی کنید و دوباره تلاش کنید.';
       });
     }
   }
 
-  String get level {
-    if (lifetime >= 15000) return 'DIAMOND';
-    if (lifetime >= 5000) return 'BLACK';
-    if (lifetime >= 1000) return 'GOLD';
-    return 'SILVER';
+  Future<void> _loadAvatar(RoyalClubMember row) async {
+    try {
+      final url = await db.storage.from(bucket).createSignedUrl(
+        row.userId + '/avatar.jpg', 3600);
+      if (mounted && member?.userId == row.userId) {
+        setState(() => imageUrl = url);
+      }
+    } catch (_) {
+      // A new member may not yet have chosen an image.
+    }
   }
 
-  Future<void> _editDisplayName() async {
-    final controller = TextEditingController(text: displayName);
+  Future<void> _pickPhoto() async {
+    if (working || member == null) return;
+    try {
+      final picked = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 80,
+        requestFullMetadata: false,
+      );
+      if (picked == null) return;
+      final data = await picked.readAsBytes();
+      if (data.lengthInBytes > 2 * 1024 * 1024) {
+        _message('عکس انتخابی بزرگ است؛ عکس کوچک‌تری انتخاب کنید.');
+        return;
+      }
+      if (!mounted) return;
+      setState(() => working = true);
+      await db.storage.from(bucket).uploadBinary(
+        member!.userId + '/avatar.jpg',
+        data,
+        fileOptions: const FileOptions(
+          contentType: 'image/jpeg', upsert: true),
+      );
+      if (!mounted) return;
+      setState(() {
+        avatarBytes = data;
+        imageUrl = null;
+      });
+      _message('عکس خصوصی پروفایل ذخیره شد.');
+    } catch (_) {
+      _message('بارگذاری عکس انجام نشد؛ اتصال اینترنت را بررسی کنید.');
+    } finally {
+      if (mounted) setState(() => working = false);
+    }
+  }
+
+  Future<void> _removePhoto() async {
+    if (working || member == null) return;
+    setState(() => working = true);
+    try {
+      await db.storage.from(bucket).remove(
+        [member!.userId + '/avatar.jpg']);
+      if (mounted) setState(() {
+        imageUrl = null;
+        avatarBytes = null;
+      });
+      _message('عکس پروفایل حذف شد.');
+    } catch (_) {
+      _message('حذف عکس انجام نشد؛ دوباره تلاش کنید.');
+    } finally {
+      if (mounted) setState(() => working = false);
+    }
+  }
+
+  void _message(String value) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(value, textDirection: TextDirection.rtl)),
+    );
+  }
+
+  Future<void> _editAlias() async {
+    final current = member;
+    if (current == null || working) return;
+    final input = TextEditingController(text: current.displayName ?? '');
     final result = await showDialog<String>(
       context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: const Color(0xFF16090B),
-        title: const Text(
-          'نام نمایشی بازی‌ها',
-          textDirection: TextDirection.rtl,
-          style: TextStyle(color: gold),
-        ),
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF14281B),
+        title: const Text('نام نمایشی', textDirection: TextDirection.rtl,
+          style: TextStyle(color: gold)),
         content: TextField(
-          controller: controller,
+          controller: input,
+          maxLength: 30,
           textDirection: TextDirection.rtl,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: cream),
           decoration: const InputDecoration(
-            hintText: 'نام نمایشی',
-            hintStyle: TextStyle(color: Colors.white38),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: gold),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: gold),
-            ),
+            hintText: 'نامی که دیگران در بازی می‌بینند',
+            hintStyle: TextStyle(color: Colors.white54),
           ),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('لغو'),
-          ),
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('انصراف')),
           TextButton(
-            onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('ذخیره', style: TextStyle(color: gold)),
-          ),
+            onPressed: () => Navigator.pop(ctx, input.text.trim()),
+            child: const Text('ذخیره', style: TextStyle(color: gold))),
         ],
       ),
     );
-    controller.dispose();
+    input.dispose();
     if (result == null) return;
+    if (result.isNotEmpty && (result.length < 2 || result.length > 30)) {
+      _message('نام نمایشی باید بین ۲ تا ۳۰ کاراکتر باشد.');
+      return;
+    }
+    setState(() => working = true);
     try {
-      await RoyalScoreStore.saveDisplayName(result);
+      await db.from('royal_club_members')
+          .update({'display_name': result.isEmpty ? null : result})
+          .eq('user_id', current.userId);
+      if (result.isNotEmpty) {
+        try { await RoyalScoreStore.saveDisplayName(result); } catch (_) {}
+      }
       await _load();
-    } on FormatException catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
-      );
+      _message('نام نمایشی در پروفایل ذخیره شد.');
+    } catch (_) {
+      _message('نام نمایشی ذخیره نشد؛ دوباره تلاش کنید.');
+    } finally {
+      if (mounted) setState(() => working = false);
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final member = membershipCode.isNotEmpty;
-
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF16090B),
-        foregroundColor: gold,
-        centerTitle: true,
-        title: const Text('رویال کلاب | پروفایل'),
+  Future<void> _logout() async {
+    if (working) return;
+    final yes = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF15221B),
+        title: const Text('خروج از حساب', textDirection: TextDirection.rtl,
+          style: TextStyle(color: gold)),
+        content: const Text(
+          'با خروج، برای ورود دوباره باید شمارهٔ موبایل را با پیامک تأیید کنید.',
+          textDirection: TextDirection.rtl,
+          style: TextStyle(color: cream)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('انصراف')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('خروج', style: TextStyle(color: gold))),
+        ],
       ),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(18),
+    );
+    if (yes != true || !mounted) return;
+    setState(() => working = true);
+    try {
+      await RoyalClubMemberService.signOut();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(RoyalClubMembershipPage.fullNameKey);
+      await prefs.remove(RoyalClubMembershipPage.phoneKey);
+      await prefs.remove(RoyalClubMembershipPage.joinedAtKey);
+      if (mounted) setState(() {
+        member = null;
+        imageUrl = null;
+        avatarBytes = null;
+        tickets = 0;
+        lifetime = 0;
+        working = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => working = false);
+      _message('خروج از حساب انجام نشد.');
+    }
+  }
+
+  void _showQr() {
+    final current = member;
+    if (current == null) return;
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF0D2017),
+        title: const Text('کارت عضویت رویال کلاب',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: gold)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(22),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(26),
-                border: Border.all(color: gold),
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF50101A), Color(0xFF16090B), Color(0xFF25170A)],
-                ),
-              ),
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 38,
-                    backgroundColor: const Color(0xFF090706),
-                    child: Text(
-                      name.isNotEmpty ? name.characters.first : 'R',
-                      style: const TextStyle(
-                        color: gold,
-                        fontSize: 32,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    loading
-                        ? '...'
-                        : member
-                            ? name
-                            : 'ROYAL CLUB MEMBER',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    member ? 'عضو تأییدشده' : 'عضویت تأیید نشده',
-                    style: const TextStyle(
-                      color: gold,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2.4,
-                    ),
-                  ),
-                  if (member) ...[
-                    const SizedBox(height: 7),
-                    Text(
-                      membershipCode,
-                      style: const TextStyle(color: gold, fontSize: 15,
-                        fontWeight: FontWeight.bold, letterSpacing: 1.3),
-                    ),
-                    const SizedBox(height: 7),
-                    Text(
-                      phone,
-                      style: const TextStyle(color: Colors.white60),
-                    ),
-                  ],
-                ],
+              color: Colors.white,
+              padding: const EdgeInsets.all(14),
+              child: QrImageView(
+                data: 'royalone:member:' + current.memberCode,
+                version: QrVersions.auto,
+                size: 207,
               ),
             ),
-            const SizedBox(height: 16),
-            if (member) Row(
-              children: [
-                Expanded(child: _Stat(label: 'تیکت آزمایشی', value: '$tickets')),
-                const SizedBox(width: 10),
-                Expanded(child: _Stat(label: 'کل تیکت آزمایشی', value: '$lifetime')),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _Action(
-              icon: Icons.workspace_premium_outlined,
-              title: member ? 'ویرایش عضویت' : 'فعال‌سازی عضویت',
-              onTap: () async {
-                await Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const RoyalClubMembershipPage(),
-                  ),
-                );
-                await _load();
-              },
-            ),
-            if (member) _Action(
-              icon: Icons.badge_outlined,
-              title: displayName.isEmpty
-                  ? 'ثبت نام نمایشی بازی‌ها'
-                  : 'نام نمایشی: $displayName',
-              onTap: _editDisplayName,
-            ),
-            if (loadFailed) Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: TextButton.icon(
-                onPressed: _load,
-                icon: const Icon(Icons.refresh_rounded),
-                label: const Text('دریافت مجدد اطلاعات حساب'),
-                style: TextButton.styleFrom(foregroundColor: gold),
-              ),
-            ),
-            _Action(
-              icon: Icons.diamond_outlined,
-              title: 'امتیازات و مزایا',
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const RoyalClubPrivilegesPage(),
-                ),
-              ),
-            ),
+            const SizedBox(height: 10),
+            Text(current.memberCode, style: const TextStyle(
+              color: gold, fontWeight: FontWeight.bold,
+              fontSize: 17, letterSpacing: 2)),
+            const SizedBox(height: 8),
+            const Text(
+              'این کد فقط شناسهٔ عضویت است؛ برای دریافت خدمات باید اعتبار عضویت توسط سامانه بررسی شود.',
+              textDirection: TextDirection.rtl,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: cream, fontSize: 11, height: 1.6)),
           ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx),
+            child: const Text('بستن', style: TextStyle(color: gold))),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    RoyalScoreStore.revision.removeListener(_refreshCounters);
+    super.dispose();
+  }
+
+  Widget _action(IconData icon, String title, VoidCallback onTap) => Padding(
+    padding: const EdgeInsets.only(bottom: 9),
+    child: Material(
+      color: const Color(0xFF1B1511),
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: working ? null : onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+          child: Row(textDirection: TextDirection.rtl, children: [
+            Icon(icon, color: gold),
+            const SizedBox(width: 12),
+            Expanded(child: Text(title,
+              textDirection: TextDirection.rtl,
+              style: const TextStyle(color: cream,
+                fontWeight: FontWeight.w700))),
+            const Icon(Icons.chevron_left_rounded, color: gold),
+          ]),
+        ),
+      ),
+    ),
+  );
+
+  Widget _profilePhoto() {
+    return CircleAvatar(
+      radius: 48,
+      backgroundColor: const Color(0xFF171E19),
+      child: ClipOval(
+        child: SizedBox(
+          width: 90, height: 90,
+          child: avatarBytes != null
+              ? Image.memory(avatarBytes!, fit: BoxFit.cover)
+              : imageUrl != null
+                  ? Image.network(imageUrl!, fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => _letterAvatar())
+                  : _letterAvatar(),
         ),
       ),
     );
   }
-}
 
-class _Stat extends StatelessWidget {
-  final String label;
-  final String value;
-  const _Stat({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: const Color(0xFF160E0C),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0x66E8C36A)),
-        ),
-        child: Column(
-          children: [
-            Text(
-              value,
-              style: const TextStyle(
-                color: Color(0xFFE8C36A),
-                fontSize: 25,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            Text(
-              label,
-              textDirection: TextDirection.rtl,
-              style: const TextStyle(color: Colors.white60),
-            ),
-          ],
-        ),
-      );
-}
-
-class _Action extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final VoidCallback onTap;
-  const _Action({
-    required this.icon,
-    required this.title,
-    required this.onTap,
-  });
+  Widget _letterAvatar() => Center(
+    child: Text(
+      member?.fullName.isNotEmpty == true
+        ? member!.fullName.characters.first : 'R',
+      style: const TextStyle(
+        color: gold, fontSize: 35, fontWeight: FontWeight.w900)),
+  );
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: Material(
-          color: const Color(0xFF160E0C),
-          borderRadius: BorderRadius.circular(18),
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(18),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: const Color(0x66E8C36A)),
-              ),
-              child: Row(
-                textDirection: TextDirection.rtl,
-                children: [
-                  Icon(icon, color: const Color(0xFFE8C36A)),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      title,
+  Widget build(BuildContext context) {
+    final current = member;
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        title: const Text('پروفایل رویال کلاب'),
+        centerTitle: true,
+        backgroundColor: dark,
+        foregroundColor: gold,
+        actions: [
+          IconButton(
+            tooltip: 'بازخوانی عضویت',
+            icon: const Icon(Icons.refresh),
+            onPressed: loading ? null : _load),
+        ],
+      ),
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 620),
+            child: ListView(
+              padding: const EdgeInsets.all(17),
+              children: [
+                if (loading) const LinearProgressIndicator(color: gold),
+                if (error != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Text(error!,
                       textDirection: TextDirection.rtl,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.redAccent)),
                   ),
-                  const Icon(Icons.chevron_left_rounded,
-                      color: Color(0xFFE8C36A)),
+                if (current == null) ...[
+                  const SizedBox(height: 45),
+                  const Icon(Icons.account_circle_outlined,
+                    color: gold, size: 85),
+                  const SizedBox(height: 17),
+                  const Text('برای دریافت کارت عضویت، ابتدا شماره‌ات را تأیید کن.',
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: cream, fontSize: 16)),
+                  const SizedBox(height: 25),
+                  _action(Icons.workspace_premium_outlined,
+                    'ثبت‌نام یا ورود با پیامک', () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const RoyalClubMembershipPage()));
+                      await _load();
+                    }),
+                ] else ...[
+                  Container(
+                    padding: const EdgeInsets.all(21),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(26),
+                      border: Border.all(color: gold),
+                      gradient: const LinearGradient(colors: [
+                        Color(0xFF253B2B), Color(0xFF110D0B),
+                        Color(0xFF39221A)]),
+                    ),
+                    child: Column(children: [
+                      _profilePhoto(),
+                      const SizedBox(height: 12),
+                      Text(current.fullName,
+                        textDirection: TextDirection.rtl,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: cream,
+                          fontSize: 21, fontWeight: FontWeight.w900)),
+                      const SizedBox(height: 7),
+                      const Text('عضویت استاندارد • فعال',
+                        style: TextStyle(color: gold, fontSize: 12)),
+                      const SizedBox(height: 13),
+                      Text(current.memberCode,
+                        style: const TextStyle(color: gold,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 20, letterSpacing: 2)),
+                      const SizedBox(height: 8),
+                      Text(current.phone,
+                        style: const TextStyle(color: Colors.white60)),
+                      if (current.displayName != null) ...[
+                        const SizedBox(height: 6),
+                        Text('نام نمایشی: ' + current.displayName!,
+                          textDirection: TextDirection.rtl,
+                          style: const TextStyle(color: cream, fontSize: 12)),
+                      ],
+                    ]),
+                  ),
+                  const SizedBox(height: 13),
+                  Row(children: [
+                    Expanded(child: _stat('تیکت آزمایشی', tickets)),
+                    const SizedBox(width: 9),
+                    Expanded(child: _stat('مجموع تیکت', lifetime)),
+                  ]),
+                  const SizedBox(height: 9),
+                  const Text(
+                    'تیکت‌های بازی در این نسخه مبنای دریافت جوایز واقعی نیستند.',
+                    textAlign: TextAlign.center,
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(color: Colors.white54, fontSize: 11)),
+                  const SizedBox(height: 17),
+                  _action(Icons.qr_code_2_rounded,
+                    'نمایش QR اختصاصی عضویت', _showQr),
+                  _action(Icons.add_a_photo_outlined,
+                    'انتخاب یا تغییر عکس پروفایل (اختیاری)', _pickPhoto),
+                  if (imageUrl != null || avatarBytes != null)
+                    _action(Icons.delete_outline,
+                      'حذف عکس پروفایل', _removePhoto),
+                  _action(Icons.badge_outlined,
+                    'ویرایش نام نمایشی', _editAlias),
+                  _action(Icons.manage_accounts_outlined,
+                    'ویرایش نام و اطلاعات عضویت', () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const RoyalClubMembershipPage()));
+                      await _load();
+                    }),
+                  _action(Icons.diamond_outlined,
+                    'مزایا و امتیازات باشگاه', () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => const RoyalClubPrivilegesPage()));
+                    }),
+                  const SizedBox(height: 9),
+                  _action(Icons.logout_rounded, 'خروج امن از حساب', _logout),
+                  const SizedBox(height: 9),
+                  const Text(
+                    'عکس پروفایل در فضای خصوصی ذخیره می‌شود و بدون دسترسی مجاز عمومی نیست.',
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white54,
+                      fontSize: 11, height: 1.8)),
                 ],
-              ),
+                if (working)
+                  const Padding(
+                    padding: EdgeInsets.all(14),
+                    child: LinearProgressIndicator(color: gold)),
+              ],
             ),
           ),
         ),
-      );
+      ),
+    );
+  }
+
+  Widget _stat(String title, int count) => Container(
+    padding: const EdgeInsets.all(14),
+    decoration: BoxDecoration(
+      color: dark,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: const Color(0x66786241))),
+    child: Column(children: [
+      Text('$count', style: const TextStyle(
+        color: gold, fontSize: 22, fontWeight: FontWeight.bold)),
+      Text(title, style: const TextStyle(
+        color: Colors.white70, fontSize: 11)),
+    ]),
+  );
 }
