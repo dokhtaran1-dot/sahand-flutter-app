@@ -7,24 +7,27 @@ class RoyalClubMember {
     required this.userId,
     required this.fullName,
     required this.phone,
-    required this.memberNumber,
+    required this.memberCode,
+    this.displayName,
     this.createdAt,
   });
 
   final String userId;
   final String fullName;
   final String phone;
-  final int memberNumber;
+  final String memberCode;
+  final String? displayName;
   final DateTime? createdAt;
 
-  String get membershipCode => 'RC-${memberNumber.toString().padLeft(7, '0')}';
+  String get membershipCode => memberCode;
 
   factory RoyalClubMember.fromJson(Map<String, dynamic> data) {
     return RoyalClubMember(
       userId: data['user_id'] as String,
       fullName: data['full_name'] as String,
       phone: data['phone'] as String,
-      memberNumber: (data['member_number'] as num).toInt(),
+      memberCode: data['member_code'] as String,
+      displayName: data['display_name'] as String?,
       createdAt: DateTime.tryParse((data['created_at'] ?? '').toString()),
     );
   }
@@ -41,14 +44,14 @@ class RoyalClubMemberService {
     if (user == null) return null;
     final result = await client
         .from('royal_club_members')
-        .select('user_id,full_name,phone,member_number,created_at')
+        .select('user_id,full_name,phone,member_code,display_name,created_at')
         .eq('user_id', user.id)
         .maybeSingle();
     if (result == null) return null;
     return RoyalClubMember.fromJson(result);
   }
 
-  static Future<RoyalClubMember> saveVerifiedMember(String fullName) async {
+  static Future<RoyalClubMember> saveVerifiedMember(String fullName, {String? displayName}) async {
     final user = currentUser;
     final number = user?.phone;
     if (user == null || number == null ||
@@ -59,13 +62,19 @@ class RoyalClubMemberService {
     if (trimmed.length < 3 || trimmed.length > 120) {
       throw const FormatException('نام و نام خانوادگی باید بین ۳ تا ۱۲۰ حرف باشد.');
     }
+    final alias = displayName?.trim();
+    if (alias != null && alias.isNotEmpty &&
+        (alias.length < 2 || alias.length > 30)) {
+      throw const FormatException('نام نمایشی باید بین ۲ تا ۳۰ کاراکتر باشد.');
+    }
     final saved = await client.from('royal_club_members').upsert({
       'user_id': user.id,
       'full_name': trimmed,
+      'display_name': alias == null || alias.isEmpty ? null : alias,
       'phone': number,
       'accepted_terms_at': DateTime.now().toUtc().toIso8601String(),
     }, onConflict: 'user_id').select(
-      'user_id,full_name,phone,member_number,created_at',
+      'user_id,full_name,phone,member_code,display_name,created_at',
     ).single();
     return RoyalClubMember.fromJson(saved);
   }
