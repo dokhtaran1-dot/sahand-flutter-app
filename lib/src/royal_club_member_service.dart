@@ -9,6 +9,7 @@ class RoyalClubMember {
     required this.phone,
     required this.memberCode,
     this.displayName,
+    this.avatarPath,
     this.createdAt,
   });
 
@@ -17,6 +18,7 @@ class RoyalClubMember {
   final String phone;
   final String memberCode;
   final String? displayName;
+  final String? avatarPath;
   final DateTime? createdAt;
 
   String get membershipCode => memberCode;
@@ -28,6 +30,7 @@ class RoyalClubMember {
       phone: data['phone'] as String,
       memberCode: data['member_code'] as String,
       displayName: data['display_name'] as String?,
+      avatarPath: data['avatar_path'] as String?,
       createdAt: DateTime.tryParse((data['created_at'] ?? '').toString()),
     );
   }
@@ -44,7 +47,7 @@ class RoyalClubMemberService {
     if (user == null) return null;
     final result = await client
         .from('royal_club_members')
-        .select('user_id,full_name,phone,member_code,display_name,created_at')
+        .select('user_id,full_name,phone,member_code,display_name,created_at,avatar_path')
         .eq('user_id', user.id)
         .maybeSingle();
     if (result == null) return null;
@@ -74,7 +77,7 @@ class RoyalClubMemberService {
       'phone': number,
       'accepted_terms_at': DateTime.now().toUtc().toIso8601String(),
     }, onConflict: 'user_id').select(
-      'user_id,full_name,phone,member_code,display_name,created_at',
+      'user_id,full_name,phone,member_code,display_name,created_at,avatar_path',
     ).single();
     return RoyalClubMember.fromJson(saved);
   }
