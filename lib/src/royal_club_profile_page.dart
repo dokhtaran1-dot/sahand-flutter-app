@@ -78,19 +78,21 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
   }
 
   Future<void> _loadAvatar(RoyalClubMember row) async {
+    final path = row.avatarPath;
+    if (path == null || !path.startsWith(row.userId + '/')) return;
     try {
-      final url = await db.storage.from(bucket).createSignedUrl(
-        row.userId + '/avatar.jpg', 3600);
+      final url = await db.storage.from(bucket).createSignedUrl(path, 3600);
       if (mounted && member?.userId == row.userId) {
         setState(() => imageUrl = url);
       }
     } catch (_) {
-      // A new member may not yet have chosen an image.
+      // No public fallback for private profile pictures.
     }
   }
 
   Future<void> _pickPhoto() async {
-    if (working || member == null) return;
+    final current = member;
+    if (working || current == null) return;
     try {
       final picked = await ImagePicker().pickImage(
         source: ImageSource.gallery,
@@ -101,23 +103,52 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
       );
       if (picked == null) return;
       final data = await picked.readAsBytes();
-      if (data.lengthInBytes > 2 * 1024 * 1024) {
-        _message('عکس انتخابی بزرگ است؛ عکس کوچک‌تری انتخاب کنید.');
+      if (data.isEmpty || data.lengthInBytes > 2 * 1024 * 1024) {
+        _message('عکس انتخابی باید کمتر از دو مگابایت باشد.');
+        return;
+      }
+      // Determine the MIME type from actual bytes, not the file name.
+      String? mime;
+      String? extension;
+      if (data.length >= 3 && data[0] == 0xFF &&
+          data[1] == 0xD8 && data[2] == 0xFF) {
+        mime = 'image/jpeg';
+        extension = 'jpg';
+      } else if (data.length >= 4 && data[0] == 0x89 &&
+          data[1] == 0x50 && data[2] == 0x4E && data[3] == 0x47) {
+        mime = 'image/png';
+        extension = 'png';
+      } else if (data.length >= 12 &&
+          String.fromCharCodes(data.sublist(0, 4)) == 'RIFF' &&
+          String.fromCharCodes(data.sublist(8, 12)) == 'WEBP') {
+        mime = 'image/webp';
+        extension = 'webp';
+      } else {
+        _message('فرمت عکس باید JPG، PNG یا WebP باشد.');
         return;
       }
       if (!mounted) return;
       setState(() => working = true);
+      final path = current.userId + '/avatar.' + extension;
       await db.storage.from(bucket).uploadBinary(
-        member!.userId + '/avatar.jpg',
+        path,
         data,
-        fileOptions: const FileOptions(
-          contentType: 'image/jpeg', upsert: true),
+        fileOptions: FileOptions(contentType: mime, upsert: true),
       );
+      await db.from('royal_club_members')
+          .update({'avatar_path': path})
+          .eq('user_id', current.userId);
+      if (current.avatarPath != null && current.avatarPath != path) {
+        try {
+          await db.storage.from(bucket).remove([current.avatarPath!]);
+        } catch (_) {
+          // Old private file remains inaccessible to other users.
+        }
+      }
       if (!mounted) return;
-      setState(() {
-        avatarBytes = data;
-        imageUrl = null;
-      });
+      await _load();
+      if (!mounted) return;
+      setState(() => avatarBytes = data);
       _message('عکس خصوصی پروفایل ذخیره شد.');
     } catch (_) {
       _message('بارگذاری عکس انجام نشد؛ اتصال اینترنت را بررسی کنید.');
@@ -127,15 +158,21 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
   }
 
   Future<void> _removePhoto() async {
-    if (working || member == null) return;
+    final current = member;
+    final path = current?.avatarPath;
+    if (working || current == null || path == null) return;
     setState(() => working = true);
     try {
-      await db.storage.from(bucket).remove(
-        [member!.userId + '/avatar.jpg']);
-      if (mounted) setState(() {
-        imageUrl = null;
-        avatarBytes = null;
-      });
+      await db.from('royal_club_members')
+          .update({'avatar_path': null})
+          .eq('user_id', current.userId);
+      try {
+        await db.storage.from(bucket).remove([path]);
+      } catch (_) {
+        // Database no longer exposes the old private avatar.
+      }
+      if (!mounted) return;
+      await _load();
       _message('عکس پروفایل حذف شد.');
     } catch (_) {
       _message('حذف عکس انجام نشد؛ دوباره تلاش کنید.');
@@ -448,7 +485,7 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
                     'نمایش QR اختصاصی عضویت', _showQr),
                   _action(Icons.add_a_photo_outlined,
                     'انتخاب یا تغییر عکس پروفایل (اختیاری)', _pickPhoto),
-                  if (imageUrl != null || avatarBytes != null)
+                  if (current.avatarPath != null)
                     _action(Icons.delete_outline,
                       'حذف عکس پروفایل', _removePhoto),
                   _action(Icons.badge_outlined,
