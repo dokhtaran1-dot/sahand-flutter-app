@@ -1,8 +1,7 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'royal_club_membership_page.dart';
+import 'royal_club_member_service.dart';
 import 'royal_club_privileges_page.dart';
 import 'royal_score_store.dart';
 
@@ -22,45 +21,54 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
   int tickets = 0;
   int lifetime = 0;
   bool loading = true;
-  StreamSubscription<Map<String, int>>? _liveTickets;
+  bool loadFailed = false;
+  String membershipCode = '';
 
   @override
   void initState() {
     super.initState();
     _load();
-    RoyalScoreStore.revision.addListener(_load);
-    _liveTickets = RoyalScoreStore.liveTicketStats().listen((stats) {
-      if (!mounted) return;
-      setState(() {
-        tickets = stats['balance'] ?? 0;
-        lifetime = stats['lifetime'] ?? 0;
-        loading = false;
-      });
-    });
   }
 
   Future<void> _load() async {
-    final prefs = await SharedPreferences.getInstance();
-    final currentDisplay = await RoyalScoreStore.displayName();
-    final currentTickets = await RoyalScoreStore.ticketBalance();
-    final currentLifetime = await RoyalScoreStore.lifetimeTickets();
     if (!mounted) return;
-    setState(() {
-      name =
-          prefs.getString(RoyalClubMembershipPage.fullNameKey)?.trim() ?? '';
-      phone = prefs.getString(RoyalClubMembershipPage.phoneKey)?.trim() ?? '';
-      displayName = currentDisplay ?? '';
-      tickets = currentTickets;
-      lifetime = currentLifetime;
-      loading = false;
-    });
-  }
-
-  @override
-  void dispose() {
-    RoyalScoreStore.revision.removeListener(_load);
-    _liveTickets?.cancel();
-    super.dispose();
+    setState(() { loading = true; loadFailed = false; });
+    try {
+      final profile = await RoyalClubMemberService.loadCurrent();
+      String display = '';
+      int currentTickets = 0;
+      int currentLifetime = 0;
+      if (profile != null) {
+        try {
+          display = await RoyalScoreStore.displayName() ?? '';
+          currentTickets = await RoyalScoreStore.ticketBalance();
+          currentLifetime = await RoyalScoreStore.lifetimeTickets();
+        } catch (_) {
+          // Ticket prototypes are independent of verified membership.
+        }
+      }
+      if (!mounted) return;
+      setState(() {
+        name = profile?.fullName ?? '';
+        phone = profile?.phone ?? '';
+        membershipCode = profile?.membershipCode ?? '';
+        displayName = display;
+        tickets = currentTickets;
+        lifetime = currentLifetime;
+        loading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        loading = false;
+        loadFailed = true;
+        membershipCode = '';
+        name = '';
+        phone = '';
+        tickets = 0;
+        lifetime = 0;
+      });
+    }
   }
 
   String get level {
@@ -123,7 +131,7 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final member = name.isNotEmpty && phone.isNotEmpty;
+    final member = membershipCode.isNotEmpty;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -131,7 +139,7 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
         backgroundColor: const Color(0xFF16090B),
         foregroundColor: gold,
         centerTitle: true,
-        title: const Text('ROYAL CLUB • PROFILE'),
+        title: const Text('رویال کلاب | پروفایل'),
       ),
       body: SafeArea(
         child: ListView(
@@ -176,7 +184,7 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    level,
+                    member ? 'عضو تأییدشده' : 'عضویت تأیید نشده',
                     style: const TextStyle(
                       color: gold,
                       fontSize: 13,
@@ -187,6 +195,12 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
                   if (member) ...[
                     const SizedBox(height: 7),
                     Text(
+                      membershipCode,
+                      style: const TextStyle(color: gold, fontSize: 15,
+                        fontWeight: FontWeight.bold, letterSpacing: 1.3),
+                    ),
+                    const SizedBox(height: 7),
+                    Text(
                       phone,
                       style: const TextStyle(color: Colors.white60),
                     ),
@@ -195,11 +209,11 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
               ),
             ),
             const SizedBox(height: 16),
-            Row(
+            if (member) Row(
               children: [
-                Expanded(child: _Stat(label: 'تیکت', value: '$tickets')),
+                Expanded(child: _Stat(label: 'تیکت آزمایشی', value: '$tickets')),
                 const SizedBox(width: 10),
-                Expanded(child: _Stat(label: 'کل تیکت', value: '$lifetime')),
+                Expanded(child: _Stat(label: 'کل تیکت آزمایشی', value: '$lifetime')),
               ],
             ),
             const SizedBox(height: 16),
@@ -215,12 +229,21 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
                 await _load();
               },
             ),
-            _Action(
+            if (member) _Action(
               icon: Icons.badge_outlined,
               title: displayName.isEmpty
                   ? 'ثبت نام نمایشی بازی‌ها'
                   : 'نام نمایشی: $displayName',
               onTap: _editDisplayName,
+            ),
+            if (loadFailed) Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: TextButton.icon(
+                onPressed: _load,
+                icon: const Icon(Icons.refresh_rounded),
+                label: const Text('دریافت مجدد اطلاعات حساب'),
+                style: TextButton.styleFrom(foregroundColor: gold),
+              ),
             ),
             _Action(
               icon: Icons.diamond_outlined,
