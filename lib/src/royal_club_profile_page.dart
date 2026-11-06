@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import 'royal_club_membership_page.dart';
 import 'royal_club_privileges_page.dart';
@@ -22,6 +24,10 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
   int tickets = 0;
   int lifetime = 0;
   bool loading = true;
+  bool verifiedMember = false;
+  String? memberCode;
+  String? avatarUrl;
+  String? statusMessage;
   StreamSubscription<Map<String, int>>? _liveTickets;
 
   @override
@@ -40,20 +46,89 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
   }
 
   Future<void> _load() async {
-    final prefs = await SharedPreferences.getInstance();
-    final currentDisplay = await RoyalScoreStore.displayName();
-    final currentTickets = await RoyalScoreStore.ticketBalance();
-    final currentLifetime = await RoyalScoreStore.lifetimeTickets();
-    if (!mounted) return;
-    setState(() {
-      name =
-          prefs.getString(RoyalClubMembershipPage.fullNameKey)?.trim() ?? '';
-      phone = prefs.getString(RoyalClubMembershipPage.phoneKey)?.trim() ?? '';
-      displayName = currentDisplay ?? '';
-      tickets = currentTickets;
-      lifetime = currentLifetime;
-      loading = false;
-    });
+    try {
+      final client = Supabase.instance.client;
+      final user = client.auth.currentUser;
+      if (user == null || client.auth.currentSession == null) {
+        if (!mounted) return;
+        setState(() {
+          name = '';
+          phone = '';
+          displayName = '';
+          tickets = 0;
+          lifetime = 0;
+          verifiedMember = false;
+          memberCode = null;
+          avatarUrl = null;
+          statusMessage = 'برای مشاهدهٔ کارت عضویت، شماره خود را تأیید کنید.';
+          loading = false;
+        });
+        return;
+      }
+      final record = await client.from('royal_club_members')
+          .select('full_name,phone,member_code,avatar_path')
+          .eq('user_id', user.id)
+          .maybeSingle();
+      if (!mounted) return;
+      if (record == null) {
+        setState(() {
+          name = '';
+          phone = '';
+          verifiedMember = false;
+          memberCode = null;
+          avatarUrl = null;
+          statusMessage = 'حساب وارد شده است؛ تکمیل عضویت لازم است.';
+          loading = false;
+        });
+        return;
+      }
+      String? signedPhoto;
+      final path = record['avatar_path']?.toString();
+      if (path != null && path.isNotEmpty) {
+        try {
+          signedPhoto = await client.storage
+              .from('royal-club-avatars').createSignedUrl(path, 3600);
+        } catch (_) {}
+      }
+      final alias = await RoyalScoreStore.displayName();
+      final balance = await RoyalScoreStore.ticketBalance();
+      final earned = await RoyalScoreStore.lifetimeTickets();
+      if (!mounted) return;
+      setState(() {
+        name = (record['full_name'] ?? '').toString();
+        phone = (record['phone'] ?? '').toString();
+        memberCode = record['member_code']?.toString();
+        avatarUrl = signedPhoto;
+        displayName = alias ?? '';
+        tickets = balance;
+        lifetime = earned;
+        verifiedMember = true;
+        statusMessage = null;
+        loading = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() {
+        verifiedMember = false;
+        statusMessage = 'در حال حاضر اتصال به سامانه عضویت برقرار نیست.';
+        loading = false;
+      });
+    }
+  }
+
+  Future<void> _signOut() async {
+    try {
+      await Supabase.instance.client.auth.signOut();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(RoyalClubMembershipPage.fullNameKey);
+      await prefs.remove(RoyalClubMembershipPage.phoneKey);
+      await prefs.remove(RoyalClubMembershipPage.joinedAtKey);
+      await _load();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('خروج از حساب انجام نشد.')),
+      );
+    }
   }
 
   @override
@@ -123,7 +198,7 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final member = name.isNotEmpty && phone.isNotEmpty;
+    final member = verifiedMember;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -149,15 +224,17 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
               child: Column(
                 children: [
                   CircleAvatar(
-                    radius: 38,
-                    backgroundColor: const Color(0xFF090706),
-                    child: Text(
-                      name.isNotEmpty ? name.characters.first : 'R',
-                      style: const TextStyle(
-                        color: gold,
-                        fontSize: 32,
-                        fontWeight: FontWeight.w900,
-                      ),
+                    radius: 39,
+                    backgroundColor: gold,
+                    child: CircleAvatar(
+                      radius: 36,
+                      backgroundColor: const Color(0xFF090706),
+                      backgroundImage: member && avatarUrl != null
+                        ? NetworkImage(avatarUrl!) : null,
+                      child: avatarUrl == null
+                        ? Icon(member ? Icons.verified_user_outlined
+                            : Icons.person_outline, color: gold, size: 32)
+                        : null,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -166,7 +243,7 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
                         ? '...'
                         : member
                             ? name
-                            : 'ROYAL CLUB MEMBER',
+                            : 'عضویت تأیید نشده',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: Colors.white,
@@ -176,14 +253,46 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    level,
+                    member ? level : 'برای عضویت ثبت‌نام کنید',
                     style: const TextStyle(
                       color: gold,
                       fontSize: 13,
                       fontWeight: FontWeight.w900,
-                      letterSpacing: 2.4,
+                      letterSpacing: 1.2,
                     ),
                   ),
+                  if (member && memberCode != null) ...[
+                    const SizedBox(height: 10),
+                    Text('شماره عضویت: ' + memberCode!,
+                      style: const TextStyle(color: gold)),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(9),
+                      color: Colors.white,
+                      child: QrImageView(
+                        data: 'ROYAL-CLUB:' + memberCode!,
+                        version: QrVersions.auto,
+                        size: 155,
+                        backgroundColor: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 7),
+                    const Text(
+                      'کد مخصوص عضو؛ پذیرش حضوری با اسکن هنوز فعال نیست.',
+                      textDirection: TextDirection.rtl,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white70, fontSize: 10),
+                    ),
+                  ],
+                  if (!member && statusMessage != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Text(statusMessage!,
+                        textDirection: TextDirection.rtl,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white70, fontSize: 12)),
+                    ),
                   if (member) ...[
                     const SizedBox(height: 7),
                     Text(
@@ -205,7 +314,7 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
             const SizedBox(height: 16),
             _Action(
               icon: Icons.workspace_premium_outlined,
-              title: member ? 'ویرایش عضویت' : 'فعال‌سازی عضویت',
+              title: member ? 'ویرایش عضویت و عکس پروفایل' : 'ثبت‌نام و فعال‌سازی عضویت',
               onTap: () async {
                 await Navigator.of(context).push(
                   MaterialPageRoute(
@@ -220,8 +329,16 @@ class _RoyalClubProfilePageState extends State<RoyalClubProfilePage> {
               title: displayName.isEmpty
                   ? 'ثبت نام نمایشی بازی‌ها'
                   : 'نام نمایشی: $displayName',
-              onTap: _editDisplayName,
+              onTap: member ? _editDisplayName : () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const RoyalClubMembershipPage()),
+              ),
             ),
+            if (member)
+              _Action(
+                icon: Icons.logout,
+                title: 'خروج امن از حساب',
+                onTap: _signOut,
+              ),
             _Action(
               icon: Icons.diamond_outlined,
               title: 'امتیازات و مزایا',
