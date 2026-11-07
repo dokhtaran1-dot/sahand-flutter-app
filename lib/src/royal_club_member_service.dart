@@ -56,9 +56,55 @@ class RoyalClubMemberService {
 
   static Future<RoyalClubMember> saveVerifiedMember(String fullName, {String? displayName}) async {
     final user = currentUser;
-    final number = user?.phone;
+    final rawNumber = user?.phone;
+    final number = rawNumber == null ? null : normalizeIranMobile(rawNumber);
     if (user == null || number == null ||
-        !RegExp(r'^\+989[0-9]{9}$').hasMatch(number)) {
+        !RegExp(r'^\+989[0-9]{9}
+      throw const FormatException('شماره همراه هنوز تأیید نشده است.');
+    }
+    final trimmed = fullName.trim().replaceAll(RegExp(r'\s+'), ' ');
+    if (trimmed.length < 3 || trimmed.length > 120) {
+      throw const FormatException('نام و نام خانوادگی باید بین ۳ تا ۱۲۰ حرف باشد.');
+    }
+    final alias = displayName?.trim();
+    if (alias != null && alias.isNotEmpty &&
+        (alias.length < 2 || alias.length > 30)) {
+      throw const FormatException('نام نمایشی باید بین ۲ تا ۳۰ کاراکتر باشد.');
+    }
+    final saved = await client.from('royal_club_members').upsert({
+      'user_id': user.id,
+      'full_name': trimmed,
+      'display_name': alias == null || alias.isEmpty ? null : alias,
+      'phone': number,
+      'accepted_terms_at': DateTime.now().toUtc().toIso8601String(),
+    }, onConflict: 'user_id').select(
+      'user_id,full_name,phone,member_code,display_name,created_at,avatar_path',
+    ).single();
+    return RoyalClubMember.fromJson(saved);
+  }
+
+  static String normalizeIranMobile(String raw) {
+    const persian = '۰۱۲۳۴۵۶۷۸۹';
+    const arabic = '٠١٢٣٤٥٦٧٨٩';
+    var converted = '';
+    for (final c in raw.trim().split('')) {
+      final p = persian.indexOf(c);
+      final a = arabic.indexOf(c);
+      converted += p >= 0 ? p.toString() : (a >= 0 ? a.toString() : c);
+    }
+    var normalized = converted.replaceAll(RegExp(r'[\s\-()]'), '');
+    if (normalized.startsWith('0098')) normalized = '+98'+normalized.substring(4);
+    if (normalized.startsWith('09')) normalized = '+98'+normalized.substring(1);
+    if (normalized.startsWith('989')) normalized = '+'+normalized;
+    return normalized;
+  }
+
+  static bool validIranMobile(String value) =>
+      RegExp(r'^\+989[0-9]{9}$').hasMatch(normalizeIranMobile(value));
+
+  static Future<void> signOut() async => client.auth.signOut();
+}
+).hasMatch(number)) {
       throw const FormatException('شماره همراه هنوز تأیید نشده است.');
     }
     final trimmed = fullName.trim().replaceAll(RegExp(r'\s+'), ' ');
