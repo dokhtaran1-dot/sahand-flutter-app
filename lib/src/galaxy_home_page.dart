@@ -276,7 +276,7 @@ class _OrbitingMonogram extends StatelessWidget {
               return Transform.translate(
                 offset: Offset(5.0 * math.cos(theta), 7.5 * math.sin(theta)),
                 child: Transform.rotate(
-                  angle: .018 * math.sin(theta),
+                  angle: theta,
                   child: child,
                 ),
               );
