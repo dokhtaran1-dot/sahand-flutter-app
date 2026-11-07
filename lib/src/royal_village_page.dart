@@ -1,7 +1,6 @@
-import 'royal_village_entry_page.dart';
+import 'royal_village_luxury_page.dart';
 
-// The RV tile must open the approved full-screen poster. Its transparent
-// interaction layer sends each salon and footer icon to the right destination.
-class RoyalVillagePage extends RoyalVillageEntryPage {
+/// High-resolution responsive Royal Village landing page.
+class RoyalVillagePage extends RoyalVillageLuxuryPage {
   const RoyalVillagePage({super.key});
 }
