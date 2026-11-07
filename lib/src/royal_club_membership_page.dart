@@ -134,7 +134,9 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
       if (mounted) setState(() {
         error = e.statusCode == '429'
             ? 'درخواست‌های پیامک زیاد شده؛ کمی بعد دوباره امتحان کنید.'
-            : 'پیامک ارسال نشد. اتصال اینترنت و سرویس پیامک را بررسی کنید.';
+            : (e.statusCode == '500' || e.statusCode == '502' || e.statusCode == '503')
+                ? 'سرور پیامک پاسخ ناموفق داده است (خطای ${e.statusCode}). اینترنت گوشی مشکلی ندارد؛ دسترسی کاوه‌نگار را بررسی کنید.'
+                : 'ارسال کد تأیید ناموفق بود (خطای ${e.statusCode ?? 'نامشخص'}). اگر ادامه داشت، پشتیبانی سرویس را بررسی کنید.';
       });
     } catch (_) {
       if (mounted) setState(() => error =
