@@ -44,7 +44,7 @@ class _GalaxyHomePageState extends State<GalaxyHomePage>
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: math.max(sz.height - 50, 550)),
+              constraints: BoxConstraints(minHeight: math.max(sz.height - 50, 550.0)),
               child: Column(children: [
                 const SizedBox(height: 16),
                 const Text('SC', style: TextStyle(
