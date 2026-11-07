@@ -1,7 +1,5 @@
 import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
-
 import 'ettehad_page.dart';
 import 'royal_club_game_page.dart';
 import 'royal_harmonia_page.dart';
@@ -9,396 +7,237 @@ import 'royal_mall_page.dart';
 import 'royal_signature_page.dart';
 import 'royal_village_page.dart';
 
-/// The approved full-bleed artwork supplies the upper three gateways.
-/// The three lower monograms are independently animated, accessible controls.
-class GalaxyHomePage extends StatelessWidget {
+/// Six independently tappable gateways; photos revolve inside the fixed
+/// spherical silhouettes, while all labels and controls remain readable.
+class GalaxyHomePage extends StatefulWidget {
   const GalaxyHomePage({super.key});
-
-  static const String artwork = 'assets/image/royal_one_home_classic_full.webp';
-  static const double artworkWidth = 998;
-  static const double artworkHeight = 1576;
-  static const double upperArtworkHeight = 1218;
-
-  void _open(BuildContext context, Widget page) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
-  }
-
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF030806),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ClipRect(
-                child: FittedBox(
-                  fit: BoxFit.fill,
-                  child: SizedBox(
-                    width: artworkWidth,
-                    height: upperArtworkHeight,
-                    child: Stack(
-                      clipBehavior: Clip.hardEdge,
-                      children: [
-                        const Positioned(
-                          left: 0,
-                          top: 0,
-                          width: artworkWidth,
-                          height: artworkHeight,
-                          child: Image(
-                            image: AssetImage(artwork),
-                            fit: BoxFit.fill,
-                            filterQuality: FilterQuality.high,
-                          ),
-                        ),
-                        Positioned(
-                          left: 0,
-                          top: 389,
-                          width: 333,
-                          height: 827,
-                          child: _GatewayTapZone(
-                            label: 'Royal Mall',
-                            onTap: () => _open(context, const RoyalMallPage()),
-                          ),
-                        ),
-                        Positioned(
-                          left: 333,
-                          top: 389,
-                          width: 333,
-                          height: 827,
-                          child: _GatewayTapZone(
-                            label: 'Royal Club',
-                            onTap: () => _open(context, const RoyalClubGamePage()),
-                          ),
-                        ),
-                        Positioned(
-                          left: 666,
-                          top: 389,
-                          width: 332,
-                          height: 827,
-                          child: _GatewayTapZone(
-                            label: 'Royal Village Cafe',
-                            onTap: () => _open(context, const RoyalVillagePage()),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            _GalaxyNavigation(
-              onEttehad: () => _open(context, const EttehadPage()),
-              onSignature: () => _open(context, const RoyalSignaturePage()),
-              onHarmonia: () => _open(context, const RoyalHarmoniaPage()),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  State<GalaxyHomePage> createState() => _GalaxyHomePageState();
 }
-
-class _GatewayTapZone extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-
-  const _GatewayTapZone({required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: 'ورود به $label',
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-        ),
-      ),
-    );
-  }
-}
-
-/// The orbs travel along three tiny, phase-shifted elliptical orbits. They
-/// never cross one another, and their individual hit targets travel with them.
-class _GalaxyNavigation extends StatefulWidget {
-  final VoidCallback onEttehad;
-  final VoidCallback onSignature;
-  final VoidCallback onHarmonia;
-
-  const _GalaxyNavigation({
-    required this.onEttehad,
-    required this.onSignature,
-    required this.onHarmonia,
-  });
-
-  @override
-  State<_GalaxyNavigation> createState() => _GalaxyNavigationState();
-}
-
-class _GalaxyNavigationState extends State<_GalaxyNavigation>
+class _GalaxyHomePageState extends State<GalaxyHomePage>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _orbit;
-
+  late final AnimationController _turn;
   @override
   void initState() {
     super.initState();
-    _orbit = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 16),
-    )..repeat();
+    _turn = AnimationController(
+      vsync: this, duration: const Duration(seconds: 20))..repeat();
   }
-
   @override
-  void dispose() {
-    _orbit.dispose();
-    super.dispose();
+  void dispose() { _turn.dispose(); super.dispose(); }
+  void _open(Widget page) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
   }
-
   @override
   Widget build(BuildContext context) {
-    final navHeight =
-        (MediaQuery.sizeOf(context).height * .21).clamp(136.0, 176.0).toDouble();
-
-    return Container(
-      width: double.infinity,
-      height: navHeight,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFF030807), Color(0xFF0D1A15), Color(0xFF030605)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+    final sz = MediaQuery.sizeOf(context);
+    final d = math.min((sz.width - 48) / 3, 128.0);
+    const gold = Color(0xFFE7C88E);
+    return Scaffold(
+      backgroundColor: const Color(0xFF03100B),
+      body: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: RadialGradient(
+            center: Alignment(0, -.3), radius: 1.45,
+            colors: [Color(0xFF17372C), Color(0xFF071B14), Color(0xFF020807)])),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: math.max(sz.height - 50, 550)),
+              child: Column(children: [
+                const SizedBox(height: 16),
+                const Text('SC', style: TextStyle(
+                  color: gold, fontSize: 37, fontWeight: FontWeight.w300)),
+                const Text('SAHAND CONSORTIUM', style: TextStyle(
+                  color: gold, fontSize: 11, letterSpacing: 3)),
+                const SizedBox(height: 3),
+                const Text('SINCE 1351', style: TextStyle(
+                  color: Color(0xFFDBD0B7), fontSize: 9, letterSpacing: 2)),
+                const SizedBox(height: 13),
+                const Text('ROYAL ONE', style: TextStyle(
+                  color: gold, fontSize: 29, fontWeight: FontWeight.bold,
+                  letterSpacing: 3.6)),
+                const Text('یک ورود، یک دنیای کامل رویال', style: TextStyle(
+                  color: Colors.white70, fontSize: 13)),
+                const SizedBox(height: 21),
+                _row(d, [
+                  _OrbInfo('assets/image/mne_06_royal_mall.jpg',
+                    'RM', 'ROYAL MALL', 'مرکز خرید', 0,
+                    () => _open(const RoyalMallPage())),
+                  _OrbInfo('assets/image/RC_Approved.jpg',
+                    'RC', 'ROYAL CLUB', 'باشگاه اختصاصی', .333,
+                    () => _open(const RoyalClubGamePage())),
+                  _OrbInfo('assets/image/Grand_Salon_Original.png',
+                    'RV', 'ROYAL VILLAGE', 'رستوران و کافه', .667,
+                    () => _open(const RoyalVillagePage())),
+                ]),
+                const SizedBox(height: 19),
+                Container(
+                  width: sz.width * .66, height: 1,
+                  color: gold.withOpacity(.45),
+                ),
+                const SizedBox(height: 20),
+                _row(d, [
+                  _OrbInfo('assets/image/monogram_re.webp',
+                    'RE', 'ROYAL ETTEHAD', 'ساخت و ساز', .16,
+                    () => _open(const EttehadPage())),
+                  _OrbInfo('assets/image/monogram_rs.webp',
+                    'RS', 'ROYAL SIGNATURE', 'هنر و محصولات خاص', .5,
+                    () => _open(const RoyalSignaturePage())),
+                  _OrbInfo('assets/image/monogram_rh.webp',
+                    'RH', 'ROYAL HARMONIA', 'تجهیزات و فناوری', .83,
+                    () => _open(const RoyalHarmoniaPage())),
+                ]),
+                const SizedBox(height: 25),
+                const Icon(Icons.public_rounded, color: gold, size: 25),
+                const SizedBox(height: 7),
+                const Text('ONE ENTRANCE. A WHOLE ROYAL WORLD.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Color(0xFFE9D7B5),
+                    letterSpacing: 1.15, fontSize: 10)),
+                const SizedBox(height: 17),
+              ]),
+            ),
+          ),
         ),
-        border: Border(top: BorderSide(color: Color(0xFF9B8252), width: .8)),
-      ),
-      child: Column(
-        children: [
-          Expanded(
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                AnimatedBuilder(
-                  animation: _orbit,
-                  builder: (context, child) => CustomPaint(
-                    painter: _GalaxyFieldPainter(progress: _orbit.value),
-                  ),
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _OrbitingMonogram(
-                        animation: _orbit,
-                        phase: 0,
-                        label: 'Ettehad Sazeh Royal',
-                        crop: const Rect.fromLTWH(65, 1236, 226, 226),
-                        onTap: widget.onEttehad,
-                      ),
-                    ),
-                    Expanded(
-                      child: _OrbitingMonogram(
-                        animation: _orbit,
-                        phase: 2 * math.pi / 3,
-                        label: 'Royal Signature',
-                        crop: const Rect.fromLTWH(376, 1229, 246, 246),
-                        emphasized: true,
-                        onTap: widget.onSignature,
-                      ),
-                    ),
-                    Expanded(
-                      child: _OrbitingMonogram(
-                        animation: _orbit,
-                        phase: 4 * math.pi / 3,
-                        label: 'Royal Harmonia',
-                        crop: const Rect.fromLTWH(704, 1236, 226, 226),
-                        onTap: widget.onHarmonia,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(bottom: 5, left: 8, right: 8),
-            child: Text(
-              'ROYAL ONE  ·  V1.0.21  ·  POWERED BY SAHAND CONSORTIUM',
-              maxLines: 1,
-              overflow: TextOverflow.fade,
-              softWrap: false,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Color(0xFFC2A56F),
-                fontSize: 8,
-                fontWeight: FontWeight.w500,
-                letterSpacing: .65,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
+  Widget _row(double d, List<_OrbInfo> orbs) => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      for (final orb in orbs) Expanded(
+        child: _OrbTile(diameter: d, animation: _turn, info: orb)),
+    ],
+  );
 }
-
-class _OrbitingMonogram extends StatelessWidget {
-  final Animation<double> animation;
+class _OrbInfo {
+  const _OrbInfo(this.photo, this.initials, this.title,
+      this.caption, this.phase, this.onTap);
+  final String photo, initials, title, caption;
   final double phase;
-  final String label;
-  final Rect crop;
-  final bool emphasized;
   final VoidCallback onTap;
-
-  const _OrbitingMonogram({
-    required this.animation,
-    required this.phase,
-    required this.label,
-    required this.crop,
-    required this.onTap,
-    this.emphasized = false,
-  });
+}
+class _OrbTile extends StatelessWidget {
+  const _OrbTile({required this.diameter, required this.animation,
+    required this.info});
+  final double diameter;
+  final Animation<double> animation;
+  final _OrbInfo info;
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final diameter = math.min(
-          constraints.maxWidth * (emphasized ? .88 : .82),
-          emphasized ? 112.0 : 103.0,
-        );
-        return Center(
-          child: AnimatedBuilder(
-            animation: animation,
-            builder: (context, child) {
-              final theta = animation.value * 2 * math.pi + phase;
-              return Transform.translate(
-                offset: Offset(5.0 * math.cos(theta), 7.5 * math.sin(theta)),
-                child: Transform.rotate(
-                  angle: theta,
-                  child: child,
-                ),
-              );
-            },
-            child: Semantics(
-              button: true,
-              label: 'ورود به $label',
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: onTap,
-                  customBorder: const CircleBorder(),
-                  child: Container(
-                    width: diameter,
-                    height: diameter,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFFAD966C), width: .6),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF9F7E43).withOpacity(.15),
-                          blurRadius: 15,
-                          spreadRadius: 2,
-                        ),
-                      ],
-                    ),
-                    child: _CircularArtworkCrop(source: crop),
+    const gold = Color(0xFFE7C88E);
+    return Semantics(
+      label: 'ورود به ' + info.title,
+      button: true,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: info.onTap,
+          borderRadius: BorderRadius.circular(18),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            SizedBox(
+              height: diameter + 9, width: diameter,
+              child: Center(
+                child: RepaintBoundary(
+                  child: AnimatedBuilder(
+                    animation: animation,
+                    builder: (context, _) {
+                      final t = (animation.value + info.phase) % 1;
+                      return Transform.translate(
+                        offset: Offset(0, 3 * math.sin(t * math.pi * 2)),
+                        child: _SpinningPhotoSphere(
+                          diameter: diameter, photo: info.photo, t: t),
+                      );
+                    },
                   ),
                 ),
               ),
             ),
-          ),
-        );
-      },
+            const SizedBox(height: 5),
+            Text(info.initials, style: const TextStyle(color: gold,
+              fontSize: 26, fontWeight: FontWeight.w800, height: 1)),
+            const SizedBox(height: 6),
+            Text(info.title, maxLines: 1, overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center, style: const TextStyle(
+                color: gold, fontSize: 10, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 4),
+            Text(info.caption, maxLines: 2, textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Color(0xFFE7DDC6), fontSize: 11, height: 1.25)),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+              decoration: BoxDecoration(
+                color: const Color(0xFF221B0E),
+                border: Border.all(color: gold),
+                borderRadius: BorderRadius.circular(22)),
+              child: const Text('ورود', style: TextStyle(
+                color: gold, fontSize: 11, fontWeight: FontWeight.w600)),
+            ),
+          ]),
+        ),
+      ),
     );
   }
 }
-
-/// Extract each approved classical seal at render time from the same source
-/// image; this preserves the exact antique-metal artwork without flattened
-/// copies or a second manually maintained image set.
-class _CircularArtworkCrop extends StatelessWidget {
-  final Rect source;
-
-  const _CircularArtworkCrop({required this.source});
-
+/// The two tiles loop without a sudden reset. Gold light, shadow and a
+/// stable circular outline simulate a lit three-dimensional globe.
+class _SpinningPhotoSphere extends StatelessWidget {
+  const _SpinningPhotoSphere({
+    required this.diameter, required this.photo, required this.t});
+  final double diameter;
+  final String photo;
+  final double t;
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final scale = constraints.maxWidth / source.width;
-        return ClipOval(
-          child: Stack(
-            clipBehavior: Clip.hardEdge,
-            children: [
-              Positioned(
-                left: -source.left * scale,
-                top: -source.top * scale,
-                width: GalaxyHomePage.artworkWidth * scale,
-                height: GalaxyHomePage.artworkHeight * scale,
-                child: const Image(
-                  image: AssetImage(GalaxyHomePage.artwork),
-                  fit: BoxFit.fill,
-                  filterQuality: FilterQuality.high,
-                ),
-              ),
-            ],
+    const gold = Color(0xFFFFD89E);
+    return SizedBox(
+      width: diameter, height: diameter,
+      child: Stack(children: [
+        Positioned.fill(child: DecoratedBox(
+          decoration: BoxDecoration(shape: BoxShape.circle,
+            boxShadow: [BoxShadow(color: gold.withOpacity(.40),
+              blurRadius: 20, spreadRadius: 1)]))),
+        ClipOval(child: SizedBox(
+          width: diameter, height: diameter,
+          child: Stack(children: [
+            Positioned(
+              left: -2 * diameter * t, top: 0,
+              width: 4 * diameter, height: diameter,
+              child: Row(children: [
+                Image.asset(photo, width: 2 * diameter, height: diameter,
+                  fit: BoxFit.cover, filterQuality: FilterQuality.medium),
+                Image.asset(photo, width: 2 * diameter, height: diameter,
+                  fit: BoxFit.cover, filterQuality: FilterQuality.medium),
+              ]),
+            ),
+            const Positioned.fill(child: DecoratedBox(
+              decoration: BoxDecoration(gradient: RadialGradient(
+                center: Alignment(-.45, -.55), radius: 1.05,
+                colors: [Color(0x30FFFFFF), Color(0x09000000),
+                  Color(0x66000000), Color(0xBC000000)],
+                stops: [0, .40, .77, 1])))),
+          ]),
+        )),
+        Positioned.fill(child: IgnorePointer(child: DecoratedBox(
+          decoration: BoxDecoration(shape: BoxShape.circle,
+            border: Border.fromBorderSide(
+              BorderSide(color: gold, width: 2.2)))))),
+        Positioned(top: diameter * .08, left: diameter * .16,
+          child: Container(
+            width: diameter * .19, height: diameter * .05,
+            decoration: BoxDecoration(
+              color: const Color(0x88FFFDF4),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(color: Color(0x99FFF2CD), blurRadius: 9)],
+            ),
           ),
-        );
-      },
+        ),
+      ]),
     );
   }
-}
-
-class _GalaxyFieldPainter extends CustomPainter {
-  final double progress;
-
-  const _GalaxyFieldPainter({required this.progress});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final random = math.Random(1351);
-    final t = progress * 2 * math.pi;
-
-    // Tiny, understated celestial dust; each twinkles but does not jitter.
-    for (var i = 0; i < 42; i++) {
-      final x = random.nextDouble() * size.width;
-      final y = random.nextDouble() * size.height;
-      final radius = .45 + random.nextDouble() * 1.1;
-      final opacity = .10 + .20 * (1 + math.sin(t + i * 1.73)) / 2;
-      canvas.drawCircle(
-        Offset(x, y),
-        radius,
-        Paint()..color = const Color(0xFFDCC390).withOpacity(opacity),
-      );
-    }
-
-    for (var index = 0; index < 3; index++) {
-      final center = Offset(size.width * (index + .5) / 3, size.height * .56);
-      final radius = math.min(size.width / 3 * .38, size.height * .36);
-      canvas.drawOval(
-        Rect.fromCenter(center: center, width: radius * 2.25, height: radius * .85),
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = .8
-          ..color = const Color(0xFFB39A66).withOpacity(.11),
-      );
-
-      final phase = index * 2 * math.pi / 3;
-      final glint = Offset(
-        center.dx + radius * 1.12 * math.cos(t + phase),
-        center.dy + radius * .42 * math.sin(t + phase),
-      );
-      canvas.drawCircle(
-        glint,
-        1.6,
-        Paint()..color = const Color(0xFFEBD3A1).withOpacity(.7),
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _GalaxyFieldPainter oldDelegate) =>
-      oldDelegate.progress != progress;
 }
