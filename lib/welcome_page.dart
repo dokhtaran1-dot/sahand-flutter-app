@@ -36,7 +36,7 @@ class _WelcomePageState extends State<WelcomePage> {
   void _startTimer() {
     _timer?.cancel();
     _timer = Timer.periodic(
-      const Duration(milliseconds: 2500),
+      const Duration(milliseconds: 5500),
       (_) => _next(restart: false),
     );
   }
@@ -119,13 +119,22 @@ class _WelcomePageState extends State<WelcomePage> {
                             children: [
                               const ColoredBox(color: Colors.black),
                               AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 420),
+                                duration: const Duration(milliseconds: 1050),
                                 switchInCurve: Curves.easeOut,
                                 switchOutCurve: Curves.easeIn,
                                 transitionBuilder: (child, animation) =>
                                     FadeTransition(
                                   opacity: animation,
-                                  child: child,
+                                  child: ScaleTransition(
+                                    scale: Tween<double>(
+                                      begin: 1.035,
+                                      end: 1.0,
+                                    ).animate(CurvedAnimation(
+                                      parent: animation,
+                                      curve: Curves.easeOutCubic,
+                                    )),
+                                    child: child,
+                                  ),
                                 ),
                                 layoutBuilder:
                                     (currentChild, previousChildren) => Stack(
