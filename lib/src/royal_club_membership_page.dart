@@ -117,7 +117,8 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
     setState(() { busy = true; error = null; });
     try {
       final user = RoyalClubMemberService.currentUser;
-      if (user != null && user.phone == normalizedPhone) {
+      if (user != null && user.phone != null &&
+          RoyalClubMemberService.normalizeIranMobile(user.phone!) == normalizedPhone) {
         // The identity is already authenticated; never send a second OTP
         // unnecessarily. Persist the profile securely.
         await _saveVerified();
