@@ -24,6 +24,7 @@ on:
       - 'lib/src/ettehad_page.dart'
       - 'lib/src/royal_signature_page.dart'
       - 'lib/main.dart'
+      - 'lib/welcome_page.dart'
       - 'assets/image/royal_one_home_classic_full.webp'
       - 'assets/image/mne_*.jpg'
       - 'pubspec.yaml'
