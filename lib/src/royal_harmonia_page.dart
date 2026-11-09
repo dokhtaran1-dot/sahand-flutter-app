@@ -1,30 +1,23 @@
 import 'package:flutter/material.dart';
+import 'rh/rh_site_mobile.dart'
+    if (dart.library.html) 'rh/rh_site_web.dart' as rh;
 
+/// Uses the complete, bundled RH site so its presentation remains identical.
 class RoyalHarmoniaPage extends StatelessWidget {
   const RoyalHarmoniaPage({super.key});
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xFF08090D),
+    backgroundColor: const Color(0xFF07100E),
     appBar: AppBar(
-      backgroundColor: const Color(0xFF08090D),
-      foregroundColor: const Color(0xFFD6B779),
+      backgroundColor: const Color(0xFF07100E),
+      foregroundColor: const Color(0xFFD9C493),
+      surfaceTintColor: Colors.transparent,
+      toolbarHeight: 44,
       centerTitle: true,
-      title: const Text('RH · ROYAL HARMONIA', style: TextStyle(letterSpacing: 1.8, fontSize: 15)),
+      title: const Text('ROYAL ONE / RH',
+          style: TextStyle(letterSpacing: 2, fontSize: 12)),
     ),
-    body: const SafeArea(
-      child: Center(
-        child: Padding(
-          padding: EdgeInsets.all(28),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Icon(Icons.auto_awesome, size: 72, color: Color(0xFFD6B779)),
-            SizedBox(height: 22),
-            Text('ROYAL HARMONIA', style: TextStyle(color: Color(0xFFF3EBDD), fontSize: 24, letterSpacing: 2.2)),
-            SizedBox(height: 10),
-            Text('RH', style: TextStyle(color: Color(0xFFD6B779), fontSize: 16, letterSpacing: 4)),
-          ]),
-        ),
-      ),
-    ),
+    body: const SafeArea(top: false, child: rh.RhSiteView()),
   );
 }
