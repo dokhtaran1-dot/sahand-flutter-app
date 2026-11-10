@@ -267,7 +267,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
                     // Top row salons
                     Positioned(
                       left: 22,
-                      top: 520,
+                      top: 635,
                       width: 270,
                       height: 220,
                       child: _TapZone(
@@ -279,7 +279,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
                     ),
                     Positioned(
                       left: 296,
-                      top: 520,
+                      top: 635,
                       width: 255,
                       height: 220,
                       child: _TapZone(
@@ -288,7 +288,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
                     ),
                     Positioned(
                       left: 554,
-                      top: 520,
+                      top: 635,
                       width: 255,
                       height: 220,
                       child: _TapZone(
@@ -297,7 +297,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
                     ),
                     Positioned(
                       left: 812,
-                      top: 520,
+                      top: 635,
                       width: 310,
                       height: 220,
                       child: _TapZone(
@@ -308,9 +308,9 @@ class RoyalVillageEntryPage extends StatelessWidget {
                     // Grand Salon
                     Positioned(
                       left: 22,
-                      top: 744,
+                      top: 868,
                       width: 1100,
-                      height: 248,
+                      height: 257,
                       child: _TapZone(
                         onTap: () => _openSalon(context, 'Grand Salon'),
                       ),
@@ -319,36 +319,36 @@ class RoyalVillageEntryPage extends StatelessWidget {
                     // Bottom row salons
                     Positioned(
                       left: 22,
-                      top: 995,
+                      top: 1135,
                       width: 270,
-                      height: 220,
+                      height: 174,
                       child: _TapZone(
                         onTap: () => _openSalon(context, 'Salon Royal'),
                       ),
                     ),
                     Positioned(
                       left: 296,
-                      top: 995,
+                      top: 1135,
                       width: 255,
-                      height: 220,
+                      height: 174,
                       child: _TapZone(
                         onTap: () => _openSalon(context, 'Salon Privé'),
                       ),
                     ),
                     Positioned(
                       left: 554,
-                      top: 995,
+                      top: 1135,
                       width: 255,
-                      height: 220,
+                      height: 174,
                       child: _TapZone(
                         onTap: () => _openSalon(context, 'Salon Noir'),
                       ),
                     ),
                     Positioned(
                       left: 812,
-                      top: 995,
+                      top: 1135,
                       width: 310,
-                      height: 220,
+                      height: 174,
                       child: _TapZone(
                         onTap: () => _openSalon(context, 'Salon Âme du Poète'),
                       ),
@@ -360,18 +360,18 @@ class RoyalVillageEntryPage extends StatelessWidget {
                     // WhatsApp / Instagram.
                     Positioned(
                       left: 10,
-                      top: 1340,
+                      top: 1425,
                       width: 323,
-                      height: 161,
+                      height: 95,
                       child: _TapZone(
                         onTap: () => _openStoreChooser(context),
                       ),
                     ),
                     Positioned(
                       left: 347,
-                      top: 1355,
+                      top: 1440,
                       width: 146,
-                      height: 138,
+                      height: 85,
                       child: _TapZone(
                         onTap: () => _openLink(
                           context, _bazaarSearch,
@@ -381,9 +381,9 @@ class RoyalVillageEntryPage extends StatelessWidget {
                     ),
                     Positioned(
                       left: 497,
-                      top: 1355,
+                      top: 1440,
                       width: 150,
-                      height: 138,
+                      height: 85,
                       child: _TapZone(
                         onTap: () => _openLink(
                           context, _playSearch,
@@ -393,9 +393,9 @@ class RoyalVillageEntryPage extends StatelessWidget {
                     ),
                     Positioned(
                       left: 650,
-                      top: 1355,
+                      top: 1440,
                       width: 146,
-                      height: 138,
+                      height: 85,
                       child: _TapZone(
                         onTap: () => _openLink(
                           context, _appStoreSearch,
@@ -405,18 +405,18 @@ class RoyalVillageEntryPage extends StatelessWidget {
                     ),
                     Positioned(
                       left: 812,
-                      top: 1350,
+                      top: 1435,
                       width: 148,
-                      height: 145,
+                      height: 90,
                       child: _TapZone(
                         onTap: () => _openWhatsApp(context),
                       ),
                     ),
                     Positioned(
                       left: 967,
-                      top: 1350,
+                      top: 1435,
                       width: 166,
-                      height: 145,
+                      height: 90,
                       child: _TapZone(
                         onTap: () => _openLink(
                           context, _instagram,
