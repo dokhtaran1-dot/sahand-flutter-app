@@ -19,6 +19,8 @@ void main() {
     await tester.tap(find.byWidgetPredicate((w) => w is RoyalTouchTarget && w.label == 'میراث سهند'));
     await tester.pumpAndSettle();
     expect(find.byType(HeritagePage), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('حامد قنبری'), 250, scrollable: find.byType(Scrollable).last);
+    await tester.pumpAndSettle();
     expect(find.text('حامد قنبری'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
