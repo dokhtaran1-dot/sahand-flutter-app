@@ -28,7 +28,7 @@ class _PhotoOrbitState extends State<PhotoOrbit> with SingleTickerProviderStateM
       onHorizontalDragUpdate: (d) => setState(() => dragOffset += d.delta.dx * .008),
       onHorizontalDragEnd: (_) => updateMotion(),
       onHorizontalDragCancel: updateMotion,
-      child: AnimatedBuilder(animation: orbit, builder: (_, __) => Stack(alignment: Alignment.center, children: [
+      child: SizedBox(width: box.maxWidth, height: 380, child: AnimatedBuilder(animation: orbit, builder: (_, __) => Stack(alignment: Alignment.center, children: [
         Container(width: box.maxWidth * .74, height: 270, decoration: BoxDecoration(borderRadius: BorderRadius.circular(200), border: Border.all(color: const Color(0x557F7048)))),
         Container(width: 100, height: 100, decoration: BoxDecoration(shape: BoxShape.circle, gradient: const RadialGradient(colors: [Color(0xFF28543A), Color(0xFF071711)]), border: Border.all(color: const Color(0xFFD6B15E))), child: Center(child: Text(widget.center, style: const TextStyle(fontFamily:'serif', fontSize: 40, color: Color(0xFFE7C77D))))),
         for (var i = 0; i < widget.images.length; i++) Positioned(
@@ -44,7 +44,7 @@ class _PhotoOrbitState extends State<PhotoOrbit> with SingleTickerProviderStateM
             ]),
           ))),
         ),
-      ])),
+      ]))),
     ))),
     TextButton.icon(onPressed: () { setState(() => paused = !paused); updateMotion(); }, icon: Icon(paused ? Icons.play_arrow : Icons.pause), label: Text(paused ? 'ادامهٔ چرخش' : 'توقف چرخش')),
     const Text('برای مشاهده لمس کنید · برای چرخاندن بکشید', textDirection: TextDirection.rtl, style: TextStyle(color: Color(0xFFCBBF9E), fontSize: 12)),
