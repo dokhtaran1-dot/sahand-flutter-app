@@ -203,7 +203,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
   }
 
   static const _salons = ['Salon Lumière', 'Salon Noir', 'Salon Jardin', 'Salon Privé', 'RV Lounge Impérial Classique', 'Salon Doré', 'Salon Âme du Poète', 'Salon Royal'];
-  static const _photos = ['Salon_lumiere.png', 'Salon_noir.png', 'salon_jardin.png', 'Salon_prive.png', 'rv_lounge_imperial_classique.png', 'salon_dore.png', 'salon_ame_du_poete.png', 'Salon_royal.png'];
+  static const _photos = ['salon_gallery/lumiere/design_01.webp', 'salon_gallery/noir/design_01.webp', 'salon_gallery/jardin/design_01.webp', 'salon_gallery/prive/design_01.webp', 'salon_gallery/imperial/design_01.webp', 'salon_gallery/dore/design_01.webp', 'salon_gallery/ame_du_poete/design_01.webp', 'salon_gallery/royal/design_01.webp'];
 
   @override
   Widget build(BuildContext context) => Scaffold(
