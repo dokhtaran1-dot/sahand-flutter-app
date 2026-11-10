@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'photo_orbit.dart';
 import 'reservation_page.dart';
 import 'royal_club_game_page.dart';
 import 'rv_gallery_page.dart';
@@ -201,271 +202,53 @@ class RoyalVillageEntryPage extends StatelessWidget {
     );
   }
 
+  static const _salons = ['Salon Lumière', 'Salon Noir', 'Salon Jardin', 'Salon Privé', 'RV Lounge Impérial Classique', 'Salon Doré', 'Salon Âme du Poète', 'Salon Royal'];
+  static const _photos = ['Salon_lumiere.png', 'Salon_noir.png', 'salon_jardin.png', 'Salon_prive.png', 'rv_lounge_imperial_classique.png', 'salon_dore.png', 'salon_ame_du_poete.png', 'Salon_royal.png'];
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          // RV is a full-screen poster on phones: no black remainder.
-          // We deliberately fill the viewport while keeping the original
-          // bitmap at high filtering quality. Hotspots use the same x/y
-          // factors, so every salon/footer button stays aligned.
-          final sx = constraints.maxWidth / _designWidth;
-          final sy = constraints.maxHeight / _designHeight;
-
-          return SizedBox.expand(
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image.asset(
-                  _art,
-                  width: constraints.maxWidth,
-                  height: constraints.maxHeight,
-                  fit: BoxFit.fill,
-                  filterQuality: FilterQuality.high,
-                  isAntiAlias: true,
-                  gaplessPlayback: true,
-                ),
-                Stack(
-                  children: [
-                    // Back
-                    Positioned(
-                      left: 0,
-                      top: 0,
-                      width: 120,
-                      height: 130,
-                      child: _TapZone(
-                        onTap: () => Navigator.of(context).pop(),
-                      ),
-                    ),
-
-                    // Location / Tabriz
-                    Positioned(
-                      left: 850,
-                      top: 0,
-                      width: 145,
-                      height: 120,
-                      child: _TapZone(
-                        onTap: () => _info(
-                          context,
-                          'Royal Village • Tabriz',
-                          'رویال ویلیج، تبریز\nبرای رزرو سالن و تجربه اختصاصی از بخش رزرو استفاده کنید.',
-                        ),
-                      ),
-                    ),
-
-                    // Top menu
-                    Positioned(
-                      left: 995,
-                      top: 0,
-                      width: 149,
-                      height: 125,
-                      child: _TapZone(onTap: () => _openGallery(context)),
-                    ),
-
-                    // Top row salons
-                    Positioned(
-                      left: 22,
-                      top: 520,
-                      width: 270,
-                      height: 220,
-                      child: _TapZone(
-                        onTap: () => _openSalon(
-                          context,
-                          'RV Lounge Impérial Classique',
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 296,
-                      top: 520,
-                      width: 255,
-                      height: 220,
-                      child: _TapZone(
-                        onTap: () => _openSalon(context, 'Salon Jardin'),
-                      ),
-                    ),
-                    Positioned(
-                      left: 554,
-                      top: 520,
-                      width: 255,
-                      height: 220,
-                      child: _TapZone(
-                        onTap: () => _openSalon(context, 'Salon Lumière'),
-                      ),
-                    ),
-                    Positioned(
-                      left: 812,
-                      top: 520,
-                      width: 310,
-                      height: 220,
-                      child: _TapZone(
-                        onTap: () => _openSalon(context, 'Salon Doré'),
-                      ),
-                    ),
-
-                    // Grand Salon
-                    Positioned(
-                      left: 22,
-                      top: 744,
-                      width: 1100,
-                      height: 248,
-                      child: _TapZone(
-                        onTap: () => _openSalon(context, 'Grand Salon'),
-                      ),
-                    ),
-
-                    // Bottom row salons
-                    Positioned(
-                      left: 22,
-                      top: 995,
-                      width: 270,
-                      height: 220,
-                      child: _TapZone(
-                        onTap: () => _openSalon(context, 'Salon Royal'),
-                      ),
-                    ),
-                    Positioned(
-                      left: 296,
-                      top: 995,
-                      width: 255,
-                      height: 220,
-                      child: _TapZone(
-                        onTap: () => _openSalon(context, 'Salon Privé'),
-                      ),
-                    ),
-                    Positioned(
-                      left: 554,
-                      top: 995,
-                      width: 255,
-                      height: 220,
-                      child: _TapZone(
-                        onTap: () => _openSalon(context, 'Salon Noir'),
-                      ),
-                    ),
-                    Positioned(
-                      left: 812,
-                      top: 995,
-                      width: 310,
-                      height: 220,
-                      child: _TapZone(
-                        onTap: () => _openSalon(context, 'Salon Âme du Poète'),
-                      ),
-                    ),
-
-                    // The approved poster remains an unchanged bitmap.
-                    // These transparent hit regions match its footer icons:
-                    // app mock-up / Bazaar / Google Play / App Store /
-                    // WhatsApp / Instagram.
-                    Positioned(
-                      left: 10,
-                      top: 1340,
-                      width: 323,
-                      height: 161,
-                      child: _TapZone(
-                        onTap: () => _openStoreChooser(context),
-                      ),
-                    ),
-                    Positioned(
-                      left: 347,
-                      top: 1355,
-                      width: 146,
-                      height: 138,
-                      child: _TapZone(
-                        onTap: () => _openLink(
-                          context, _bazaarSearch,
-                          title: 'جستجو در کافه بازار',
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 497,
-                      top: 1355,
-                      width: 150,
-                      height: 138,
-                      child: _TapZone(
-                        onTap: () => _openLink(
-                          context, _playSearch,
-                          title: 'جستجو در Google Play',
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 650,
-                      top: 1355,
-                      width: 146,
-                      height: 138,
-                      child: _TapZone(
-                        onTap: () => _openLink(
-                          context, _appStoreSearch,
-                          title: 'جستجو در App Store',
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 812,
-                      top: 1350,
-                      width: 148,
-                      height: 145,
-                      child: _TapZone(
-                        onTap: () => _openWhatsApp(context),
-                      ),
-                    ),
-                    Positioned(
-                      left: 967,
-                      top: 1350,
-                      width: 166,
-                      height: 145,
-                      child: _TapZone(
-                        onTap: () => _openLink(
-                          context, _instagram,
-                          title: 'Instagram • the_royalmall',
-                        ),
-                      ),
-                    ),
-
-
-
-
-                  ].map((widget) {
-                    if (widget is Positioned) {
-                      return Positioned(
-                        left: widget.left == null ? null : widget.left! * sx,
-                        top: widget.top == null ? null : widget.top! * sy,
-                        right: widget.right == null ? null : widget.right! * sx,
-                        bottom: widget.bottom == null ? null : widget.bottom! * sy,
-                        width: widget.width == null ? null : widget.width! * sx,
-                        height: widget.height == null ? null : widget.height! * sy,
-                        child: widget.child,
-                      );
-                    }
-                    return widget;
-                  }).toList(),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: const Color(0xFF061710),
+    appBar: AppBar(backgroundColor: const Color(0xFF061710), foregroundColor: _gold,
+      title: const Text('LE ROYAL VILLAGE CAFÉ', style: TextStyle(fontFamily: 'serif', fontSize: 17)),
+      actions: [IconButton(tooltip: 'گالری', icon: const Icon(Icons.photo_library_outlined), onPressed: () => _openGallery(context))]),
+    body: ListView(children: [
+      AspectRatio(aspectRatio: 1.65, child: Stack(fit: StackFit.expand, children: [
+        Image.asset('assets/image/Grand_Salon_Original.png', fit: BoxFit.cover, alignment: Alignment.topCenter),
+        const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Color(0xFF061710)]))),
+        const Positioned(left: 20, right: 20, bottom: 16, child: Column(children: [
+          Text('RV', style: TextStyle(fontFamily: 'serif', fontSize: 50, color: _gold)),
+          Text('رویال ویلاژ کافه', textDirection: TextDirection.rtl, style: TextStyle(fontSize: 25, color: Colors.white)),
+          Text('کافه و رستوران · سالن‌های اختصاصی', textDirection: TextDirection.rtl, style: TextStyle(fontSize: 14, color: Color(0xFFF4DFAF))),
+        ])),
+      ])),
+      Padding(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8), child: Row(children: [
+        Expanded(child: FilledButton.icon(style: FilledButton.styleFrom(backgroundColor: _gold, foregroundColor: const Color(0xFF061710)), onPressed: () => _openReservation(context), icon: const Icon(Icons.calendar_month), label: const Text('رزرو میز و سالن'))),
+        const SizedBox(width: 12),
+        OutlinedButton(onPressed: () => _openWhatsApp(context), child: const Text('ارتباط')),
+      ])),
+      const Padding(padding: EdgeInsets.only(top: 26), child: Text('OUR PRIVATE SALONS', textAlign: TextAlign.center, style: TextStyle(color: _gold, letterSpacing: 3, fontSize: 17))),
+      PhotoOrbit(images: _photos.map((p) => 'assets/image/$p').toList(), labels: _salons, onSelected: (i) => _openSalon(context, _salons[i])),
+      Padding(padding: const EdgeInsets.all(20), child: LayoutBuilder(builder: (context, constraints) => Wrap(spacing: 12, runSpacing: 16, children: [
+        for (var i = 0; i < _salons.length; i++) SizedBox(width: (constraints.maxWidth - 12) / 2, child: _SalonCard(name: _salons[i], image: 'assets/image/${_photos[i]}', onTap: () => _openSalon(context, _salons[i]))),
+        SizedBox(width: constraints.maxWidth, child: _SalonCard(name: 'Grand Salon', image: 'assets/image/Grand_Salon_Original.png', onTap: () => _openSalon(context, 'Grand Salon'))),
+      ]))),
+      Padding(padding: const EdgeInsets.all(20), child: OutlinedButton.icon(onPressed: () => _openGallery(context), icon: const Icon(Icons.photo_library_outlined), label: const Text('مشاهدهٔ گالری'))),
+      const Padding(padding: EdgeInsets.only(bottom: 32), child: Text('POWERED BY SAHAND CONSORTIUM', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, letterSpacing: 2, color: _gold))),
+    ]),
+  );
 }
 
-class _TapZone extends StatelessWidget {
+class _SalonCard extends StatelessWidget {
+  final String name, image;
   final VoidCallback onTap;
-  const _TapZone({required this.onTap});
-
+  const _SalonCard({required this.name, required this.image, required this.onTap});
   @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Semantics(button: true, label: name, child: Material(
+    color: const Color(0xFF10291D), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: const BorderSide(color: Color(0xFF806B40))), clipBehavior: Clip.antiAlias,
+    child: InkWell(onTap: onTap, child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      AspectRatio(aspectRatio: 1.2, child: Image.asset(image, fit: BoxFit.cover, alignment: Alignment.topCenter)),
+      Padding(padding: const EdgeInsets.all(12), child: Text(name, style: const TextStyle(color: Color(0xFFE7C77D), fontFamily: 'serif', fontSize: 16))),
+      const Padding(padding: EdgeInsets.fromLTRB(12, 0, 12, 14), child: Row(children: [Expanded(child: Text('مشاهده و رزرو', textDirection: TextDirection.rtl, style: TextStyle(fontSize: 12))), Icon(Icons.arrow_forward, size: 18, color: Color(0xFFE7C77D))])),
+    ])),
+  ));
 }

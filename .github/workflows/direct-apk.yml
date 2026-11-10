@@ -1,4 +1,4 @@
-name: Build ROYAL1 v1.0.20 Direct ARM64 APK
+name: Build ROYAL1 v1.0.21 Direct ARM64 APK
 
 on:
   push:
@@ -67,6 +67,15 @@ jobs:
       - name: Get packages
         run: flutter pub get
 
+      - name: Verify approved navigation and capture previews
+        run: flutter test test/royal_navigation_test.dart --update-goldens
+
+      - name: Upload tested screen previews
+        uses: actions/upload-artifact@v4
+        with:
+          name: royal-one-v21-previews
+          path: test/goldens/*.png
+
       - name: Work around app_links Android compile SDK bug
         run: |
           plugin_gradle="$HOME/.pub-cache/hosted/pub.dev/app_links-6.4.1/android/build.gradle"
@@ -81,28 +90,28 @@ jobs:
           content = gradle.read_text()
           needle = '        release {\n'
           assert content.count(needle) == 1
-          gradle.write_text(content.replace(needle, needle + '            applicationIdSuffix = ".preview20"\n'))
+          gradle.write_text(content.replace(needle, needle + '            applicationIdSuffix = ".preview21"\n'))
           manifest = Path('android/app/src/main/AndroidManifest.xml')
           content = manifest.read_text()
           assert 'android:label="ROYAL 1"' in content
-          manifest.write_text(content.replace('android:label="ROYAL 1"', 'android:label="ROYAL ONE 1.0.20"'))
+          manifest.write_text(content.replace('android:label="ROYAL 1"', 'android:label="ROYAL ONE 1.0.21"'))
           PY
 
       - name: Build ARM64 APK
         run: |
-          flutter build apk --release --split-per-abi --build-name 1.0.20 --build-number 22 \
+          flutter build apk --release --split-per-abi --build-name 1.0.21 --build-number 23 \
             --dart-define=SUPABASE_URL=https://jwddfcsikkialxzbrhle.supabase.co \
             --dart-define=SUPABASE_ANON_KEY=sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve \
             --dart-define=ROYAL_CLUB_BACKEND_READY=true
-          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.20_ARM64.apk
-          test -s build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.20_ARM64.apk
-          sha256sum build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.20_ARM64.apk
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.21_ARM64.apk
+          test -s build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.21_ARM64.apk
+          sha256sum build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.21_ARM64.apk
 
       - name: Upload direct APK
         uses: actions/upload-artifact@v4
         with:
-          name: ROYAL1-v1.0.20-arm64
-          path: build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.20_ARM64.apk
+          name: ROYAL1-v1.0.21-arm64
+          path: build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.21_ARM64.apk
           compression-level: 0
 
       - name: Publish optimized APK to permanent GitHub Release
@@ -110,15 +119,15 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
         run: |
-          tag='royal-one-v1.0.20'
-          apk='build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.20_ARM64.apk'
+          tag='royal-one-v1.0.21'
+          apk='build/app/outputs/flutter-apk/ROYAL_ONE_v1.0.21_ARM64.apk'
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" "$apk" --clobber
           else
             gh release create "$tag" "$apk" \
               --target "$GITHUB_SHA" \
-              --title 'ROYAL ONE v1.0.20 — Android preview' \
-              --notes 'ROYAL ONE v1.0.20 | ARM64 preview for modern Samsung devices. Installs separately to protect existing app data. Luxury copper RE, champagne-black RS and amethyst RH monograms in the footer.' \
+              --title 'ROYAL ONE v1.0.21 — Android preview' \
+              --notes 'ROYAL ONE v1.0.21 | ARM64 preview for modern Samsung devices. Installs separately to protect existing app data. Approved home artwork with interactive portals, Sahand heritage, rotating RV salon photos, and the complete RH mini-site.' \
               --prerelease || gh release upload "$tag" "$apk" --clobber
           fi
           gh release view "$tag" --json assets --jq '.assets[].name'

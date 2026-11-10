@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'src/heritage_page.dart';
 
 class WelcomePage extends StatefulWidget {
   final VoidCallback onEnter;
@@ -123,10 +124,11 @@ class _WelcomePageState extends State<WelcomePage> {
                                 switchInCurve: Curves.easeOut,
                                 switchOutCurve: Curves.easeIn,
                                 transitionBuilder: (child, animation) =>
-                                    FadeTransition(
-                                  opacity: animation,
-                                  child: child,
-                                ),
+                                    AnimatedBuilder(animation: animation, child: child, builder: (_, card) => Transform(
+                                      alignment: Alignment.center,
+                                      transform: Matrix4.identity()..setEntry(3, 2, .001)..rotateY((1 - animation.value) * .35),
+                                      child: Opacity(opacity: animation.value, child: card),
+                                    )),
                                 layoutBuilder:
                                     (currentChild, previousChildren) => Stack(
                                   fit: StackFit.expand,
@@ -144,6 +146,8 @@ class _WelcomePageState extends State<WelcomePage> {
                                   gaplessPlayback: true,
                                 ),
                               ),
+                              Align(alignment: Alignment.centerLeft, child: IconButton.filledTonal(tooltip: 'قبلی', onPressed: _previous, icon: const Icon(Icons.chevron_left))),
+                              Align(alignment: Alignment.centerRight, child: IconButton.filledTonal(tooltip: 'بعدی', onPressed: _next, icon: const Icon(Icons.chevron_right))),
                             ],
                           ),
                         ),
@@ -169,6 +173,11 @@ class _WelcomePageState extends State<WelcomePage> {
                       ),
                     ),
 
+                    Positioned(left: canvasWidth * .08, right: canvasWidth * .08, top: canvasHeight * .735, height: canvasHeight * .045,
+                      child: Center(child: OutlinedButton.icon(style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFFE7C77D), backgroundColor: const Color(0xCC071711)),
+                        onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HeritagePage())),
+                        icon: const Icon(Icons.auto_awesome, size: 16), label: const Text('SC · میراث سهند · حامد قنبری')))),
+
                     // ENTER THE ROYAL WORLD / ورود.
                     Positioned(
                       left: canvasWidth * .105,
@@ -178,7 +187,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       child: GestureDetector(
                         behavior: HitTestBehavior.translucent,
                         onTap: widget.onEnter,
-                        child: const SizedBox.expand(),
+                        child: const Semantics(button: true, label: 'ورود به دنیای رویال', child: SizedBox.expand()),
                       ),
                     ),
                   ],
