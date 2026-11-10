@@ -187,7 +187,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       child: GestureDetector(
                         behavior: HitTestBehavior.translucent,
                         onTap: widget.onEnter,
-                        child: const Semantics(button: true, label: 'ورود به دنیای رویال', child: SizedBox.expand()),
+                        child: Semantics(button: true, label: 'ورود به دنیای رویال', child: SizedBox.expand()),
                       ),
                     ),
                   ],

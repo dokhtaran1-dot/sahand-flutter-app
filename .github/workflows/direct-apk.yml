@@ -8,7 +8,9 @@ on:
       - '.github/workflows/direct-apk.yml'
       - 'android/settings.gradle.kts'
       - 'android/app/build.gradle.kts'
-      - 'lib/src/home_page.dart'
+      - 'lib/**'
+      - 'assets/**'
+      - 'test/**'
       - 'pubspec.yaml'
   workflow_dispatch:
 
