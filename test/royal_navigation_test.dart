@@ -1,18 +1,34 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sahand_consortium/src/home_page.dart';
 import 'package:sahand_consortium/src/heritage_page.dart';
 import 'package:sahand_consortium/src/royal_village_page.dart';
 
-Widget app() => MaterialApp(theme: ThemeData.dark(), builder: (context, child) => MediaQuery(data: MediaQuery.of(context).copyWith(disableAnimations: true), child: child!), home: const HomePage());
+Widget app() => MaterialApp(theme: ThemeData.dark().copyWith(textTheme: ThemeData.dark().textTheme.apply(fontFamily: 'PreviewSans')), builder: (context, child) => MediaQuery(data: MediaQuery.of(context).copyWith(disableAnimations: true), child: child!), home: const HomePage());
+Future<void> loadImages(WidgetTester tester, BuildContext context, List<String> assets) async {
+  await tester.runAsync(() async {
+    for (final asset in assets) { await precacheImage(AssetImage(asset), context); }
+  });
+  await tester.pumpAndSettle();
+}
 void main() {
+  setUpAll(() async {
+    final font = File('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf');
+    if (await font.exists()) {
+      final loader = FontLoader('PreviewSans')..addFont(Future.value(ByteData.sublistView(await font.readAsBytes())));
+      await loader.load();
+    }
+  });
   testWidgets('Approved home: all portals fit and heritage is reachable', (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(app());
-    await tester.pumpAndSettle();
+    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/royal_one_approved_v21.jpg']);
     expect(tester.takeException(), isNull);
     expect(find.byWidgetPredicate((w) => w is RoyalTouchTarget && w.label.startsWith('ENTER ')), findsNWidgets(3));
     await expectLater(find.byType(HomePage), matchesGoldenFile('goldens/royal_one_home_390.png'));
@@ -30,10 +46,11 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(app());
-    await tester.pumpAndSettle();
+    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/royal_one_approved_v21.jpg']);
     await tester.tap(find.byWidgetPredicate((w) => w is RoyalTouchTarget && w.label == 'ENTER رویال ویلاژ کافه'));
     await tester.pumpAndSettle();
     expect(find.byType(RoyalVillagePage), findsOneWidget);
+    await loadImages(tester, tester.element(find.byType(RoyalVillagePage)), ['Grand_Salon_Original.png', 'Salon_lumiere.png', 'Salon_noir.png', 'salon_jardin.png', 'Salon_prive.png', 'rv_lounge_imperial_classique.png', 'salon_dore.png', 'salon_ame_du_poete.png', 'Salon_royal.png'].map((p) => 'assets/image/$p').toList());
     expect(find.text('رزرو میز و سالن'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await expectLater(find.byType(RoyalVillagePage), matchesGoldenFile('goldens/royal_village_360.png'));
