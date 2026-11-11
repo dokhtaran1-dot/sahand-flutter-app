@@ -65,6 +65,25 @@ class _HomePageState extends State<HomePage> {
       child: ClipRect(child: Stack(children: [
         const Positioned(left: 0, top: -topCrop, width: width, height: 1536,
           child: Image(image: AssetImage(art), fit: BoxFit.fill, filterQuality: FilterQuality.high, excludeFromSemantics: true)),
+        // Local restoration only: keep all original portal artwork untouched.
+        Positioned(left: 0, top: 0, width: 320, height: 292,
+          child: ClipRect(child: ShaderMask(
+            blendMode: BlendMode.dstIn,
+            shaderCallback: (rect) => const LinearGradient(
+              colors: [Colors.white, Colors.white, Colors.transparent],
+              stops: [0, .96, 1],
+            ).createShader(rect),
+            child: Stack(children: [
+              Positioned(left: 0, top: -topCrop, width: width, height: 1536,
+                child: Image.asset('assets/image/sc_restored_v22.png',
+                  fit: BoxFit.fill, filterQuality: FilterQuality.high,
+                  excludeFromSemantics: true)),
+            ]),
+          ))),
+        const Positioned(left: 0, top: 1383, width: width, height: 45,
+          child: ColoredBox(color: Color(0xFF030B08), child: Center(
+            child: Text('ROYAL ONE  ·  V1.0.22  ·  POWERED BY SAHAND CONSORTIUM',
+              style: TextStyle(color: Color(0xFFD7BE78), fontSize: 17, letterSpacing: 1.4))))),
         // Entire portals including their ENTER buttons are interactive.
         zone(33, 451, 306, 718, names[language]![0], () => open(0), radius: 145),
         zone(346, 451, 288, 718, names[language]![1], () => open(1), radius: 145),

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'src/heritage_page.dart';
 
 class WelcomePage extends StatefulWidget {
   final VoidCallback onEnter;
@@ -172,11 +171,6 @@ class _WelcomePageState extends State<WelcomePage> {
                         ),
                       ),
                     ),
-
-                    Positioned(left: canvasWidth * .08, right: canvasWidth * .08, top: canvasHeight * .735, height: canvasHeight * .045,
-                      child: Center(child: OutlinedButton.icon(style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFFE7C77D), backgroundColor: const Color(0xCC071711)),
-                        onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HeritagePage())),
-                        icon: const Icon(Icons.auto_awesome, size: 16), label: const Text('SC · میراث سهند · حامد قنبری')))),
 
                     // ENTER THE ROYAL WORLD / ورود.
                     Positioned(
