@@ -69,19 +69,14 @@ class _WelcomePageState extends State<WelcomePage> {
       body: ClipRect(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final scale = math.max(
+            final scale = math.min(
               constraints.maxWidth / _designWidth,
               constraints.maxHeight / _designHeight,
             );
             final canvasWidth = _designWidth * scale;
             final canvasHeight = _designHeight * scale;
 
-            return OverflowBox(
-              alignment: Alignment.center,
-              minWidth: canvasWidth,
-              maxWidth: canvasWidth,
-              minHeight: canvasHeight,
-              maxHeight: canvasHeight,
+            return Center(
               child: SizedBox(
                 width: canvasWidth,
                 height: canvasHeight,
