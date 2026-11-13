@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+const Color _rsCream = Color(0xFFF3EBDD);
+const Color _rsGold = Color(0xFFDFC189);
 
 /// RS is a self-contained Royal One section; no external mini-site is opened.
 /// Concept designs are labeled as concepts, not finished artist inventory.
@@ -25,8 +29,19 @@ class RoyalSignaturePage extends StatelessWidget {
   ];
 
   static const _note =
-      'این تصاویر ایده‌های مفهومی پیشنهادی برای بررسی و ساخت احتمالی هستند؛ '
-      'آثار ساخته‌شده یا تأییدشدهٔ استاد جعفر درگاهی محسوب نمی‌شوند.';
+      'این ده طرح امضایی بر اساس سفارش قابل ساخت هستند؛ جزئیات اجرا و زمان‌بندی '
+      'با هنرمند هماهنگ می‌شود.';
+
+  void _openGalleryPhoto(BuildContext context, _GalleryItem item) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => _GalleryPhotoViewer(item: item)),
+    );
+  }
+
+  Future<void> _openWhatsApp() async {
+    final uri = Uri.https('wa.me', '/989141159263');
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
 
   void _openArtwork(BuildContext context, _ArtConcept concept) {
     Navigator.of(context).push(
@@ -128,10 +143,142 @@ class RoyalSignaturePage extends StatelessWidget {
             ),
             const SizedBox(height: 23),
             _BeyondGravityFeature(
-              artwork: _concepts.first.asset,
-              onOpen: () => _openArtwork(context, _concepts.first),
+              artwork: 'https://jafar-dargahi-art-royalone.dokhtaran1.chatgpt.site/jafar-dargahi-floating-island.jpg',
+              onOpen: () => _openGalleryPhoto(
+                context,
+                const _GalleryItem(
+                  'https://jafar-dargahi-art-royalone.dokhtaran1.chatgpt.site/jafar-dargahi-floating-island.jpg',
+                  'جزیرهٔ معلق',
+                  'Floating Island',
+                ),
+              ),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 25),
+            const Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                '01 / SELECTED INSTALLATION',
+                style: TextStyle(
+                  fontSize: 9,
+                  color: _gold,
+                  letterSpacing: 1.6,
+                ),
+              ),
+            ),
+            const SizedBox(height: 7),
+            const Text(
+              'جایی میان زمین و خیال',
+              textDirection: TextDirection.rtl,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                color: _cream,
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'اثر شاخص استاد جعفر درگاهی در رویال مال تبریز؛ جزیره‌ای معلق با خانه‌ای کوچک، خزه، گیاه و بافت سنگ.',
+              textDirection: TextDirection.rtl,
+              textAlign: TextAlign.right,
+              style: TextStyle(color: _muted, fontSize: 13, height: 1.9),
+            ),
+            const SizedBox(height: 24),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'THE ART COLLECTION · 04',
+                  style: TextStyle(
+                    fontSize: 8,
+                    color: _gold,
+                    letterSpacing: 1.3,
+                  ),
+                ),
+                Text(
+                  'آثار و جزئیات',
+                  textDirection: TextDirection.rtl,
+                  style: TextStyle(
+                    fontSize: 19,
+                    color: _cream,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 13),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _gallery.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 11,
+                childAspectRatio: .78,
+              ),
+              itemBuilder: (context, index) => _GalleryTile(
+                item: _gallery[index],
+                onTap: () => _openGalleryPhoto(context, _gallery[index]),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.fromLTRB(17, 16, 17, 17),
+              decoration: BoxDecoration(
+                color: const Color(0xFF101A13),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0x557B694A)),
+              ),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'BEYOND GRAVITY',
+                    style: TextStyle(
+                      fontSize: 9,
+                      color: _gold,
+                      letterSpacing: 2.1,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'سنگ، طبیعت و خیال',
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(
+                      color: _cream,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(height: 6),
+                  Text(
+                    'از خانه‌ای کوچک با الهام از یک دهکده در اسلواکی تا صخره‌ای پوشیده از طبیعت؛ این اثر، تضاد میان سنگینی و شناوری را به تصویری شاعرانه تبدیل می‌کند.',
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.right,
+                    style: TextStyle(color: _muted, fontSize: 12, height: 1.9),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: _openWhatsApp,
+                icon: const Icon(Icons.chat_bubble_outline_rounded),
+                label: const Text(
+                  'استعلام قیمت و سفارش از واتساپ',
+                  textDirection: TextDirection.rtl,
+                ),
+                style: FilledButton.styleFrom(
+                  backgroundColor: _gold,
+                  foregroundColor: _black,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  textStyle: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+              ),
+            ),
             const SizedBox(height: 21),
             Container(
               padding: const EdgeInsets.fromLTRB(19, 18, 19, 18),
@@ -164,8 +311,8 @@ class RoyalSignaturePage extends StatelessWidget {
                   ),
                   SizedBox(height: 9),
                   Text(
-                    'مجسمه‌سازی، چیدمان هنری و جهانِ جزیره‌های معلق؛ '
-                    'پیوند طبیعت، فرم و خیال در آثاری که جاذبه را به چالش می‌کشند.',
+                    'عضو تیم هنری کنسرسیوم سهند و مجری آثار هنری برای مجموعهٔ رویال مال تبریز. '
+                    'در آثار او، طبیعت، فرم و خیال در جهانِ جزیره‌های معلق به هم می‌رسند.',
                     textDirection: TextDirection.rtl,
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -330,9 +477,8 @@ class RoyalSignaturePage extends StatelessWidget {
   }
 }
 
-/// Native Royal One artist-edition centerpiece. This is a Flutter widget,
-/// not an embedded website or WebView. The hero image is a concept visual,
-/// while the artist's real documentary photograph is not bundled in this app.
+/// Native Royal One artist-edition centerpiece. The screen is Flutter UI;
+/// its documentary photo is loaded from the mini-site's public image assets.
 class _BeyondGravityFeature extends StatelessWidget {
   final String artwork;
   final VoidCallback onOpen;
@@ -364,22 +510,19 @@ class _BeyondGravityFeature extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.asset(
-                    artwork,
-                    fit: BoxFit.cover,
-                    filterQuality: FilterQuality.high,
-                  ),
+                  Image.network(artwork, fit: BoxFit.cover, filterQuality: FilterQuality.high, errorBuilder: (_, __, ___) => const ColoredBox(color: Color(0xFF111A14), child: Center(child: Icon(Icons.image_not_supported_outlined, color: Color(0xFFDFC189), size: 38)))),
+                  const _FloatingIslandAtmosphere(),
                   const DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        stops: [0, 0.3, 0.66, 1],
+                        stops: [0, .24, .57, 1],
                         colors: [
-                          Color(0xD008140C),
-                          Color(0x7108140C),
-                          Color(0xBB07110A),
-                          Color(0xFF07100A),
+                          Color(0x9208140C),
+                          Color(0x2308140C),
+                          Color(0x8A07110A),
+                          Color(0xF507100A),
                         ],
                       ),
                     ),
@@ -411,18 +554,6 @@ class _BeyondGravityFeature extends StatelessWidget {
                         ),
                         const Spacer(),
                         const Text(
-                          'JD',
-                          style: TextStyle(
-                            color: Color(0xC6D7B77B),
-                            fontFamily: 'serif',
-                            fontSize: 68,
-                            fontWeight: FontWeight.w300,
-                            height: 0.9,
-                            letterSpacing: -5,
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        const Text(
                           'BEYOND GRAVITY.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
@@ -432,7 +563,7 @@ class _BeyondGravityFeature extends StatelessWidget {
                             letterSpacing: 2.2,
                           ),
                         ),
-                        const SizedBox(height: 11),
+                        const SizedBox(height: 8),
                         const Text(
                           'هنر، فراتر از جاذبه',
                           textDirection: TextDirection.rtl,
@@ -452,22 +583,19 @@ class _BeyondGravityFeature extends StatelessWidget {
                             letterSpacing: 2.4,
                           ),
                         ),
-                        const SizedBox(height: 17),
+                        const SizedBox(height: 7),
                         const Text(
-                          'SCULPTURE  ·  SUSPENSION  ·  NATURE',
+                          'FLOATING ISLAND · ROYAL MALL, TABRIZ',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Color(0xFFE3D1B0),
-                            fontSize: 9,
-                            letterSpacing: 1.5,
+                            fontSize: 8,
+                            letterSpacing: 1.2,
                           ),
                         ),
                         const SizedBox(height: 16),
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 25,
-                            vertical: 12,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
                           decoration: BoxDecoration(
                             color: const Color(0xFFD3AF71),
                             borderRadius: BorderRadius.circular(2),
@@ -476,7 +604,7 @@ class _BeyondGravityFeature extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                'مشاهده مجموعه',
+                                'مشاهدهٔ جزیره',
                                 textDirection: TextDirection.rtl,
                                 style: TextStyle(
                                   color: Color(0xFF121711),
@@ -485,19 +613,8 @@ class _BeyondGravityFeature extends StatelessWidget {
                                 ),
                               ),
                               SizedBox(width: 12),
-                              Icon(Icons.arrow_forward_ios,
-                                  color: Color(0xFF121711), size: 13),
+                              Icon(Icons.arrow_forward_ios, color: Color(0xFF121711), size: 13),
                             ],
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        const Text(
-                          'CONCEPT VISUAL  /  JD SIGNATURE COLLECTION',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Color(0xFFC0C8BB),
-                            fontSize: 8,
-                            letterSpacing: 1.1,
                           ),
                         ),
                       ],
@@ -511,6 +628,178 @@ class _BeyondGravityFeature extends StatelessWidget {
       },
     );
   }
+}
+
+class _FloatingIslandAtmosphere extends StatelessWidget {
+  const _FloatingIslandAtmosphere();
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+        builder: (context, constraints) => IgnorePointer(
+          child: Stack(
+            children: [
+              Positioned(
+                left: constraints.maxWidth * .445,
+                top: constraints.maxHeight * .465,
+                width: 38,
+                height: 46,
+                child: const DecoratedBox(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0x55E8AC53),
+                        blurRadius: 22,
+                        spreadRadius: 7,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                left: constraints.maxWidth * .355,
+                top: constraints.maxHeight * .59,
+                width: 92,
+                height: 102,
+                child: const CustomPaint(painter: _SteamPainter()),
+              ),
+            ],
+          ),
+        ),
+      );
+}
+
+class _SteamPainter extends CustomPainter {
+  const _SteamPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0x32F5F3E9)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4.5
+      ..strokeCap = StrokeCap.round
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5);
+    final paths = [
+      Path()
+        ..moveTo(size.width * .35, size.height)
+        ..cubicTo(size.width * .16, size.height * .70, size.width * .62, size.height * .44, size.width * .45, 0),
+      Path()
+        ..moveTo(size.width * .60, size.height * .94)
+        ..cubicTo(size.width * .82, size.height * .65, size.width * .35, size.height * .35, size.width * .72, size.height * .05),
+    ];
+    for (final path in paths) {
+      canvas.drawPath(path, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _SteamPainter oldDelegate) => false;
+}
+
+class _GalleryItem {
+  final String asset;
+  final String titleFa;
+  final String titleEn;
+
+  const _GalleryItem(this.asset, this.titleFa, this.titleEn);
+}
+
+const List<_GalleryItem> _gallery = [
+  _GalleryItem('https://jafar-dargahi-art-royalone.dokhtaran1.chatgpt.site/gallery-room-luxury.png', 'نمای کامل چیدمان', 'The Installation in Space'),
+  _GalleryItem('https://jafar-dargahi-art-royalone.dokhtaran1.chatgpt.site/gallery-cottage-luxury.png', 'دهکدهٔ خزه‌پوش', 'Moss-Covered Cottage'),
+  _GalleryItem('https://jafar-dargahi-art-royalone.dokhtaran1.chatgpt.site/classical-bust-gallery.png', 'تندیس کلاسیک', 'Classical Bust'),
+  _GalleryItem('https://jafar-dargahi-art-royalone.dokhtaran1.chatgpt.site/gallery-forest-luxury.png', 'جزیرهٔ درختی معلق', 'Floating Woodland'),
+];
+
+class _GalleryTile extends StatelessWidget {
+  final _GalleryItem item;
+  final VoidCallback onTap;
+
+  const _GalleryTile({required this.item, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) => Material(
+        color: const Color(0xFF111A14),
+        borderRadius: BorderRadius.circular(14),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.network(item.asset, fit: BoxFit.cover, filterQuality: FilterQuality.high, errorBuilder: (_, __, ___) => const ColoredBox(color: Color(0xFF111A14), child: Center(child: Icon(Icons.image_not_supported_outlined, color: _rsGold, size: 30)))),
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Color(0xE8050906)],
+                    stops: [.43, 1],
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 11,
+                left: 9,
+                bottom: 12,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      item.titleFa,
+                      textDirection: TextDirection.rtl,
+                      textAlign: TextAlign.right,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: _rsCream, fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      item.titleEn,
+                      textAlign: TextAlign.right,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: _rsGold, fontSize: 9, fontFamily: 'serif'),
+                    ),
+                  ],
+                ),
+              ),
+              const Positioned(
+                top: 10,
+                left: 10,
+                child: Icon(Icons.zoom_in_rounded, color: _rsCream, size: 20),
+              ),
+            ],
+          ),
+        ),
+      );
+}
+
+class _GalleryPhotoViewer extends StatelessWidget {
+  final _GalleryItem item;
+
+  const _GalleryPhotoViewer({required this.item});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        backgroundColor: const Color(0xFF050906),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF050906),
+          foregroundColor: _rsGold,
+          centerTitle: true,
+          title: Text(item.titleFa, style: const TextStyle(fontSize: 15)),
+        ),
+        body: SafeArea(
+          child: InteractiveViewer(
+            minScale: 1,
+            maxScale: 5,
+            child: Center(
+              child: Image.network(item.asset, fit: BoxFit.contain, filterQuality: FilterQuality.high, errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported_outlined, color: _rsGold, size: 48)),
+            ),
+          ),
+        ),
+      );
 }
 
 class _ArtConcept {
