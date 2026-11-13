@@ -203,7 +203,26 @@ class RoyalVillageEntryPage extends StatelessWidget {
   }
 
   static const _salons = ['Salon Lumière', 'Salon Noir', 'Salon Jardin', 'Salon Privé', 'RV Lounge Impérial Classique', 'Salon Doré', 'Salon Âme du Poète', 'Salon Royal'];
-  static const _photos = ['salon_gallery/lumiere/design_01.webp', 'salon_gallery/noir/design_01.webp', 'salon_gallery/jardin/design_01.webp', 'salon_gallery/prive/design_01.webp', 'salon_gallery/imperial/design_01.webp', 'salon_gallery/dore/design_01.webp', 'salon_gallery/ame_du_poete/design_01.webp', 'salon_gallery/royal/design_01.webp'];
+  static const _photos = ['Salon_lumiere.png', 'Salon_noir.png', 'salon_jardin.png', 'Salon_prive.png', 'rv_lounge_imperial_classique.png', 'salon_dore.png', 'salon_ame_du_poete.png', 'Salon_royal.png'];
+
+  void _showFullPhoto(BuildContext context, String title, String asset) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => Scaffold(
+      backgroundColor: const Color(0xFF03120E),
+      appBar: AppBar(backgroundColor: const Color(0xFF03120E), foregroundColor: _gold, title: Text(title)),
+      body: Center(child: InteractiveViewer(
+        minScale: 1, maxScale: 5,
+        child: Image.asset(asset, fit: BoxFit.contain, filterQuality: FilterQuality.high),
+      )),
+      bottomNavigationBar: SafeArea(child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: FilledButton(
+          style: FilledButton.styleFrom(backgroundColor: _gold, foregroundColor: const Color(0xFF061710)),
+          onPressed: () => _openSalon(context, title),
+          child: const Text('مشاهده جزئیات و رزرو سالن'),
+        ),
+      )),
+    )));
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -228,9 +247,10 @@ class RoyalVillageEntryPage extends StatelessWidget {
       ])),
       const Padding(padding: EdgeInsets.only(top: 26), child: Text('OUR PRIVATE SALONS', textAlign: TextAlign.center, style: TextStyle(color: _gold, letterSpacing: 3, fontSize: 17))),
       PhotoOrbit(images: _photos.map((p) => 'assets/image/$p').toList(), labels: _salons, onSelected: (i) => _openSalon(context, _salons[i])),
+      const Padding(padding: EdgeInsets.only(top: 18), child: Text('THE ROYAL SALON COLLECTION', textAlign: TextAlign.center, style: TextStyle(color: _gold, letterSpacing: 2, fontSize: 15))),
       Padding(padding: const EdgeInsets.all(20), child: LayoutBuilder(builder: (context, constraints) => Wrap(spacing: 12, runSpacing: 16, children: [
-        for (var i = 0; i < _salons.length; i++) SizedBox(width: (constraints.maxWidth - 12) / 2, child: _SalonCard(name: _salons[i], image: 'assets/image/${_photos[i]}', onTap: () => _openSalon(context, _salons[i]))),
-        SizedBox(width: constraints.maxWidth, child: _SalonCard(name: 'Grand Salon', image: 'assets/image/Grand_Salon_Original.png', onTap: () => _openSalon(context, 'Grand Salon'))),
+        for (var i = 0; i < _salons.length; i++) SizedBox(width: (constraints.maxWidth - 12) / 2, child: _SalonCard(name: _salons[i], image: 'assets/image/${_photos[i]}', onTap: () => _showFullPhoto(context, _salons[i], 'assets/image/${_photos[i]}'))),
+        SizedBox(width: constraints.maxWidth, child: _SalonCard(name: 'Grand Salon', image: 'assets/image/Grand_Salon_Original.png', onTap: () => _showFullPhoto(context, 'Grand Salon', 'assets/image/Grand_Salon_Original.png'))),
       ]))),
       Padding(padding: const EdgeInsets.all(20), child: OutlinedButton.icon(onPressed: () => _openGallery(context), icon: const Icon(Icons.photo_library_outlined), label: const Text('مشاهدهٔ گالری'))),
       const Padding(padding: EdgeInsets.only(bottom: 32), child: Text('POWERED BY SAHAND CONSORTIUM', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, letterSpacing: 2, color: _gold))),
@@ -246,9 +266,9 @@ class _SalonCard extends StatelessWidget {
   Widget build(BuildContext context) => Semantics(button: true, label: name, child: Material(
     color: const Color(0xFF10291D), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: const BorderSide(color: Color(0xFF806B40))), clipBehavior: Clip.antiAlias,
     child: InkWell(onTap: onTap, child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      AspectRatio(aspectRatio: 1.2, child: Image.asset(image, fit: BoxFit.cover, alignment: Alignment.topCenter)),
+      AspectRatio(aspectRatio: .95, child: Image.asset(image, fit: BoxFit.cover, filterQuality: FilterQuality.high, alignment: Alignment.center)),
       Padding(padding: const EdgeInsets.all(12), child: Text(name, style: const TextStyle(color: Color(0xFFE7C77D), fontFamily: 'serif', fontSize: 16))),
-      const Padding(padding: EdgeInsets.fromLTRB(12, 0, 12, 14), child: Row(children: [Expanded(child: Text('مشاهده و رزرو', textDirection: TextDirection.rtl, style: TextStyle(fontSize: 12))), Icon(Icons.arrow_forward, size: 18, color: Color(0xFFE7C77D))])),
+      const Padding(padding: EdgeInsets.fromLTRB(12, 0, 12, 14), child: Row(children: [Expanded(child: Text('بزرگ‌نمایی تصویر', textDirection: TextDirection.rtl, style: TextStyle(fontSize: 12))), Icon(Icons.arrow_forward, size: 18, color: Color(0xFFE7C77D))])),
     ])),
   ));
 }
