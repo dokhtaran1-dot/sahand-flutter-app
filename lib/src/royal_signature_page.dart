@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
-/// RS artist edition: original proposed designs, not fabricated inventory.
+/// RS is a self-contained Royal One section; no external mini-site is opened.
+/// Concept designs are labeled as concepts, not finished artist inventory.
 class RoyalSignaturePage extends StatelessWidget {
   const RoyalSignaturePage({super.key});
 
@@ -27,12 +27,6 @@ class RoyalSignaturePage extends StatelessWidget {
   static const _note =
       'این تصاویر ایده‌های مفهومی پیشنهادی برای بررسی و ساخت احتمالی هستند؛ '
       'آثار ساخته‌شده یا تأییدشدهٔ استاد جعفر درگاهی محسوب نمی‌شوند.';
-
-  void _openMiniSite(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => const _JafarMiniSitePage()),
-    );
-  }
 
   void _openArtwork(BuildContext context, _ArtConcept concept) {
     Navigator.of(context).push(
@@ -138,52 +132,6 @@ class RoyalSignaturePage extends StatelessWidget {
               onOpen: () => _openArtwork(context, _concepts.first),
             ),
             const SizedBox(height: 14),
-            Material(
-              color: const Color(0xFF111A14),
-              borderRadius: BorderRadius.circular(15),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(15),
-                onTap: () => _openMiniSite(context),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: const Color(0x88DFC189)),
-                  ),
-                  child: const Row(
-                    textDirection: TextDirection.rtl,
-                    children: [
-                      Icon(Icons.open_in_browser_rounded, color: _gold, size: 23),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              'مینی‌سایت اختصاصی استاد جعفر درگاهی',
-                              textDirection: TextDirection.rtl,
-                              style: TextStyle(
-                                color: _cream,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'جزیرهٔ معلق، گالری آثار و مجموعهٔ امضایی',
-                              textDirection: TextDirection.rtl,
-                              style: TextStyle(color: _muted, fontSize: 11),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Icon(Icons.arrow_back_rounded, color: _gold, size: 19),
-                    ],
-                  ),
-                ),
-              ),
-            ),
             const SizedBox(height: 21),
             Container(
               padding: const EdgeInsets.fromLTRB(19, 18, 19, 18),
@@ -380,57 +328,6 @@ class RoyalSignaturePage extends StatelessWidget {
       ),
     );
   }
-}
-
-class _JafarMiniSitePage extends StatefulWidget {
-  const _JafarMiniSitePage();
-
-  @override
-  State<_JafarMiniSitePage> createState() => _JafarMiniSitePageState();
-}
-
-class _JafarMiniSitePageState extends State<_JafarMiniSitePage> {
-  int _progress = 0;
-
-  late final WebViewController _controller = WebViewController()
-    ..setJavaScriptMode(JavaScriptMode.unrestricted)
-    ..setBackgroundColor(const Color(0xFF090C0A))
-    ..setNavigationDelegate(
-      NavigationDelegate(
-        onProgress: (progress) {
-          if (mounted) setState(() => _progress = progress);
-        },
-      ),
-    )
-    ..loadRequest(
-      Uri.parse('https://jafar-dargahi-art-royalone.dokhtaran1.chatgpt.site'),
-    );
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: const Color(0xFF090C0A),
-        appBar: AppBar(
-          backgroundColor: const Color(0xFF090C0A),
-          foregroundColor: const Color(0xFFDFC189),
-          centerTitle: true,
-          title: const Text(
-            'مینی‌سایت جعفر درگاهی',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-          ),
-        ),
-        body: Column(
-          children: [
-            if (_progress < 100)
-              LinearProgressIndicator(
-                value: _progress == 0 ? null : _progress / 100,
-                minHeight: 2,
-                color: const Color(0xFFDFC189),
-                backgroundColor: const Color(0xFF18241E),
-              ),
-            Expanded(child: WebViewWidget(controller: _controller)),
-          ],
-        ),
-      );
 }
 
 /// Native Royal One artist-edition centerpiece. This is a Flutter widget,
