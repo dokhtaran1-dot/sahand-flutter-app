@@ -1,0 +1,64 @@
+name: Import original RS artwork from approved public site
+
+on:
+  push:
+    branches:
+      - integration/rs-offline-assets-pending
+    paths:
+      - '.github/workflows/rs-verified-images-import.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-verified-originals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve only byte-identical original artworks
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets/rs
+          cat > /tmp/original-rs-sha256.txt <<'CHECKSUMS'
+          3fe4c009d36dce520cad9a44e90fc7e5b28c76756a2b9691fc5dbe076d611d71  assets/rs/jd-concept-02.png
+          257e7783c8bbdee403e803f807c47522e3ec88e2f90398944d8d0a381926dc62  assets/rs/jd-concept-03.png
+          d431b45010e61b35aa9ae64b969fd17770b7a132c62fb28f9113f83dcffe3500  assets/rs/jd-concept-04.png
+          1824bdbe7ae93b4fba88666de39324e615aa5c6561335338541a5e7466d2de3d  assets/rs/jd-concept-05.png
+          843088e85c9697e01cc38e7587c946ac8fb7878e5a8f0667feec12777106c5e2  assets/rs/jd-concept-06.png
+          6e76eeada1c52ea0c5e10d54da7a3a5f24a76197f5832cf042ab3d883bbbee2d  assets/rs/jd-concept-07.png
+          ddbf5092ab8760b8587e6cf52e7a3db894790a57093315f2e9ca79ebbd6818e3  assets/rs/jd-concept-08.png
+          01c9aac19e693bb6c919b812d39586d8c6bf7963e9c091a7721b556297f1525b  assets/rs/jd-concept-09.png
+          e0cd902588612317bb23114f330132a781a897f449b7d3f72faea75319fc7612  assets/rs/jd-concept-10.png
+          CHECKSUMS
+          count=0
+          while read -r digest destination; do
+            if [ -s "$destination" ]; then
+              echo "$digest  $destination" | sha256sum -c --status && continue
+            fi
+            name="$(basename "$destination")"
+            for base in 'https://jafar-dargahi-art-royalone.dokhtaran1.chatgpt.site' \
+                        'https://jafar-dargahi-art-royalone.dokhtaran1.chatgpt.site/assets'; do
+              if curl -fsSL --connect-timeout 8 --max-time 45 --retry 1 "$base/$name" -o "$destination.tmp"; then
+                if printf '%s  %s\n' "$digest" "$destination.tmp" | sha256sum -c --status; then
+                  mv "$destination.tmp" "$destination"
+                  echo "Verified original: $name"
+                  count=$((count+1))
+                  break
+                fi
+              fi
+            done
+            rm -f "$destination.tmp"
+          done < /tmp/original-rs-sha256.txt
+          echo "Verified remote originals imported: $count"
+          git add assets/rs/jd-concept-*.png
+          if git diff --cached --quiet; then
+            echo "No verifiable source found; existing assets left unchanged."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Import checksum-verified original Jafar Dargahi concept images'
+          git push origin HEAD:integration/rs-offline-assets-pending
