@@ -4,9 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Local prototype score store. NOT a cross-device leaderboard or a basis
-/// for awarding real prizes; production requires authenticated server writes
-/// and server-side game result validation.
+/// Local playable prototype with verified-score read-only public leaderboard.
+/// Claims are stored separately, awaiting independent server/admin review.
+/// No device-written scores may be treated as verified or prize-eligible.
 enum RoyalScoreGame { deal, crown, difference }
 
 class RoyalPlayerScore {
@@ -127,35 +127,21 @@ class RoyalScoreStore {
         });
   }
 
-  static Future<void> _syncRemoteScore(
-      RoyalScoreGame game, int points, String name) async {
+  /// Submit a claim for independent verification. Never let a device
+  /// directly write official leaderboard points or reward balances.
+  static Future<void> _submitRemoteScoreClaim(
+      RoyalScoreGame game, int points, int tickets, String name) async {
     if (!backendReady) return;
     final user = _db.auth.currentUser;
     if (user == null) return;
-    final existing = await _db
-        .from('royal_club_scores')
-        .select('deal,crown,difference,first_played')
-        .eq('user_id', user.id)
-        .maybeSingle();
-    final row = existing == null
-        ? <String, dynamic>{
-            'deal': 0, 'crown': 0, 'difference': 0,
-            'first_played': DateTime.now().toUtc().toIso8601String(),
-          }
-        : Map<String, dynamic>.from(existing);
-    final key = game.name;
-    row[key] = RoyalPlayerScore._nonnegative(row[key]) + points;
-    await _db.from('royal_club_scores').upsert({
+    await _db.from('royal_club_score_submissions').insert({
       'user_id': user.id,
       'display_name': name,
-      'deal': RoyalPlayerScore._nonnegative(row['deal']),
-      'crown': RoyalPlayerScore._nonnegative(row['crown']),
-      'difference': RoyalPlayerScore._nonnegative(row['difference']),
-      'first_played': row['first_played'],
-      'ticket_balance': await ticketBalance(),
-      'lifetime_tickets': await lifetimeTickets(),
-      'updated_at': DateTime.now().toUtc().toIso8601String(),
-    }, onConflict: 'user_id');
+      'game': game.name,
+      'claimed_points': points,
+      'claimed_tickets': tickets.clamp(0, 100),
+      'status': 'pending',
+    });
   }
 
   static Future<int> ticketBalance() async {
@@ -165,9 +151,11 @@ class RoyalScoreStore {
         final row = await _db.from('royal_club_scores')
             .select('ticket_balance')
             .eq('user_id', _db.auth.currentUser!.id).maybeSingle();
-        final remote = RoyalPlayerScore._nonnegative(row?['ticket_balance']);
-        await prefs.setInt(_ticketKey, remote);
-        return remote;
+        if (row != null) {
+          final remote = RoyalPlayerScore._nonnegative(row['ticket_balance']);
+          await prefs.setInt(_ticketKey, remote);
+          return remote;
+        }
       } catch (_) {}
     }
     return prefs.getInt(_ticketKey) ?? 0;
@@ -180,9 +168,11 @@ class RoyalScoreStore {
         final row = await _db.from('royal_club_scores')
             .select('lifetime_tickets')
             .eq('user_id', _db.auth.currentUser!.id).maybeSingle();
-        final remote = RoyalPlayerScore._nonnegative(row?['lifetime_tickets']);
-        await prefs.setInt(_earnedKey, remote);
-        return remote;
+        if (row != null) {
+          final remote = RoyalPlayerScore._nonnegative(row['lifetime_tickets']);
+          await prefs.setInt(_earnedKey, remote);
+          return remote;
+        }
       } catch (_) {}
     }
     return prefs.getInt(_earnedKey) ?? 0;
@@ -285,7 +275,7 @@ class RoyalScoreStore {
         jsonEncode(players.values.map((p) => p.toJson()).toList()));
     await _creditTickets(prefs, tickets);
     try {
-      await _syncRemoteScore(game, points, name);
+      await _submitRemoteScoreClaim(game, points, tickets, name);
     } catch (_) {
       // Keep the completed score locally if the live service is unavailable.
     }
