@@ -30,6 +30,8 @@ flutter:
     - assets/heritage/philosophy_book.html
     - assets/rh/index.html
     - assets/rh/assets/
+    - assets/rs/
+    - assets/rs/fonts/
     - assets/image/
     - assets/images/1.png
     - assets/image/jd_signature/
