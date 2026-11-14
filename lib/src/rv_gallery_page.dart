@@ -11,12 +11,12 @@ class RvGalleryPage extends StatelessWidget {
   static const List<_SalonItem> _salons = [
     _SalonItem('RV Lounge Impérial Classique', 'assets/image/rv_lounge_imperial_classique.png'),
     _SalonItem('Salon Jardin', 'assets/image/salon_jardin.png'),
-    _SalonItem('Salon Lumière', 'assets/image/salon_lumiere.png'),
+    _SalonItem('Salon Lumière', 'assets/image/Salon_lumiere.png'),
     _SalonItem('Salon Doré', 'assets/image/salon_dore.png'),
-    _SalonItem('Grand Salon', 'assets/image/Rv_page2.png'),
-    _SalonItem('Salon Royal', 'assets/image/salon_royal.png'),
-    _SalonItem('Salon Privé', 'assets/image/salon_prive.png'),
-    _SalonItem('Salon Noir', 'assets/image/salon_noir.png'),
+    _SalonItem('Grand Salon', 'assets/image/Grand_Salon_Original.png'),
+    _SalonItem('Salon Royal', 'assets/image/Salon_royal.png'),
+    _SalonItem('Salon Privé', 'assets/image/Salon_prive.png'),
+    _SalonItem('Salon Noir', 'assets/image/Salon_noir.png'),
     _SalonItem('Salon Âme du Poète', 'assets/image/salon_ame_du_poete.png'),
   ];
 
