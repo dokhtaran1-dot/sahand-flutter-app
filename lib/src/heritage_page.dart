@@ -42,6 +42,33 @@ class HeritagePage extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(color: Color(0xFFE3DFCF), fontSize: 16, height: 2.1)),
           const SizedBox(height: 34),
+          Semantics(
+            label: 'تصویر تاریخی و اصلی بنیان‌گذار کارخانهٔ سهند',
+            image: true,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xFF9B8255)),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: const [BoxShadow(color: Color(0x442C7C56), blurRadius: 23)],
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Image.asset(
+                'assets/heritage/founder_original.jpg',
+                width: double.infinity, fit: BoxFit.fitWidth,
+                filterQuality: FilterQuality.high,
+                errorBuilder: (_, __, ___) => const SizedBox(
+                  height: 180,
+                  child: Center(child: Text('تصویر تاریخی در دسترس نیست',
+                    style: TextStyle(color: _gold))),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 15),
+          const Text('تصویر اصلی بنیان‌گذار · سهند، از سال ۱۳۵۱',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Color(0xFFC4AB76), fontSize: 13)),
+          const SizedBox(height: 24),
           _heritagePanel(
             icon: Icons.auto_stories_outlined,
             eyebrow: 'THE ORIGIN · 1351',

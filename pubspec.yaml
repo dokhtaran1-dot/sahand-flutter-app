@@ -28,6 +28,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/heritage/philosophy_book.html
+    - assets/heritage/founder_original.jpg
     - assets/rh/index.html
     - assets/rh/assets/
     - assets/rs/
