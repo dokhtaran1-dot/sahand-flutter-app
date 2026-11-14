@@ -27,6 +27,20 @@ jobs:
         with:
           flutter-version: '3.24.5'
           cache: true
+      - name: Restore original Royal One launcher resources
+        run: |
+          test -s tooling/royal1_icon_round.png
+          for dir in \
+            android/app/src/main/res/mipmap-mdpi \
+            android/app/src/main/res/mipmap-hdpi \
+            android/app/src/main/res/mipmap-xhdpi \
+            android/app/src/main/res/mipmap-xxhdpi \
+            android/app/src/main/res/mipmap-xxxhdpi; do
+            mkdir -p "$dir"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher_foreground.png"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher.png"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher_round.png"
+          done
       - name: Restore original Royal Village media before flutter pub get
         run: |
           set -euxo pipefail
