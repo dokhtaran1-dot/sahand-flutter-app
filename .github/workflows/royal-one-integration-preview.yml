@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: royal-one-integration-preview
@@ -65,12 +65,13 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           import re
+          from hashlib import sha256
           p=Path('assets/rs/index.html')
           t=p.read_text()
           assert 'Beyond Gravity' in t and '989141159263' in t
           for i in range(1,11):
-            assert (Path('assets/image/jd_signature')/f'jd-concept-{i:02}.webp').is_file()
-          print('RS local site and all ten shipped image assets OK')
+            assert (Path('assets/rs')/f'jd-concept-{i:02}.png').is_file()
+          print('RS exact approved site and all ten original PNG artworks OK')
           PY
       - name: App-links Android compileSdk compatibility workaround
         run: |
@@ -84,19 +85,15 @@ jobs:
           from pathlib import Path
           path=Path('android/app/build.gradle.kts')
           s=path.read_text()
-          needle='        debug {\n'
-          if needle in s:
-            s=s.replace(needle,needle+'            applicationIdSuffix = ".rsstage"\n',1)
-          else:
-            needle='        release {\n'
-            if needle in s:
-              s=s.replace(needle,needle+'            applicationIdSuffix = ".rsstage"\n',1)
+          previous='applicationIdSuffix = ".dev"'
+          assert previous in s, 'Expected unique dev applicationIdSuffix missing'
+          s=s.replace(previous,'applicationIdSuffix = ".rsstage"',1)
           path.write_text(s)
           PY
           flutter build apk --debug --target-platform android-arm64 --build-name 1.0.23 --build-number 25 \
             --dart-define=SUPABASE_URL=https://jwddfcsikkialxzbrhle.supabase.co \
             --dart-define=SUPABASE_ANON_KEY=sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve \
-            --dart-define=ROYAL_CLUB_BACKEND_READY=false
+            --dart-define=ROYAL_CLUB_BACKEND_READY=true
           test -s build/app/outputs/flutter-apk/app-debug.apk
           unzip -tq build/app/outputs/flutter-apk/app-debug.apk
       - name: Upload integration preview APK
@@ -106,3 +103,21 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
           retention-days: 14
           compression-level: 0
+
+      - name: Publish isolated APK as test-only GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          tag='royal-one-rs-staging-v1.0.23'
+          apk='build/app/outputs/flutter-apk/app-debug.apk'
+          cp "$apk" ROYAL_ONE_RS_RV_v1.0.23_STAGING_ARM64.apk
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" ROYAL_ONE_RS_RV_v1.0.23_STAGING_ARM64.apk --clobber
+          else
+            gh release create "$tag" ROYAL_ONE_RS_RV_v1.0.23_STAGING_ARM64.apk \
+              --target "$GITHUB_SHA" \
+              --title 'ROYAL ONE v1.0.23 — RS + RV integration preview' \
+              --notes 'TEST PREVIEW ONLY. Separately installed app ID; contains the exact original offline Jafar Dargahi HTML with ten original artworks, Royal Village salon improvements, Sahand heritage sphere, and Royal Club server-backed claims. Not a Play Store / Cafe Bazaar replacement. Awards require verified scores.' \
+              --prerelease
+          fi

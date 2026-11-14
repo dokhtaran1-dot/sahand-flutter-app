@@ -295,18 +295,5 @@
       refreshQuoteLinks();
     })();
   </script>
-<script>
-  // Keep the exact approved site layout. During staged rollout, only use the
-  // repository's existing concept previews where an original PNG is missing.
-  document.addEventListener('error', function(event) {
-    const element = event.target;
-    if (!element || element.tagName !== 'IMG') return;
-    const source = element.getAttribute('src') || '';
-    const match = source.match(/(?:^|\/)jd-concept-(0[1-9]|10)\.png(?:\?.*)?$/);
-    if (!match || element.dataset.previewFallback === '1') return;
-    element.dataset.previewFallback = '1';
-    element.src = '../image/jd_signature/jd-concept-' + match[1] + '.webp';
-  }, true);
-</script>
 </body>
 </html>
