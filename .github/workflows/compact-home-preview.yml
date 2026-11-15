@@ -1,0 +1,165 @@
+name: Royal One Compact SC + Floating RM RC RV v1.0.28 (isolated APK)
+on:
+  push:
+    branches:
+      - design/compact-sc-floating-rm-rc-rv
+    paths:
+      - '.github/workflows/compact-home-preview.yml'
+      - 'lib/src/royal_village_entry_page.dart'
+      - 'lib/src/rv_gallery_page.dart'
+      - 'lib/src/photo_orbit.dart'
+      - 'lib/src/salon_preview_image.dart'
+      - 'lib/src/heritage_page.dart'
+      - 'pubspec.yaml'
+      - 'test/heritage_poster_interactions_test.dart test/compact_home_portals_test.dart'
+      - 'assets/heritage/royal_heritage_approved_poster.png'
+  workflow_dispatch:
+
+concurrency:
+  group: royal-one-compact-sc-floating-preview
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build-compact-home-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+      - name: Install official launcher icons for adaptive Android resources
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s tooling/royal1_icon_round.png
+          for dir in \
+            android/app/src/main/res/mipmap-mdpi \
+            android/app/src/main/res/mipmap-hdpi \
+            android/app/src/main/res/mipmap-xhdpi \
+            android/app/src/main/res/mipmap-xxhdpi \
+            android/app/src/main/res/mipmap-xxxhdpi; do
+            mkdir -p "$dir"
+            rm -f "$dir/ic_launcher.jpg" "$dir/ic_launcher.png" "$dir/ic_launcher_round.png" "$dir/ic_launcher_foreground.png"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher.png"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher_round.png"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher_foreground.png"
+          done
+      - name: Restore original approved RV artwork archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -s assets/image/Royal_Village_App_Upload.zip ]; then
+            git fetch --no-tags --depth=1 origin ac94557573e15519e35b3b5f7b99388bb2553bed
+            git show ac94557573e15519e35b3b5f7b99388bb2553bed:assets/image/Royal_Village_App_Upload.zip > assets/image/Royal_Village_App_Upload.zip
+          fi
+          unzip -tq assets/image/Royal_Village_App_Upload.zip
+          mkdir -p assets/image/rv_upload
+          unzip -o assets/image/Royal_Village_App_Upload.zip -d assets/image/rv_upload
+          unzip -tq assets/image/RV_salon_galleries_ready.zip
+          unzip -o assets/image/RV_salon_galleries_ready.zip -d .
+          unzip -tq assets/image/RV_8_final_imperial_ultra.zip
+          unzip -o assets/image/RV_8_final_imperial_ultra.zip -d .
+          test -s assets/image/booking_posters/noir.png
+          test -s assets/image/booking_posters/prive.png
+          test -s assets/image/Salon_noir.png
+          test -s assets/image/Salon_prive.png
+          test -s assets/rs/index.html
+      - name: Isolate preview app without replacing installed Royal One
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          gradle=Path('android/app/build.gradle.kts')
+          content=gradle.read_text()
+          old='        release {\n'
+          if content.count(old)!=1:
+              raise SystemExit('Unexpected Android release signing configuration')
+          gradle.write_text(content.replace(old,old+'            applicationIdSuffix = ".compacthome28"\n'))
+          manifest=Path('android/app/src/main/AndroidManifest.xml')
+          content=manifest.read_text()
+          if 'android:label="ROYAL 1"' not in content:
+              raise SystemExit('Unexpected launcher label')
+          manifest.write_text(content.replace('android:label="ROYAL 1"','android:label="ROYAL ONE COMPACT PREVIEW"'))
+          PY
+      - name: Rebuild approved second page image
+        run: |
+          python3 - <<'PY'
+          import base64, pathlib, re
+          root=pathlib.Path('.')
+          parts=[]
+          for i in range(1,14):
+              file=root/f'lib/src/page2_data_{i}.dart'
+              m=re.search(r"=\s*'([^']*)';",file.read_text(),re.S)
+              if not m:
+                  raise SystemExit(f'Could not recover approved image chunk: {file}')
+              parts.append(m.group(1))
+          out=root/'assets/image/royal1_page2_final.jpg'
+          raw=base64.b64decode(''.join(parts),validate=True)
+          if not(raw.startswith(b'\xff\xd8') and raw.endswith(b'\xff\xd9')):
+              raise SystemExit('Approved second page is not a full JPEG')
+          out.write_bytes(raw)
+          PY
+      - name: Install Flutter packages
+        run: flutter pub get
+      - name: Patch optional app_links compileSdk version if installed
+        shell: bash
+        run: |
+          plugin_gradle="$HOME/.pub-cache/hosted/pub.dev/app_links-6.4.1/android/build.gradle"
+          if [ -f "$plugin_gradle" ]; then
+            sed -i 's/flutter\.compileSdkVersion/35/g; s/flutter\.minSdkVersion/23/g' "$plugin_gradle"
+          fi
+      - name: Verify heritage UI is analyzable
+        run: |
+          flutter analyze --no-pub --no-fatal-infos lib/src/heritage_page.dart lib/src/home_page.dart
+          test -s assets/heritage/founder_original.jpg
+          test -s assets/heritage/philosophy_book.html
+          test -s assets/heritage/royal_heritage_approved_poster.png
+      - name: Test 10 branches 4 languages and 5 footer actions
+        run: flutter test test/heritage_poster_interactions_test.dart test/compact_home_portals_test.dart
+      - name: Verify screenshot correction sources
+        run: |
+          test -s lib/src/salon_preview_image.dart
+          grep -F "SalonPreviewImage(asset: widget.images[i])" lib/src/photo_orbit.dart
+          grep -F "SalonPreviewImage(asset: image)" lib/src/royal_village_entry_page.dart
+          grep -F "SalonPreviewImage(asset: item.image)" lib/src/rv_gallery_page.dart
+      - name: Build isolated ARM64 preview APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter build apk --release --split-per-abi --build-name 1.0.28 --build-number 29 \
+            --dart-define=SUPABASE_URL=https://jwddfcsikkialxzbrhle.supabase.co \
+            --dart-define=SUPABASE_ANON_KEY=sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ROYAL_ONE_COMPACT_HOME_v1.0.28_ARM64.apk
+          test -s ROYAL_ONE_COMPACT_HOME_v1.0.28_ARM64.apk
+          sha256sum ROYAL_ONE_COMPACT_HOME_v1.0.28_ARM64.apk
+      - name: Upload verified preview artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ROYAL_ONE_HERITAGE_APPROVED_v1.0.26_ARM64
+          path: ROYAL_ONE_COMPACT_HOME_v1.0.28_ARM64.apk
+          compression-level: 0
+      - name: Publish prerelease (not production)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag='royal-one-compact-home-v1.0.28'
+          apk='ROYAL_ONE_COMPACT_HOME_v1.0.28_ARM64.apk'
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" "$apk" --clobber
+          else
+            gh release create "$tag" "$apk" \
+              --target "$GITHUB_SHA" \
+              --title 'ROYAL ONE v1.0.28 — compact SC with gently floating RM RC RV home' \
+              --notes 'ISOLATED TEST BUILD. Compact SC and three separate gently floating RM RC RV portals with native tap destinations on Royal One home. Preserves approved Heritage poster with father and president, offline RS, RV corrected previews, RC, RE and RH. Not for public rewards or store release.' \
+              --prerelease
+          fi
