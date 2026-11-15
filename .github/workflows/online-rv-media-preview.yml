@@ -83,7 +83,7 @@ jobs:
           content=manifest.read_text()
           if 'android:label="ROYAL 1"' not in content:
               raise SystemExit('Unexpected launcher label')
-          manifest.write_text(content.replace('android:label="ROYAL 1"','android:label="ROYAL ONE ONLINE PREVIEW"'))
+          manifest.write_text(content.replace('android:label="ROYAL 1"','android:label="ROYAL ONE VIP v1.0.32"'))
           PY
       - name: Rebuild approved second page image
         run: |
