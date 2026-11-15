@@ -120,12 +120,20 @@ jobs:
           test -s assets/heritage/royal_heritage_approved_poster.png
       - name: Test 10 branches 4 languages and 5 footer actions
         run: flutter test test/heritage_poster_interactions_test.dart test/compact_home_portals_test.dart test/ettehad_button_actions_test.dart test/rv_online_flow_test.dart test/rv_room_photo_assets_test.dart
-      - name: Verify screenshot correction sources
+      - name: Verify all eight VIP room images replace poster-model crops
         run: |
-          test -s lib/src/salon_preview_image.dart
-          grep -F "SalonPreviewImage(asset: widget.images[i])" lib/src/photo_orbit.dart
-          grep -F "SalonPreviewImage(asset: image)" lib/src/royal_village_entry_page.dart
-          grep -F "SalonPreviewImage(asset: item.image)" lib/src/rv_gallery_page.dart
+          set -euo pipefail
+          for photo in \
+            Salon_lumiere.png Salon_noir.png salon_jardin.png Salon_prive.png \
+            rv_lounge_imperial_classique.png salon_dore.png \
+            salon_ame_du_poete.png Salon_royal.png; do
+            test -s "assets/image/$photo"
+          done
+          grep -F "Image.asset(widget.images[i]" lib/src/photo_orbit.dart
+          grep -F "PhotoOrbit(images: _photos" lib/src/royal_village_entry_page.dart
+          grep -F "Image.asset(item.image" lib/src/rv_gallery_page.dart
+          ! grep -F "assets/image/booking_posters/" lib/src/rv_gallery_page.dart
+          ! grep -F "assets/image/booking_posters/" lib/src/royal_village_entry_page.dart
       - name: Build isolated ARM64 preview APK
         shell: bash
         run: |
