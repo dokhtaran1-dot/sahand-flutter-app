@@ -29,7 +29,7 @@ class RvOnlineBookingService {
     final auth = _db.auth;
     final phone = normalizePhone(auth.currentUser?.phone ?? '');
     return auth.currentSession != null &&
-        RegExp(r'^[+][0-9]{7,15}').hasMatch(phone);
+        RegExp(r'^[+][0-9]{7,15}$').hasMatch(phone);
   }
 
   static String _date(DateTime date) =>
