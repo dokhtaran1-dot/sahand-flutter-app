@@ -31,6 +31,23 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.5'
+      - name: Install official launcher icons for adaptive Android resources
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s tooling/royal1_icon_round.png
+          for dir in \
+            android/app/src/main/res/mipmap-mdpi \
+            android/app/src/main/res/mipmap-hdpi \
+            android/app/src/main/res/mipmap-xhdpi \
+            android/app/src/main/res/mipmap-xxhdpi \
+            android/app/src/main/res/mipmap-xxxhdpi; do
+            mkdir -p "$dir"
+            rm -f "$dir/ic_launcher.jpg" "$dir/ic_launcher.png" "$dir/ic_launcher_round.png" "$dir/ic_launcher_foreground.png"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher.png"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher_round.png"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher_foreground.png"
+          done
       - name: Restore original approved RV artwork archives
         shell: bash
         run: |
