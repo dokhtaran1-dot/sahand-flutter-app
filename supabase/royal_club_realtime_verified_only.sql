@@ -1,4 +1,13 @@
--- Expose verified/read-only Royal Club leaderboard updates to Realtime.
--- Pending score claims are a DIFFERENT table, excluded from this publication.
--- End-user clients have no UPDATE/INSERT rights on royal_club_scores.
-alter publication supabase_realtime add table public.royal_club_scores;
+-- Keep verified/read-only Royal Club leaderboard updates in Realtime.
+-- Pending score claims are deliberately excluded from this publication.
+DO $migration$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables
+    WHERE pubname = 'supabase_realtime' AND schemaname = 'public'
+      AND tablename = 'royal_club_scores'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.royal_club_scores;
+  END IF;
+END
+$migration$;
