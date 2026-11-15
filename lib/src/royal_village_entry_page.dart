@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'photo_orbit.dart';
-import 'salon_preview_image.dart';
 import 'reservation_page.dart';
 import 'royal_club_game_page.dart';
 import 'rv_gallery_page.dart';
@@ -22,7 +21,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const {
         'Salon Doré', 'Salon Jardin', 'Salon Noir', 'Salon Âme du Poète',
-        'Salon Royal', 'Salon Privé', 'RV Lounge Impérial Classique', 'Salon Lumière', 'Grand Salon',
+        'Salon Royal', 'Salon Privé', 'RV Lounge Impérial Classique', 'Salon Lumière',
       }.contains(name)
         ? RvBookingPosterPage(salonName: name)
         : SalonDetailPage(salonName: name)),
@@ -210,7 +209,18 @@ class RoyalVillageEntryPage extends StatelessWidget {
   }
 
   static const _salons = ['Salon Lumière', 'Salon Noir', 'Salon Jardin', 'Salon Privé', 'RV Lounge Impérial Classique', 'Salon Doré', 'Salon Âme du Poète', 'Salon Royal'];
-  static const _photos = ['lumiere.png', 'noir.png', 'jardin.png', 'prive.png', 'imperial.png', 'dore.png', 'ame_du_poete.png', 'royal.png'];
+  // Room interiors already bundled in the original project. The former
+  // booking_posters/* pictures depict advertising models, not the salon itself.
+  static const _photos = [
+    'assets/image/Salon_lumiere.png',
+    'assets/image/Salon_noir.png',
+    'assets/image/salon_jardin.png',
+    'assets/image/Salon_prive.png',
+    'assets/image/rv_lounge_imperial_classique.png',
+    'assets/image/salon_dore.png',
+    'assets/image/salon_ame_du_poete.png',
+    'assets/image/Salon_royal.png',
+  ];
 
   void _showFullPhoto(BuildContext context, String title, String asset) {
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => Scaffold(
@@ -221,7 +231,11 @@ class RoyalVillageEntryPage extends StatelessWidget {
         child: SizedBox(
           width: MediaQuery.sizeOf(context).width * .92,
           height: MediaQuery.sizeOf(context).height * .64,
-          child: SalonPreviewImage(asset: asset),
+          child: Image.asset(asset, fit: BoxFit.contain,
+            filterQuality: FilterQuality.high,
+            errorBuilder: (_, __, ___) => const Center(
+              child: Text('تصویر این سالن در دسترس نیست',
+                style: TextStyle(color: _gold)))),
         ),
       )),
       bottomNavigationBar: SafeArea(child: Padding(
@@ -243,7 +257,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
       actions: [IconButton(tooltip: 'گالری', icon: const Icon(Icons.photo_library_outlined), onPressed: () => _openGallery(context))]),
     body: ListView(children: [
       AspectRatio(aspectRatio: 1.65, child: Stack(fit: StackFit.expand, children: [
-        Image.asset('assets/image/Grand_Salon_Original.png', fit: BoxFit.cover, alignment: Alignment.topCenter),
+        Image.asset('assets/image/rv_lounge_imperial_classique.png', fit: BoxFit.cover, alignment: Alignment.center),
         const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Color(0xFF061710)]))),
         const Positioned(left: 20, right: 20, bottom: 16, child: Column(children: [
           Text('RV', style: TextStyle(fontFamily: 'serif', fontSize: 50, color: _gold)),
@@ -264,12 +278,14 @@ class RoyalVillageEntryPage extends StatelessWidget {
             label: const Text('ویدیوها و تصاویر رسمی با صدای اصلی'),
           ))),
       const Padding(padding: EdgeInsets.only(top: 26), child: Text('OUR PRIVATE SALONS', textAlign: TextAlign.center, style: TextStyle(color: _gold, letterSpacing: 3, fontSize: 17))),
-      PhotoOrbit(images: _photos.map((p) => 'assets/image/booking_posters/$p').toList(), labels: _salons,
-        onSelected: (i) => _showFullPhoto(context, _salons[i], 'assets/image/booking_posters/${_photos[i]}')),
+      PhotoOrbit(images: _photos, labels: _salons,
+        onSelected: (i) => _showFullPhoto(context, _salons[i], _photos[i])),
       const Padding(padding: EdgeInsets.only(top: 18), child: Text('THE ROYAL SALON COLLECTION', textAlign: TextAlign.center, style: TextStyle(color: _gold, letterSpacing: 2, fontSize: 15))),
       Padding(padding: const EdgeInsets.all(20), child: LayoutBuilder(builder: (context, constraints) => Wrap(spacing: 12, runSpacing: 16, children: [
-        for (var i = 0; i < _salons.length; i++) SizedBox(width: (constraints.maxWidth - 12) / 2, child: _SalonCard(name: _salons[i], image: 'assets/image/booking_posters/${_photos[i]}', onTap: () => _showFullPhoto(context, _salons[i], 'assets/image/booking_posters/${_photos[i]}'))),
-        SizedBox(width: constraints.maxWidth, child: _SalonCard(name: 'Grand Salon', image: 'assets/image/Grand_Salon_Original.png', onTap: () => _showFullPhoto(context, 'Grand Salon', 'assets/image/Grand_Salon_Original.png'))),
+        for (var i = 0; i < _salons.length; i++) SizedBox(
+          width: (constraints.maxWidth - 12) / 2,
+          child: _SalonCard(name: _salons[i], image: _photos[i],
+            onTap: () => _showFullPhoto(context, _salons[i], _photos[i]))),
       ]))),
       Padding(padding: const EdgeInsets.all(20), child: OutlinedButton.icon(onPressed: () => _openGallery(context), icon: const Icon(Icons.photo_library_outlined), label: const Text('مشاهدهٔ گالری'))),
       const Padding(padding: EdgeInsets.only(bottom: 32), child: Text('POWERED BY SAHAND CONSORTIUM', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, letterSpacing: 2, color: _gold))),
@@ -285,7 +301,12 @@ class _SalonCard extends StatelessWidget {
   Widget build(BuildContext context) => Semantics(button: true, label: name, child: Material(
     color: const Color(0xFF10291D), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: const BorderSide(color: Color(0xFF806B40))), clipBehavior: Clip.antiAlias,
     child: InkWell(onTap: onTap, child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      AspectRatio(aspectRatio: .95, child: SalonPreviewImage(asset: image)),
+      AspectRatio(aspectRatio: 1.08, child: Image.asset(image,
+        fit: BoxFit.cover, alignment: Alignment.center,
+        filterQuality: FilterQuality.high,
+        errorBuilder: (_, __, ___) => const Center(
+          child: Icon(Icons.broken_image_outlined,
+            color: Color(0xFFD6B15E), size: 40)))),
       Padding(padding: const EdgeInsets.all(12), child: Text(name, style: const TextStyle(color: Color(0xFFE7C77D), fontFamily: 'serif', fontSize: 16))),
       const Padding(padding: EdgeInsets.fromLTRB(12, 0, 12, 14), child: Row(children: [Expanded(child: Text('بزرگ‌نمایی تصویر', textDirection: TextDirection.rtl, style: TextStyle(fontSize: 12))), Icon(Icons.arrow_forward, size: 18, color: Color(0xFFE7C77D))])),
     ])),
