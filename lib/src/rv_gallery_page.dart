@@ -10,14 +10,14 @@ class RvGalleryPage extends StatelessWidget {
   static const Color _gold = Color(0xFFD6B15E);
 
   static const List<({String name, String image})> _salons = [
-    (name: 'Salon Lumière', image: 'assets/image/Salon_lumiere.png'),
-    (name: 'Salon Noir', image: 'assets/image/Salon_noir.png'),
-    (name: 'Salon Jardin', image: 'assets/image/salon_jardin.png'),
-    (name: 'Salon Privé', image: 'assets/image/Salon_prive.png'),
-    (name: 'RV Lounge Impérial Classique', image: 'assets/image/rv_lounge_imperial_classique.png'),
-    (name: 'Salon Doré', image: 'assets/image/salon_dore.png'),
-    (name: 'Salon Âme du Poète', image: 'assets/image/salon_ame_du_poete.png'),
-    (name: 'Salon Royal', image: 'assets/image/Salon_royal.png'),
+    (name: 'Salon Lumière', image: 'assets/image/booking_posters/lumiere.png'),
+    (name: 'Salon Noir', image: 'assets/image/booking_posters/noir.png'),
+    (name: 'Salon Jardin', image: 'assets/image/booking_posters/jardin.png'),
+    (name: 'Salon Privé', image: 'assets/image/booking_posters/prive.png'),
+    (name: 'RV Lounge Impérial Classique', image: 'assets/image/booking_posters/imperial.png'),
+    (name: 'Salon Doré', image: 'assets/image/booking_posters/dore.png'),
+    (name: 'Salon Âme du Poète', image: 'assets/image/booking_posters/ame_du_poete.png'),
+    (name: 'Salon Royal', image: 'assets/image/booking_posters/royal.png'),
   ];
 
   static void _open(BuildContext context, int index) {
