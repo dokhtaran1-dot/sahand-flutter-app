@@ -1,0 +1,51 @@
+{
+  "id": "jafar-dargahi",
+  "display_name_fa": "استاد جعفر درگاهی",
+  "display_name_en": "Jafar Dargahi",
+  "discipline_fa": "مجسمه‌سازی و هنر چیدمان",
+  "discipline_en": "Sculpture & Installation Art",
+  "affiliation_fa": "عضو تیم هنری کنسرسیوم سهند؛ مجری آثار هنری برای مجموعهٔ رویال مال تبریز",
+  "affiliation_en": "Member of Sahand Consortium's artistic team; executes sculptural and installation works for Royal Mall, Tabriz",
+  "commercial_contact": {
+    "purpose": "price_enquiries_only",
+    "channel": "whatsapp",
+    "number_international": "+989141159263",
+    "url": "https://wa.me/989141159263",
+    "online_checkout": false,
+    "phone_call_link": false
+  },
+  "brand_tagline": "Beyond Gravity",
+  "featured_work": {
+    "display_title_fa": "جزیرهٔ معلق",
+    "display_title_en": "Floating Island",
+    "location": "Royal Mall, Tabriz",
+    "reference_image": "jafar-dargahi-floating-island.jpg",
+    "description_fa": "چیدمانی الهام‌گرفته از یک دهکده در اسلواکی، با بافت سنگ، خزه، گیاه و خانه‌ای کوچک بر بستری معلق.",
+    "description_en": "An installation inspired by a village in Slovakia, with a miniature cottage, moss, foliage, and textured rock in suspension."
+  },
+  "gallery": [
+    {"id": "spatial-installation", "image": "gallery-room-luxury.png", "original_image": "02-3498.jpg", "title_fa": "نمای کامل چیدمان", "title_en": "The Installation in Space", "presentation": "AI-assisted luxury gallery restaging"},
+    {"id": "moss-cottage", "image": "gallery-cottage-luxury.png", "original_image": "03-3484.jpg", "title_fa": "دهکدهٔ خزه‌پوش", "title_en": "Moss-Covered Cottage", "presentation": "AI-assisted luxury gallery restaging"},
+    {"id": "classical-bust", "image": "classical-bust-gallery.png", "original_image": "04-3474.jpg", "title_fa": "تندیس کلاسیک", "title_en": "Classical Bust", "presentation": "AI-assisted background restaging with elevated display plinth"},
+    {"id": "floating-woodland", "image": "gallery-forest-luxury.png", "original_image": "01-3500.jpg", "title_fa": "جزیرهٔ درختی معلق", "title_en": "Floating Woodland", "presentation": "AI-assisted luxury gallery restaging"}
+  ],
+  "signature_concepts": [
+    {"number": 1, "id": "midnight-alpine-village", "image": "jd-concept-01.png", "title_fa": "دهکدهٔ آلپی نیمه‌شب", "title_en": "Midnight Alpine Village", "theme": "Floating Village"},
+    {"number": 2, "id": "emerald-bonsai-citadel", "image": "jd-concept-02.png", "title_fa": "ارگ بونسای زمردین", "title_en": "Emerald Bonsai Citadel", "theme": "Botanical Sculpture"},
+    {"number": 3, "id": "clockmakers-isle", "image": "jd-concept-03.png", "title_fa": "جزیرهٔ ساعت‌ساز", "title_en": "The Clockmaker's Isle", "theme": "Mechanical Miniature"},
+    {"number": 4, "id": "black-rose-sanctuary", "image": "jd-concept-04.png", "title_fa": "حریم رز سیاه", "title_en": "Black Rose Sanctuary", "theme": "Romantic Landscape"},
+    {"number": 5, "id": "spiral-cascade", "image": "jd-concept-05.png", "title_fa": "آبشار مارپیچ", "title_en": "The Spiral Cascade", "theme": "Kinetic Landscape"},
+    {"number": 6, "id": "chess-of-gravity", "image": "jd-concept-06.png", "title_fa": "شطرنجِ جاذبه", "title_en": "Chess of Gravity", "theme": "Symbolic Installation"},
+    {"number": 7, "id": "luminous-library", "image": "jd-concept-07.png", "title_fa": "کتابخانهٔ نورانی", "title_en": "The Luminous Library", "theme": "Architectural Fantasy"},
+    {"number": 8, "id": "ivory-muse", "image": "jd-concept-08.png", "title_fa": "الههٔ عاجی", "title_en": "Ivory Muse", "theme": "Contemporary Classicism"},
+    {"number": 9, "id": "obsidian-phoenix", "image": "jd-concept-09.png", "title_fa": "ققنوسِ آبسیدین", "title_en": "Obsidian Phoenix", "theme": "Abstract Masterpiece"},
+    {"number": 10, "id": "infinite-roots", "image": "jd-concept-10.png", "title_fa": "ریشه‌های بی‌انتها", "title_en": "Infinite Roots", "theme": "Sculptural Fusion"}
+  ],
+  "signature_concept_status": "ten original signature designs available for made-to-order fabrication based on the customer’s selected details",
+  "signature_concepts_archive": "jd-signature-concepts-10.zip",
+  "brand_assets": {
+    "monogram_gold": "jd-monogram.svg",
+    "monogram_dark": "jd-monogram-dark.svg"
+  },
+  "notes": "Showcase content based on photographs supplied by the user. The four gallery images are luxury gallery restagings, with original source photographs retained separately. The ten signature designs are available for made-to-order fabrication based on the customer’s selected details. Gallery labels are descriptive. Slogan and editorial descriptions are brand copy, not attributed artist quotations."
+}

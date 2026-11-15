@@ -169,7 +169,7 @@ class _RoyalLeaderboardPageState extends State<RoyalLeaderboardPage> {
                     const SizedBox(height: 12),
                     Text(
                       RoyalScoreStore.backendReady
-                          ? 'LIVE • رتبه‌بندی آنلاین با به‌روزرسانی لحظه‌ای'
+                          ? 'LIVE • نمایش امتیازهای تأییدشده با به‌روزرسانی لحظه‌ای'
                           : 'OFFLINE • اتصال سرور فعال نیست؛ امتیازهای همین دستگاه نمایش داده می‌شود.',
                       textDirection: TextDirection.rtl,
                       textAlign: TextAlign.center,
@@ -255,7 +255,7 @@ class _RoyalLeaderboardPageState extends State<RoyalLeaderboardPage> {
               const SizedBox(height: 20),
               Text(
                 RoyalScoreStore.backendReady
-                    ? 'LIVE TOP 10 • امتیاز بازیکنان متصل به حساب کاربری به‌صورت لحظه‌ای رتبه‌بندی می‌شود.'
+                    ? 'LIVE TOP 10 • فقط امتیازهای بررسی و تأییدشده وارد رتبه‌بندی رسمی می‌شوند.'
                     : 'برای فعال شدن LIVE TOP 10 باید اتصال Supabase در نسخه نهایی فعال باشد.',
                 textDirection: TextDirection.rtl,
                 textAlign: TextAlign.center,

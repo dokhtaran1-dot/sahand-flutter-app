@@ -28,8 +28,12 @@ flutter:
   uses-material-design: true
   assets:
     - assets/heritage/philosophy_book.html
+    - assets/heritage/royal_heritage_approved_poster.png
+    - assets/heritage/founder_original.jpg
     - assets/rh/index.html
     - assets/rh/assets/
+    - assets/rs/
+    - assets/rs/fonts/
     - assets/image/
     - assets/images/1.png
     - assets/image/jd_signature/

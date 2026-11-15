@@ -1,0 +1,123 @@
+name: ROYAL ONE - RS RV integration preview
+
+on:
+  push:
+    branches:
+      - integration/rs-offline-assets-pending
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: royal-one-integration-preview
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+          cache: true
+      - name: Restore original Royal One launcher resources
+        run: |
+          test -s tooling/royal1_icon_round.png
+          for dir in \
+            android/app/src/main/res/mipmap-mdpi \
+            android/app/src/main/res/mipmap-hdpi \
+            android/app/src/main/res/mipmap-xhdpi \
+            android/app/src/main/res/mipmap-xxhdpi \
+            android/app/src/main/res/mipmap-xxxhdpi; do
+            mkdir -p "$dir"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher_foreground.png"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher.png"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher_round.png"
+          done
+      - name: Restore original Royal Village media before flutter pub get
+        run: |
+          set -euxo pipefail
+          if [ ! -s assets/image/Royal_Village_App_Upload.zip ]; then
+            git fetch --no-tags --depth=1 origin ac94557573e15519e35b3b5f7b99388bb2553bed
+            git show ac94557573e15519e35b3b5f7b99388bb2553bed:assets/image/Royal_Village_App_Upload.zip > assets/image/Royal_Village_App_Upload.zip
+          fi
+          unzip -tq assets/image/Royal_Village_App_Upload.zip
+          mkdir -p assets/image/rv_upload
+          unzip -oq assets/image/Royal_Village_App_Upload.zip -d assets/image/rv_upload
+          unzip -oq assets/image/RV_salon_galleries_ready.zip -d .
+          unzip -oq assets/image/RV_8_final_imperial_ultra.zip -d .
+          test -s assets/image/booking_posters/dore.png
+          test -s assets/rs/index.html
+          test -s assets/rs/fonts/fonts.css
+          test -s assets/image/jd_signature/jd-concept-01.webp
+          test -s assets/image/jd_signature/jd-concept-10.webp
+      - name: Flutter packages
+        run: flutter pub get
+      - name: Verify RS page and baseline asset presence
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          from hashlib import sha256
+          p=Path('assets/rs/index.html')
+          t=p.read_text()
+          assert 'Beyond Gravity' in t and '989141159263' in t
+          for i in range(1,11):
+            assert (Path('assets/rs')/f'jd-concept-{i:02}.png').is_file()
+          print('RS exact approved site and all ten original PNG artworks OK')
+          PY
+      - name: App-links Android compileSdk compatibility workaround
+        run: |
+          file="$HOME/.pub-cache/hosted/pub.dev/app_links-6.4.1/android/build.gradle"
+          if [ -f "$file" ]; then
+            sed -i 's/flutter\.compileSdkVersion/35/g; s/flutter\.minSdkVersion/23/g' "$file"
+          fi
+      - name: Build isolated Android ARM64 debug preview
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path=Path('android/app/build.gradle.kts')
+          s=path.read_text()
+          previous='applicationIdSuffix = ".dev"'
+          assert previous in s, 'Expected unique dev applicationIdSuffix missing'
+          s=s.replace(previous,'applicationIdSuffix = ".rsstage"',1)
+          path.write_text(s)
+          PY
+          flutter build apk --debug --target-platform android-arm64 --build-name 1.0.23 --build-number 25 \
+            --dart-define=SUPABASE_URL=https://jwddfcsikkialxzbrhle.supabase.co \
+            --dart-define=SUPABASE_ANON_KEY=sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve \
+            --dart-define=ROYAL_CLUB_BACKEND_READY=true
+          test -s build/app/outputs/flutter-apk/app-debug.apk
+          unzip -tq build/app/outputs/flutter-apk/app-debug.apk
+      - name: Upload integration preview APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ROYAL_ONE_RS_RV_STAGING_ARM64_APK
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 14
+          compression-level: 0
+
+      - name: Publish isolated APK as test-only GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          tag='royal-one-rs-staging-v1.0.23'
+          apk='build/app/outputs/flutter-apk/app-debug.apk'
+          cp "$apk" ROYAL_ONE_RS_RV_v1.0.23_STAGING_ARM64.apk
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" ROYAL_ONE_RS_RV_v1.0.23_STAGING_ARM64.apk --clobber
+          else
+            gh release create "$tag" ROYAL_ONE_RS_RV_v1.0.23_STAGING_ARM64.apk \
+              --target "$GITHUB_SHA" \
+              --title 'ROYAL ONE v1.0.23 — RS + RV integration preview' \
+              --notes 'TEST PREVIEW ONLY. Separately installed app ID; contains the exact original offline Jafar Dargahi HTML with ten original artworks, Royal Village salon improvements, Sahand heritage sphere, and Royal Club server-backed claims. Not a Play Store / Cafe Bazaar replacement. Awards require verified scores.' \
+              --prerelease
+          fi
