@@ -75,7 +75,7 @@ class HeritagePage extends StatelessWidget {
 class _GoldDivider extends StatelessWidget {
   const _GoldDivider();
   @override
-  Widget build(BuildContext context) => Row(children: const [
+  Widget build(BuildContext context) => const Row(children: [
     Expanded(child: Divider(color: Color(0x665B6F59), thickness: 1)),
     SizedBox(width: 12),
     Icon(Icons.diamond_outlined, color: _gold, size: 15),
@@ -88,7 +88,7 @@ class _HeritageMasthead extends StatelessWidget {
   const _HeritageMasthead();
 
   @override
-  Widget build(BuildContext context) => Column(children: const [
+  Widget build(BuildContext context) => const Column(children: [
     SizedBox(height: 8),
     _HeritageSphere(),
     SizedBox(height: 1),
@@ -206,7 +206,7 @@ class _FounderStoryCard extends StatelessWidget {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(child: Padding(
+        const Expanded(child: Padding(
           padding: const EdgeInsets.fromLTRB(1, 8, 12, 4),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,7 +263,7 @@ class _SuccessorStoryCard extends StatelessWidget {
       border: Border.all(color: const Color(0x557C653D), width: .8),
     ),
     child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Expanded(child: Column(
+      const Expanded(child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: const [
           Text('THE THIRD HEIR',
@@ -318,7 +318,7 @@ class _BookEntry extends StatelessWidget {
           border: Border.all(color: const Color(0xAAAB9158), width: .8),
           borderRadius: BorderRadius.circular(18),
         ),
-        child: Row(children: const [
+        child: const Row(children: [
           Icon(Icons.auto_stories_outlined, color: _gold, size: 32),
           SizedBox(width: 13),
           Expanded(child: Column(
