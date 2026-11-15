@@ -207,10 +207,10 @@ class _FounderStoryCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Expanded(child: Padding(
-          padding: const EdgeInsets.fromLTRB(1, 8, 12, 4),
+          padding: EdgeInsets.fromLTRB(1, 8, 12, 4),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               Text('THE FOUNDER  ·  1351',
                 textDirection: TextDirection.ltr,
                 style: TextStyle(fontSize: 10,
@@ -265,7 +265,7 @@ class _SuccessorStoryCard extends StatelessWidget {
     child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const Expanded(child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           Text('THE THIRD HEIR',
             textDirection: TextDirection.ltr,
             style: TextStyle(color: _gold, fontSize: 10, letterSpacing: 1.8)),
