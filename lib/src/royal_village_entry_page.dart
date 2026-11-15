@@ -6,6 +6,7 @@ import 'salon_preview_image.dart';
 import 'reservation_page.dart';
 import 'royal_club_game_page.dart';
 import 'rv_gallery_page.dart';
+import 'rv_media_page.dart';
 import 'salon_detail_page.dart';
 import 'rv_booking_poster_page.dart';
 
@@ -32,6 +33,11 @@ class RoyalVillageEntryPage extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const RvGalleryPage()),
     );
+  }
+
+  void _openOfficialMedia(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => const RvMediaPage()));
   }
 
   void _openReservation(BuildContext context) {
@@ -250,6 +256,13 @@ class RoyalVillageEntryPage extends StatelessWidget {
         const SizedBox(width: 12),
         OutlinedButton(onPressed: () => _openWhatsApp(context), child: const Text('ارتباط')),
       ])),
+      Padding(padding: const EdgeInsets.fromLTRB(20, 4, 20, 10),
+        child: SizedBox(width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () => _openOfficialMedia(context),
+            icon: const Icon(Icons.movie_outlined),
+            label: const Text('ویدیوها و تصاویر رسمی با صدای اصلی'),
+          ))),
       const Padding(padding: EdgeInsets.only(top: 26), child: Text('OUR PRIVATE SALONS', textAlign: TextAlign.center, style: TextStyle(color: _gold, letterSpacing: 3, fontSize: 17))),
       PhotoOrbit(images: _photos.map((p) => 'assets/image/booking_posters/$p').toList(), labels: _salons,
         onSelected: (i) => _showFullPhoto(context, _salons[i], 'assets/image/booking_posters/${_photos[i]}')),
