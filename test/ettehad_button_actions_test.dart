@@ -17,7 +17,7 @@ void main() {
     await tester.tap(project);
     await tester.pumpAndSettle();
     expect(find.text('پروژه تجاری ۳۶۰۰ مترمربع رویال مال'), findsOneWidget);
-    await tester.pageBack();
+    await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
 
     final consultation = find.text('درخواست مشاوره');
