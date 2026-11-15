@@ -10,6 +10,8 @@ on:
       - 'lib/src/photo_orbit.dart'
       - 'lib/src/salon_preview_image.dart'
       - 'lib/src/heritage_page.dart'
+      - 'lib/src/ettehad_page.dart'
+      - 'test/ettehad_button_actions_test.dart'
       - 'pubspec.yaml'
       - 'test/heritage_poster_interactions_test.dart test/compact_home_portals_test.dart'
       - 'assets/heritage/royal_heritage_approved_poster.png'
@@ -117,12 +119,12 @@ jobs:
           fi
       - name: Verify heritage UI is analyzable
         run: |
-          flutter analyze --no-pub --no-fatal-infos lib/src/heritage_page.dart lib/src/home_page.dart
+          flutter analyze --no-pub --no-fatal-infos lib/src/heritage_page.dart lib/src/home_page.dart lib/src/ettehad_page.dart
           test -s assets/heritage/founder_original.jpg
           test -s assets/heritage/philosophy_book.html
           test -s assets/heritage/royal_heritage_approved_poster.png
       - name: Test 10 branches 4 languages and 5 footer actions
-        run: flutter test test/heritage_poster_interactions_test.dart test/compact_home_portals_test.dart
+        run: flutter test test/heritage_poster_interactions_test.dart test/compact_home_portals_test.dart test/ettehad_button_actions_test.dart
       - name: Verify screenshot correction sources
         run: |
           test -s lib/src/salon_preview_image.dart
