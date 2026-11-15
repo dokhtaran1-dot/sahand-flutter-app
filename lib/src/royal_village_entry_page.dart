@@ -259,7 +259,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
       AspectRatio(aspectRatio: 1.65, child: Stack(fit: StackFit.expand, children: [
         Image.asset('assets/image/rv_lounge_imperial_classique.png', fit: BoxFit.cover, alignment: Alignment.center),
         const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Color(0xFF061710)]))),
-        const Positioned(left: 20, right: 20, bottom: 16, child: Column(children: [
+        const Positioned(left: 20, right: 20, bottom: 16, child: Column(mainAxisSize: MainAxisSize.min, children: [
           Text('RV', style: TextStyle(fontFamily: 'serif', fontSize: 50, color: _gold)),
           Text('رویال ویلاژ کافه', textDirection: TextDirection.rtl, style: TextStyle(fontSize: 25, color: Colors.white)),
           Text('کافه و رستوران · سالن‌های اختصاصی', textDirection: TextDirection.rtl, style: TextStyle(fontSize: 14, color: Color(0xFFF4DFAF))),
