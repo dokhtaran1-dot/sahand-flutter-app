@@ -192,7 +192,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           onTap: () => open(2), phase: 4.2),
         const Positioned(left: 0, top: 1383, width: width, height: 45,
           child: ColoredBox(color: Color(0xFF030B08), child: Center(
-            child: Text('ROYAL ONE  ·  V1.0.22  ·  POWERED BY SAHAND CONSORTIUM',
+            child: Text('ROYAL ONE  ·  POWERED BY SAHAND CONSORTIUM',
               style: TextStyle(color: Color(0xFFD7BE78), fontSize: 17, letterSpacing: 1.4))))),
         // Tapping the small SC opens the unchanged Heritage poster.
         zone(93, 78, 153, 173, names[language]![6],
