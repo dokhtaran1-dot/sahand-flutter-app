@@ -80,7 +80,7 @@ class MyReservationsPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
                       const Text(
-                        'هنوز درخواست محلی ذخیره نشده'
+                        'هنوز درخواست محلی ذخیره نشده',
                         style: TextStyle(
                           color: goldLight,
                           fontSize: 21,
@@ -89,7 +89,7 @@ class MyReservationsPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 9),
                       const Text(
-                        'برای بررسی درخواست‌های ثبت‌شده در سرور، آیکون ابر بالای صفحه را بزنید.'
+                        'برای بررسی درخواست‌های ثبت‌شده در سرور، آیکون ابر بالای صفحه را بزنید.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white54,
