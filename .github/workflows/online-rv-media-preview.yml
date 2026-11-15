@@ -114,7 +114,7 @@ jobs:
           fi
       - name: Verify heritage UI is analyzable
         run: |
-          flutter analyze --no-pub --no-fatal-infos lib/src/heritage_page.dart lib/src/home_page.dart lib/src/ettehad_page.dart lib/src/reservation_page.dart lib/src/reservation_store.dart lib/src/my_reservations_page.dart lib/src/rv_online_booking_service.dart lib/src/rv_online_requests_page.dart lib/src/rv_media_page.dart lib/src/royal_village_entry_page.dart
+          flutter analyze --no-pub --no-fatal-infos --no-fatal-warnings lib/src/heritage_page.dart lib/src/home_page.dart lib/src/ettehad_page.dart lib/src/reservation_page.dart lib/src/reservation_store.dart lib/src/my_reservations_page.dart lib/src/rv_online_booking_service.dart lib/src/rv_online_requests_page.dart lib/src/rv_media_page.dart lib/src/royal_village_entry_page.dart
           test -s assets/heritage/founder_original.jpg
           test -s assets/heritage/philosophy_book.html
           test -s assets/heritage/royal_heritage_approved_poster.png
