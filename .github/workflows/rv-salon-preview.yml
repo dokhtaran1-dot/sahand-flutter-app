@@ -1,0 +1,107 @@
+name: Royal One RV salon preview v1.0.24 (isolated APK)
+on:
+  push:
+    branches:
+      - integration/rs-offline-assets-pending
+    paths:
+      - '.github/workflows/rv-salon-preview.yml'
+      - 'lib/src/royal_village_entry_page.dart'
+      - 'lib/src/rv_gallery_page.dart'
+      - 'lib/src/photo_orbit.dart'
+      - 'lib/src/salon_preview_image.dart'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-rv-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+      - name: Restore original approved RV artwork archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -s assets/image/Royal_Village_App_Upload.zip ]; then
+            git fetch --no-tags --depth=1 origin ac94557573e15519e35b3b5f7b99388bb2553bed
+            git show ac94557573e15519e35b3b5f7b99388bb2553bed:assets/image/Royal_Village_App_Upload.zip > assets/image/Royal_Village_App_Upload.zip
+          fi
+          unzip -tq assets/image/Royal_Village_App_Upload.zip
+          mkdir -p assets/image/rv_upload
+          unzip -o assets/image/Royal_Village_App_Upload.zip -d assets/image/rv_upload
+          unzip -tq assets/image/RV_salon_galleries_ready.zip
+          unzip -o assets/image/RV_salon_galleries_ready.zip -d .
+          unzip -tq assets/image/RV_8_final_imperial_ultra.zip
+          unzip -o assets/image/RV_8_final_imperial_ultra.zip -d .
+          test -s assets/image/booking_posters/noir.png
+          test -s assets/image/booking_posters/prive.png
+          test -s assets/image/Salon_noir.png
+          test -s assets/image/Salon_prive.png
+          test -s assets/rs/index.html
+      - name: Isolate preview app without replacing installed Royal One
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          gradle=Path('android/app/build.gradle.kts')
+          content=gradle.read_text()
+          old='        release {\n'
+          if content.count(old)!=1:
+              raise SystemExit('Unexpected Android release signing configuration')
+          gradle.write_text(content.replace(old,old+'            applicationIdSuffix = ".rvpreview24"\n'))
+          manifest=Path('android/app/src/main/AndroidManifest.xml')
+          content=manifest.read_text()
+          if 'android:label="ROYAL 1"' not in content:
+              raise SystemExit('Unexpected launcher label')
+          manifest.write_text(content.replace('android:label="ROYAL 1"','android:label="ROYAL ONE RV PREVIEW"'))
+          PY
+      - name: Install Flutter packages
+        run: flutter pub get
+      - name: Verify screenshot correction sources
+        run: |
+          test -s lib/src/salon_preview_image.dart
+          grep -F "SalonPreviewImage(asset: widget.images[i])" lib/src/photo_orbit.dart
+          grep -F "SalonPreviewImage(asset: image)" lib/src/royal_village_entry_page.dart
+          grep -F "SalonPreviewImage(asset: item.image)" lib/src/rv_gallery_page.dart
+      - name: Build isolated ARM64 preview APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter build apk --release --split-per-abi --build-name 1.0.24 --build-number 26 \
+            --dart-define=SUPABASE_URL=https://jwddfcsikkialxzbrhle.supabase.co \
+            --dart-define=SUPABASE_ANON_KEY=sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ROYAL_ONE_RV_CORRECTED_v1.0.24_ARM64.apk
+          test -s ROYAL_ONE_RV_CORRECTED_v1.0.24_ARM64.apk
+          sha256sum ROYAL_ONE_RV_CORRECTED_v1.0.24_ARM64.apk
+      - name: Upload verified preview artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ROYAL_ONE_RV_CORRECTED_v1.0.24_ARM64
+          path: ROYAL_ONE_RV_CORRECTED_v1.0.24_ARM64.apk
+          compression-level: 0
+      - name: Publish prerelease (not production)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag='royal-one-rv-corrected-v1.0.24'
+          apk='ROYAL_ONE_RV_CORRECTED_v1.0.24_ARM64.apk'
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" "$apk" --clobber
+          else
+            gh release create "$tag" "$apk" \
+              --target "$GITHUB_SHA" \
+              --title 'ROYAL ONE v1.0.24 — corrected RV salon previews' \
+              --notes 'ISOLATED TEST BUILD. Removes booking-form poster clutter from RV salon gallery and rotating orbit. Preserves original booking page and offline RS. Not for public rewards or store release.' \
+              --prerelease
+          fi
