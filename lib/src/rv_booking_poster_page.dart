@@ -18,17 +18,6 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
     'Salon Royal': 'royal', 'RV Lounge Impérial Classique': 'imperial',
     'Salon Lumière': 'lumiere', 'Salon Privé': 'prive', 'Grand Salon': 'grand',
   };
-  static const Map<String, String> _originalPosterAssets = {
-    'dore': 'assets/image/salon_dore.png',
-    'jardin': 'assets/image/salon_jardin.png',
-    'noir': 'assets/image/Salon_noir.png',
-    'ame_du_poete': 'assets/image/salon_ame_du_poete.png',
-    'royal': 'assets/image/Salon_royal.png',
-    'imperial': 'assets/image/rv_lounge_imperial_classique.png',
-    'lumiere': 'assets/image/Salon_lumiere.png',
-    'prive': 'assets/image/Salon_prive.png',
-    'grand': 'assets/image/1000075552-1.png',
-  };
   static const Map<String, List<String>> music = {
     'dore': ['Golden Hour – Piano', 'Éclat Doré – Violin', 'Soleil de Paris – Lounge'],
     'jardin': ['Jardin de Rêve – Piano', 'Fleurs de Paris – Violin', 'Matin au Jardin – Lounge'],
@@ -171,7 +160,9 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
         Positioned(left: x*sx, top: y*sy, width: w*sx, height: h*sy,
           child: GestureDetector(behavior: HitTestBehavior.opaque, onTap: action));
       return Stack(fit: StackFit.expand, children: [
-        Image.asset(_originalPosterAssets[keyName]!,
+        Image.asset(keyName == 'grand'
+            ? 'assets/image/1000075552-1.png'
+            : 'assets/image/booking_posters/$keyName.png',
           fit: BoxFit.fill, filterQuality: FilterQuality.high,
           errorBuilder: (_, __, ___) => keyName == 'grand'
             ? Image.asset('assets/image/Grand_Salon_Original.png', fit: BoxFit.cover)
