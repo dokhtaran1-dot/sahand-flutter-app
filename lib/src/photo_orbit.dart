@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'salon_preview_image.dart';
 
 class PhotoOrbit extends StatefulWidget {
   final List<String> images;
@@ -39,7 +38,12 @@ class _PhotoOrbitState extends State<PhotoOrbit> with SingleTickerProviderStateM
           child: Semantics(button: true, label: widget.labels[i], child: Tooltip(message: widget.labels[i], child: InkWell(
             borderRadius: BorderRadius.circular(49), onTap: () => widget.onSelected(i),
             child: Column(children: [
-              Container(width: 88, height: 88, decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: const Color(0xFFE7C77D), width: 2), boxShadow: const [BoxShadow(color: Color(0x444B8C63), blurRadius: 14)]), child: ClipOval(child: SalonPreviewImage(asset: widget.images[i]))),
+              Container(width: 88, height: 88, decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: const Color(0xFFE7C77D), width: 2), boxShadow: const [BoxShadow(color: Color(0x444B8C63), blurRadius: 14)]), child: ClipOval(child: Image.asset(widget.images[i],
+                fit: BoxFit.cover, alignment: Alignment.center,
+                filterQuality: FilterQuality.high,
+                errorBuilder: (_, __, ___) => const Center(
+                  child: Icon(Icons.broken_image_outlined,
+                    color: Color(0xFFE7C77D), size: 28))))),
               const SizedBox(height: 3),
               Text(widget.labels[i].replaceFirst('Salon ', '').replaceFirst('RV Lounge Impérial Classique', 'RV Lounge'), maxLines: 2, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, color: Color(0xFFE7C77D))),
             ]),
