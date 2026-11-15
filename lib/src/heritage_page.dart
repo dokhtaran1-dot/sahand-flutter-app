@@ -184,13 +184,14 @@ class _HeritagePageState extends State<HeritagePage> {
       actionText: branch.id == 'project'
         ? _tr('مشاهده رویال مال', 'Open Royal Mall',
             'عرض رويال مول', 'Voir Royal Mall')
-        : _tr('وب‌سایت رسمی کنسرسیوم', 'Official consortium website',
-            'الموقع الرسمي', 'Site officiel'),
+        : _tr('تاریخچه کنسرسیوم در اپ', 'Consortium history in app',
+            'تاريخ الكونسورتيوم داخل التطبيق',
+            'Histoire du consortium dans l’application'),
       onAction: () {
         if (branch.id == 'project') {
           _open(const RoyalMallPage());
         } else {
-          _external('https://sahand-consortium.com/');
+          _history();
         }
       },
     ));
@@ -332,6 +333,9 @@ class _HeritagePageState extends State<HeritagePage> {
     ),
   );
 
+  /// Fit the *entire* approved poster inside the available app viewport.
+  /// No scroll offset, crop, web browser, or separate mini-site: the image and
+  /// native hit areas scale together, including the top portraits and footer.
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: const Color(0xFF00150E),
@@ -339,17 +343,22 @@ class _HeritagePageState extends State<HeritagePage> {
       value: SystemUiOverlayStyle.light,
       child: SafeArea(
         child: LayoutBuilder(builder: (context, constraints) {
-          final width = math.min(constraints.maxWidth, 680.0);
-          final height = width * _artHeight / _artWidth;
-          return SingleChildScrollView(
-            child: Center(
-              child: SizedBox(
-                width: width, height: height,
-                child: FittedBox(
-                  fit: BoxFit.fill,
-                  child: SizedBox(
-                    width: _artWidth, height: _artHeight,
-                    child: Stack(children: [
+          final scale = math.min(
+            constraints.maxWidth / _artWidth,
+            constraints.maxHeight / _artHeight,
+          );
+          final width = _artWidth * scale;
+          final height = _artHeight * scale;
+          return Center(
+            child: SizedBox(
+              key: const ValueKey('royal-heritage-poster-frame'),
+              width: width,
+              height: height,
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: SizedBox(
+                  width: _artWidth, height: _artHeight,
+                  child: Stack(clipBehavior: Clip.none, children: [
                       const Positioned.fill(child: Image(
                         image: AssetImage(_art), fit: BoxFit.fill,
                         filterQuality: FilterQuality.high,
@@ -405,7 +414,6 @@ class _HeritagePageState extends State<HeritagePage> {
                       _hit(left: 735, top: 1490, width: 195, height: 142,
                         label: 'Contact Us', onTap: _contact),
                     ]),
-                  ),
                 ),
               ),
             ),
