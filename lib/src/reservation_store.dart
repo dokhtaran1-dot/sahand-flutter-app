@@ -14,6 +14,8 @@ class ReservationRecord {
   final String cake;
   final String music;
   final String note;
+  /// Non-null only after the server accepted this request for management review.
+  final String? onlineId;
 
   ReservationRecord({
     required this.salonName,
@@ -26,6 +28,7 @@ class ReservationRecord {
     required this.cake,
     this.music = '',
     required this.note,
+    this.onlineId,
   });
 
   Map<String, dynamic> toMap() {
@@ -40,6 +43,7 @@ class ReservationRecord {
       'cake': cake,
       'music': music,
       'note': note,
+      'onlineId': onlineId,
     };
   }
 
@@ -55,14 +59,17 @@ class ReservationRecord {
       cake: map['cake'] ?? '',
       music: map['music'] ?? '',
       note: map['note'] ?? '',
+      onlineId: map['onlineId'] as String?,
     );
   }
 }
 
 class ReservationStore {
   ReservationStore._() {
-    _load();
+    _ready = _load();
   }
+
+  late final Future<void> _ready;
 
   static final ReservationStore instance = ReservationStore._();
 
@@ -109,6 +116,7 @@ class ReservationStore {
   }
 
   Future<void> add(ReservationRecord reservation) async {
+    await _ready;
     reservations.value = [
       reservation,
       ...reservations.value,
@@ -118,6 +126,7 @@ class ReservationStore {
   }
 
   Future<void> removeAt(int index) async {
+    await _ready;
     final list =
         List<ReservationRecord>.from(reservations.value);
 
@@ -132,6 +141,7 @@ class ReservationStore {
   }
 
   Future<void> clear() async {
+    await _ready;
     reservations.value = [];
 
     final prefs = await SharedPreferences.getInstance();
