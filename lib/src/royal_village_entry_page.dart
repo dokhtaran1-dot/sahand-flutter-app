@@ -204,7 +204,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
   }
 
   static const _salons = ['Salon Lumière', 'Salon Noir', 'Salon Jardin', 'Salon Privé', 'RV Lounge Impérial Classique', 'Salon Doré', 'Salon Âme du Poète', 'Salon Royal'];
-  static const _photos = ['Salon_lumiere.png', 'Salon_noir.png', 'salon_jardin.png', 'Salon_prive.png', 'rv_lounge_imperial_classique.png', 'salon_dore.png', 'salon_ame_du_poete.png', 'Salon_royal.png'];
+  static const _photos = ['lumiere.png', 'noir.png', 'jardin.png', 'prive.png', 'imperial.png', 'dore.png', 'ame_du_poete.png', 'royal.png'];
 
   void _showFullPhoto(BuildContext context, String title, String asset) {
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => Scaffold(
@@ -251,11 +251,11 @@ class RoyalVillageEntryPage extends StatelessWidget {
         OutlinedButton(onPressed: () => _openWhatsApp(context), child: const Text('ارتباط')),
       ])),
       const Padding(padding: EdgeInsets.only(top: 26), child: Text('OUR PRIVATE SALONS', textAlign: TextAlign.center, style: TextStyle(color: _gold, letterSpacing: 3, fontSize: 17))),
-      PhotoOrbit(images: _photos.map((p) => 'assets/image/$p').toList(), labels: _salons,
-        onSelected: (i) => _showFullPhoto(context, _salons[i], 'assets/image/${_photos[i]}')),
+      PhotoOrbit(images: _photos.map((p) => 'assets/image/booking_posters/$p').toList(), labels: _salons,
+        onSelected: (i) => _showFullPhoto(context, _salons[i], 'assets/image/booking_posters/${_photos[i]}')),
       const Padding(padding: EdgeInsets.only(top: 18), child: Text('THE ROYAL SALON COLLECTION', textAlign: TextAlign.center, style: TextStyle(color: _gold, letterSpacing: 2, fontSize: 15))),
       Padding(padding: const EdgeInsets.all(20), child: LayoutBuilder(builder: (context, constraints) => Wrap(spacing: 12, runSpacing: 16, children: [
-        for (var i = 0; i < _salons.length; i++) SizedBox(width: (constraints.maxWidth - 12) / 2, child: _SalonCard(name: _salons[i], image: 'assets/image/${_photos[i]}', onTap: () => _showFullPhoto(context, _salons[i], 'assets/image/${_photos[i]}'))),
+        for (var i = 0; i < _salons.length; i++) SizedBox(width: (constraints.maxWidth - 12) / 2, child: _SalonCard(name: _salons[i], image: 'assets/image/booking_posters/${_photos[i]}', onTap: () => _showFullPhoto(context, _salons[i], 'assets/image/booking_posters/${_photos[i]}'))),
         SizedBox(width: constraints.maxWidth, child: _SalonCard(name: 'Grand Salon', image: 'assets/image/Grand_Salon_Original.png', onTap: () => _showFullPhoto(context, 'Grand Salon', 'assets/image/Grand_Salon_Original.png'))),
       ]))),
       Padding(padding: const EdgeInsets.all(20), child: OutlinedButton.icon(onPressed: () => _openGallery(context), icon: const Icon(Icons.photo_library_outlined), label: const Text('مشاهدهٔ گالری'))),
