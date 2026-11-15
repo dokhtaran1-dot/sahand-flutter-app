@@ -138,7 +138,7 @@ class _SalonImageViewerState extends State<_SalonImageViewer> {
               fit: BoxFit.contain, filterQuality: FilterQuality.high,
               errorBuilder: (_, __, ___) => const Center(
                 child: Text('تصویر این سالن در دسترس نیست',
-                  style: TextStyle(color: _gold))))),
+                  style: TextStyle(color: _gold))))))),
         ),
       )),
       SafeArea(top: false, child: Padding(
