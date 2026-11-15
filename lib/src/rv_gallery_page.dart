@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'rv_booking_poster_page.dart';
-import 'salon_preview_image.dart';
 
 /// Eight approved private salons, in the user's confirmed Royal One order.
 class RvGalleryPage extends StatelessWidget {
@@ -10,14 +9,14 @@ class RvGalleryPage extends StatelessWidget {
   static const Color _gold = Color(0xFFD6B15E);
 
   static const List<({String name, String image})> _salons = [
-    (name: 'Salon Lumière', image: 'assets/image/booking_posters/lumiere.png'),
-    (name: 'Salon Noir', image: 'assets/image/booking_posters/noir.png'),
-    (name: 'Salon Jardin', image: 'assets/image/booking_posters/jardin.png'),
-    (name: 'Salon Privé', image: 'assets/image/booking_posters/prive.png'),
-    (name: 'RV Lounge Impérial Classique', image: 'assets/image/booking_posters/imperial.png'),
-    (name: 'Salon Doré', image: 'assets/image/booking_posters/dore.png'),
-    (name: 'Salon Âme du Poète', image: 'assets/image/booking_posters/ame_du_poete.png'),
-    (name: 'Salon Royal', image: 'assets/image/booking_posters/royal.png'),
+    (name: 'Salon Lumière', image: 'assets/image/Salon_lumiere.png'),
+    (name: 'Salon Noir', image: 'assets/image/Salon_noir.png'),
+    (name: 'Salon Jardin', image: 'assets/image/salon_jardin.png'),
+    (name: 'Salon Privé', image: 'assets/image/Salon_prive.png'),
+    (name: 'RV Lounge Impérial Classique', image: 'assets/image/rv_lounge_imperial_classique.png'),
+    (name: 'Salon Doré', image: 'assets/image/salon_dore.png'),
+    (name: 'Salon Âme du Poète', image: 'assets/image/salon_ame_du_poete.png'),
+    (name: 'Salon Royal', image: 'assets/image/Salon_royal.png'),
   ];
 
   static void _open(BuildContext context, int index) {
@@ -68,14 +67,19 @@ class RvGalleryPage extends StatelessWidget {
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(onTap: () => _open(context, i),
                   child: Stack(fit: StackFit.expand, children: [
-                    SalonPreviewImage(asset: item.image),
+                    Image.asset(item.image,
+                      fit: BoxFit.cover, alignment: Alignment.center,
+                      filterQuality: FilterQuality.high,
+                      errorBuilder: (_, __, ___) =>
+                          const Center(child: Icon(Icons.broken_image_outlined,
+                            color: _gold, size: 37))),
                     const DecoratedBox(decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter, end: Alignment.bottomCenter,
                         stops: [0, .52, 1],
                         colors: [Colors.transparent, Color(0x11000000), Color(0xE6000000)]))),
                     Positioned(left: 10, right: 10, bottom: 15,
-                      child: Column(children: [
+                      child: Column(mainAxisSize: MainAxisSize.min, children: [
                         Text(item.name, textAlign: TextAlign.center,
                           style: const TextStyle(color: Colors.white,
                             fontWeight: FontWeight.w800, fontSize: 14)),
@@ -130,7 +134,11 @@ class _SalonImageViewerState extends State<_SalonImageViewer> {
           child: Center(child: SizedBox(
             width: MediaQuery.sizeOf(context).width * .92,
             height: MediaQuery.sizeOf(context).height * .57,
-            child: SalonPreviewImage(asset: widget.salons[i].image))),
+            child: Image.asset(widget.salons[i].image,
+              fit: BoxFit.contain, filterQuality: FilterQuality.high,
+              errorBuilder: (_, __, ___) => const Center(
+                child: Text('تصویر این سالن در دسترس نیست',
+                  style: TextStyle(color: _gold))))),
         ),
       )),
       SafeArea(top: false, child: Padding(
