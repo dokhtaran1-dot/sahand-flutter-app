@@ -140,7 +140,7 @@ jobs:
       - name: Upload verified preview artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ROYAL_ONE_HERITAGE_APPROVED_v1.0.26_ARM64
+          name: ROYAL_ONE_RV_ONLINE_v1.0.30_ARM64
           path: ROYAL_ONE_RV_ONLINE_v1.0.30_ARM64.apk
           compression-level: 0
       - name: Publish prerelease (not production)
@@ -158,6 +158,6 @@ jobs:
             gh release create "$tag" "$apk" \
               --target "$GITHUB_SHA" \
               --title 'ROYAL ONE v1.0.30 — RV online requests and RC verified live scores' \
-              --notes 'ISOLATED TEST BUILD. RV requests now submit to secure Supabase after phone OTP and remain PENDING until management confirms. RC uses realtime verified-only score table and pending claims; no real rewards. Approved-only real RV media portal plays source audio once uploaded. Compact SC, floating RM RC RV, Heritage father/president, offline RS, RH, and RV salons retained. No video file shipped yet; NO public release.' \
+              --notes 'ISOLATED TEST BUILD. RV requests now submit to secure Supabase after phone OTP and remain PENDING until management confirms. RC uses realtime verified-only score table and pending claims; no real rewards. RV promotional-media portal plays original audio only after official file upload and management publication. SMS login offers safe retry and a resend cooldown. Compact SC, floating RM RC RV, Heritage father/president, offline RS, RH, and RV salons retained. The real on-site identity of concept montage footage is NOT verified; no MP4 is shipped inside APK. NO public release.' \
               --prerelease
           fi
