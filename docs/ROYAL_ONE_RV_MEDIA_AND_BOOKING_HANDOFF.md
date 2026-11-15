@@ -27,3 +27,12 @@ Never mark missing or synthetic assets as real original footage, and never publi
 
 ## RC prizes
 `royal_club_scores` is a verified-only public leaderboard and Realtime publication. Score submissions remain pending review; no automatic prize awarding.
+
+## Verified integration checks — November 15, 2026
+- A real RLS-scoped database INSERT using a verified existing auth identity was accepted with status `pending` in a **rolled-back SQL transaction**. Follow-up count was **0 reservations**, proving no test bookings were retained. This tests the backend gate, **not SMS delivery on a physical device**.
+- Fixed two production DB mismatches: the E.164 phone CHECK regex had been overescaped, and Supabase Auth stores verified phone IDs without the `+` prefix while the app uses `+98...`. RLS now compares normalized values, preserving ownership/phone checks.
+- OTP Edge Function `royal1-send-sms` version 4 is deployed and uses a signed Supabase SMS webhook with Kavenegar verification template `RoyalOneOTP`. The phone carrier's **actual delivery and user OTP entry were not tested by this session**.
+- An isolated v1.0.30 Android preview implements a resend countdown and clearer expired-code guidance and requires `phoneConfirmedAt` for online bookings; confirm GitHub Actions build and physical device test before publishing.
+- Storage inventory check: `royal-one-media` bucket has **0 uploaded objects**, even though approved-only metadata rows for `rv/main_45s.mp4` and `rv/teaser_11s.mp4` exist with `published=false`.
+- Contact sheet inspection found world-city/salon concepts (Paris, Seoul, etc). These are promotional assets, **not proof of real on-site rooms or filmed customer experiences**.
+- For upload, retrieve the conversation artifact `ROYAL_ONE_RV_SUPABASE_UPLOAD_READY.zip` (29 MB) with exact internal paths. The connected Supabase app supports database/edge operations but **does not have a byte-upload action**. A signed-in admin must use Supabase Dashboard -> Storage to upload both files, verify playback and publish.
