@@ -47,7 +47,7 @@ create policy rv_reservations_verified_phone_pending_insert
     and reviewed_at is null
     and management_note is null
     and (select auth.jwt() ->> 'phone') is not null
-    and phone = (select auth.jwt() ->> 'phone')
+    and phone = ('+' || ltrim((select auth.jwt() ->> 'phone'), '+'))
   );
 -- No UPDATE/DELETE policy or grants to mobile users: status can only be
 -- changed through a privileged management workflow / Supabase dashboard.
