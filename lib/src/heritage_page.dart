@@ -2,198 +2,109 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-const _emerald = Color(0xFF061B13);
-const _gold = Color(0xFFE5C37E);
+const _bg = Color(0xFF06140F);
+const _panel = Color(0xFF0C251B);
+const _gold = Color(0xFFD8B874);
+const _ivory = Color(0xFFF4EBDA);
+const _muted = Color(0xFFBFB8A8);
 
-/// The R1 heritage entry preserves the 1351 founding story and the original
-/// nine-chapter book. The Founder title belongs exclusively to the father.
+/// The heritage page is an editorial family-history experience, not a
+/// full-screen poster. Portraits are kept as the original supplied assets.
+/// The Founder is the father; the son is the third heir and President.
 class HeritagePage extends StatelessWidget {
   const HeritagePage({super.key});
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: _emerald,
+    backgroundColor: _bg,
     appBar: AppBar(
-      centerTitle: true, backgroundColor: _emerald,
+      backgroundColor: _bg,
       foregroundColor: _gold,
-      title: const Text('SAHAND / HERITAGE',
-        style: TextStyle(letterSpacing: 2.0, fontSize: 15)),
+      centerTitle: true,
+      toolbarHeight: 58,
+      title: const Text('SAHAND  ·  HERITAGE',
+        style: TextStyle(fontFamily: 'serif', fontSize: 14,
+          letterSpacing: 2.6, fontWeight: FontWeight.w600)),
     ),
-    body: Directionality(
-      textDirection: TextDirection.rtl,
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 14, 20, 70),
-        children: [
-          const _HeritageSphere(),
-          const SizedBox(height: 8),
-          const Text('SAHAND CONSORTIUM', textAlign: TextAlign.center,
-            textDirection: TextDirection.ltr,
-            style: TextStyle(color: _gold, letterSpacing: 3, fontSize: 15)),
-          const SizedBox(height: 7),
-          const Text('SINCE 1351 · TEHRAN',
-            textAlign: TextAlign.center, textDirection: TextDirection.ltr,
-            style: TextStyle(color: Color(0xFFB3A77E), letterSpacing: 2, fontSize: 11)),
-          const SizedBox(height: 29),
-          const Text('از پدر به پسر', textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 30, color: _gold, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 15),
-          const Text(
-            'میراث یک نام؛ از کارخانهٔ سهند در سال ۱۳۵۱ تا توسعهٔ کنسرسیوم سهند.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Color(0xFFE3DFCF), fontSize: 16, height: 2.1)),
-          const SizedBox(height: 34),
-          Semantics(
-            label: 'تصویر تاریخی و اصلی بنیان‌گذار کارخانهٔ سهند',
-            image: true,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: const Color(0xFF9B8255)),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [BoxShadow(color: Color(0x442C7C56), blurRadius: 23)],
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: Image.asset(
-                'assets/heritage/founder_original.jpg',
-                width: double.infinity, fit: BoxFit.fitWidth,
-                filterQuality: FilterQuality.high,
-                errorBuilder: (_, __, ___) => const SizedBox(
-                  height: 180,
-                  child: Center(child: Text('تصویر تاریخی در دسترس نیست',
-                    style: TextStyle(color: _gold))),
-                ),
-              ),
+    body: SafeArea(
+      top: false,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 640),
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(20, 6, 20, 44),
+              children: const [
+                _HeritageMasthead(),
+                SizedBox(height: 19),
+                _GoldDivider(),
+                SizedBox(height: 21),
+                Text('از پدر به پسر',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: _ivory, fontSize: 25,
+                    fontWeight: FontWeight.w700, height: 1.45)),
+                SizedBox(height: 6),
+                Text('یک نام، یک ریشه، یک میراث ماندگار',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: _muted, fontSize: 13,
+                    height: 1.8)),
+                SizedBox(height: 23),
+                _FounderStoryCard(),
+                SizedBox(height: 14),
+                _SuccessorStoryCard(),
+                SizedBox(height: 25),
+                _GoldDivider(),
+                SizedBox(height: 20),
+                _BookEntry(),
+                SizedBox(height: 26),
+                Text('A FATHER’S LEGACY · A SON’S CONTINUATION',
+                  textDirection: TextDirection.ltr,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Color(0xFFB29B6C),
+                    fontSize: 10, letterSpacing: 1.1)),
+              ],
             ),
           ),
-          const SizedBox(height: 15),
-          const Text('تصویر اصلی بنیان‌گذار · سهند، از سال ۱۳۵۱',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Color(0xFFC4AB76), fontSize: 13)),
-          const SizedBox(height: 24),
-          _heritagePanel(
-            icon: Icons.auto_stories_outlined,
-            eyebrow: 'THE ORIGIN · 1351',
-            title: 'بنیان‌گذار سهند',
-            subtitle: 'صفر قنبری درویش',
-            description:
-                'آغاز فعالیت کارخانهٔ سهند در خیابان مولوی تهران، سال ۱۳۵۱. '
-                'ریشهٔ این مجموعه با تلاش نسل نخست و میراث پدر شکل گرفت.',
-          ),
-          const SizedBox(height: 15),
-          _heritagePanel(
-            icon: Icons.account_balance_outlined,
-            eyebrow: 'THIRD GENERATION',
-            title: 'سومین وارث',
-            subtitle: 'حامد قنبری درویش',
-            description:
-                'رئیس کنسرسیوم سهند و ادامه‌دهندهٔ نامی که بنیان آن را پدر گذاشت؛ '
-                'توسعهٔ میراث خانوادگی در ساختاری نو و چندشاخه.',
-          ),
-          const SizedBox(height: 32),
-          Center(child: Container(height: 1, width: 110, color: _gold)),
-          const SizedBox(height: 30),
-          const Text('THE NINE-CHAPTER BOOK',
-            textAlign: TextAlign.center, textDirection: TextDirection.ltr,
-            style: TextStyle(color: Color(0xFFE6C885), letterSpacing: 2.2, fontSize: 12)),
-          const SizedBox(height: 13),
-          Semantics(
-            button: true, label: 'خواندن کتاب کامل فلسفه مدیریت مرگ',
-            child: Card(
-              color: const Color(0xFF0E3827),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25),
-                side: const BorderSide(color: _gold, width: 1.1)),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(25),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const PhilosophyBookPage())),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-                  child: Column(children: [
-                    Icon(Icons.menu_book_outlined, color: _gold, size: 52),
-                    SizedBox(height: 18),
-                    Text('فلسفه مدیریت مرگ', textAlign: TextAlign.center,
-                      style: TextStyle(color: _gold, fontSize: 25, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 6),
-                    Text('از فروپاشی تا احیا', textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 18, color: Colors.white)),
-                    SizedBox(height: 10),
-                    Text('کتاب کامل ۹ فصل · به قلم حامد قنبری درویش',
-                      textAlign: TextAlign.center, style: TextStyle(color: Colors.white70)),
-                    SizedBox(height: 20),
-                    Icon(Icons.arrow_forward_rounded, color: _gold, size: 28),
-                  ]),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 38),
-          Container(
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: const Color(0x889C8052))),
-            child: Image.asset('assets/images/1.png', width: double.infinity,
-              fit: BoxFit.fitWidth,
-              errorBuilder: (context, error, stackTrace) => const SizedBox(
-                height: 100,
-                child: Center(child: Text('تصویر پرتره در دسترس نیست',
-                  style: TextStyle(color: _gold))))),
-          ),
-          const SizedBox(height: 21),
-          const Text('حامد قنبری درویش',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 27, color: _gold)),
-          const SizedBox(height: 10),
-          const Text('PRESIDENT · SAHAND CONSORTIUM',
-            textAlign: TextAlign.center, textDirection: TextDirection.ltr,
-            style: TextStyle(color: Color(0xFFB3A77E), letterSpacing: 1.6)),
-          const SizedBox(height: 15),
-          const Text('MBA · UOWD Dubai    |    DALF C2 · Français',
-            textDirection: TextDirection.ltr, textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white70, height: 1.8, fontSize: 12)),
-          const SizedBox(height: 38),
-          const Text('A FATHER’S LEGACY. A SON’S CONTINUATION.',
-            textDirection: TextDirection.ltr, textAlign: TextAlign.center,
-            style: TextStyle(color: Color(0xFFBA9E68),
-              fontSize: 10, letterSpacing: 1.0)),
-        ],
+        ),
       ),
     ),
   );
-
-  static Widget _heritagePanel({
-    required IconData icon,
-    required String eyebrow,
-    required String title,
-    required String subtitle,
-    required String description,
-  }) => Container(
-    padding: const EdgeInsets.all(22),
-    decoration: BoxDecoration(
-      color: const Color(0xFF0D2E21),
-      borderRadius: BorderRadius.circular(21),
-      border: Border.all(color: const Color(0x887F6A42))),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [
-        Icon(icon, color: _gold, size: 30),
-        const SizedBox(width: 12),
-        Text(eyebrow, textDirection: TextDirection.ltr,
-          style: const TextStyle(color: Color(0xFFE7C77D),
-            fontSize: 10, letterSpacing: 1.5)),
-      ]),
-      const SizedBox(height: 12),
-      Text(title, style: const TextStyle(
-        color: Color(0xFFFFD99C), fontSize: 23)),
-      const SizedBox(height: 8),
-      Text(subtitle, style: const TextStyle(
-        color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700)),
-      const SizedBox(height: 11),
-      Text(description, style: const TextStyle(
-        color: Color(0xFFCECBBF), fontSize: 14, height: 2.0)),
-    ]),
-  );
 }
 
+class _GoldDivider extends StatelessWidget {
+  const _GoldDivider();
+  @override
+  Widget build(BuildContext context) => Row(children: const [
+    Expanded(child: Divider(color: Color(0x665B6F59), thickness: 1)),
+    SizedBox(width: 12),
+    Icon(Icons.diamond_outlined, color: _gold, size: 15),
+    SizedBox(width: 12),
+    Expanded(child: Divider(color: Color(0x665B6F59), thickness: 1)),
+  ]);
+}
+
+class _HeritageMasthead extends StatelessWidget {
+  const _HeritageMasthead();
+
+  @override
+  Widget build(BuildContext context) => Column(children: const [
+    SizedBox(height: 8),
+    _HeritageSphere(),
+    SizedBox(height: 1),
+    Text('SAHAND CONSORTIUM',
+      textAlign: TextAlign.center, textDirection: TextDirection.ltr,
+      style: TextStyle(fontFamily: 'serif', fontSize: 17,
+        color: _gold, letterSpacing: 2.7, fontWeight: FontWeight.w600)),
+    SizedBox(height: 7),
+    Text('TEHRAN  ·  EST. 1351',
+      textAlign: TextAlign.center, textDirection: TextDirection.ltr,
+      style: TextStyle(fontSize: 10,
+        color: _muted, letterSpacing: 2.7)),
+  ]);
+}
+
+/// Fully contained in its own box; the rings never overflow the top of page.
 class _HeritageSphere extends StatefulWidget {
   const _HeritageSphere();
   @override
@@ -202,8 +113,8 @@ class _HeritageSphere extends StatefulWidget {
 
 class _HeritageSphereState extends State<_HeritageSphere>
     with SingleTickerProviderStateMixin {
-  late final AnimationController controller =
-      AnimationController(vsync: this, duration: const Duration(seconds: 18));
+  late final AnimationController controller = AnimationController(
+      vsync: this, duration: const Duration(seconds: 28));
 
   @override
   void didChangeDependencies() {
@@ -220,63 +131,223 @@ class _HeritageSphereState extends State<_HeritageSphere>
 
   @override
   Widget build(BuildContext context) => SizedBox(
-    height: 294,
-    child: AnimatedBuilder(animation: controller, builder: (context, _) {
-      final angle = controller.value * 2 * math.pi;
-      return Stack(alignment: Alignment.center, children: [
-        Transform.rotate(
-          angle: angle,
-          child: Container(
-            height: 266, width: 266,
-            decoration: BoxDecoration(shape: BoxShape.circle,
-              border: Border.all(color: const Color(0x777FBEA2)),
-              gradient: const SweepGradient(colors: [
-                Color(0x007FBEA2), Color(0x99D7BF78),
-                Color(0x007FBEA2), Color(0x66D7BF78),
-                Color(0x007FBEA2),
-              ])),
+    height: 212,
+    child: AnimatedBuilder(
+      animation: controller,
+      builder: (context, _) {
+        final a = controller.value * math.pi * 2;
+        return Stack(alignment: Alignment.center, children: [
+          Transform.rotate(
+            angle: a,
+            child: Container(width: 192, height: 192,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0x887D967A), width: .75),
+                gradient: const SweepGradient(colors: [
+                  Color(0x0011AA88), Color(0x88D1AE66),
+                  Color(0x0011AA88), Color(0x55B7D1A2),
+                  Color(0x0011AA88),
+                ]),
+              )),
           ),
-        ),
-        Transform.rotate(
-          angle: -angle * .65,
-          child: Container(
-            height: 244, width: 244,
-            decoration: BoxDecoration(shape: BoxShape.circle,
-              border: Border.all(color: const Color(0x669B8050), width: 1.5)),
+          Transform.rotate(
+            angle: -a * .7,
+            child: Container(width: 173, height: 173,
+              decoration: BoxDecoration(shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xAA9A7E4A), width: .8))),
           ),
-        ),
-        Container(
-          height: 195, width: 195,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const RadialGradient(
-              center: Alignment(-.38, -.4), radius: 1.15,
-              colors: [Color(0xFF41715A), Color(0xFF143F30), Color(0xFF06190F)]),
-            border: Border.all(color: _gold, width: 2.0),
-            boxShadow: const [
-              BoxShadow(color: Color(0x66459871), blurRadius: 56, spreadRadius: 8),
-              BoxShadow(color: Color(0x558C7439), blurRadius: 23, offset: Offset(5, 5))],
+          Container(
+            width: 153, height: 153,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: const RadialGradient(
+                center: Alignment(-.36, -.5), radius: 1.2,
+                colors: [Color(0xFF3C715A), Color(0xFF164433), _bg]),
+              border: Border.all(color: _gold, width: 1.5),
+              boxShadow: const [
+                BoxShadow(color: Color(0x332D8D65),
+                    blurRadius: 27, spreadRadius: 3),
+              ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('SC',
+                  textDirection: TextDirection.ltr,
+                  style: TextStyle(fontFamily: 'serif',
+                    fontSize: 60, color: _gold, letterSpacing: -3.5)),
+                const SizedBox(height: 1),
+                Container(height: 1, width: 65, color: _gold),
+                const SizedBox(height: 7),
+                const Text('1351',
+                  textDirection: TextDirection.ltr,
+                  style: TextStyle(fontSize: 12,
+                    letterSpacing: 3.5, color: _gold)),
+              ],
+            ),
           ),
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const Text('SC', style: TextStyle(fontFamily: 'serif',
-              fontSize: 82, color: Color(0xFFEDD099), letterSpacing: -5)),
-            Container(height: 1, width: 94, color: _gold),
-            const SizedBox(height: 9),
-            const Text('1351', style: TextStyle(
-              letterSpacing: 5, color: _gold, fontSize: 16)),
-          ]),
-        ),
-      ]);
-    }),
+        ]);
+      },
+    ),
   );
 }
 
+class _FounderStoryCard extends StatelessWidget {
+  const _FounderStoryCard();
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(13),
+    decoration: BoxDecoration(
+      color: _panel,
+      borderRadius: BorderRadius.circular(18),
+      border: Border.all(color: const Color(0x887C653D), width: .8),
+    ),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: Padding(
+          padding: const EdgeInsets.fromLTRB(1, 8, 12, 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Text('THE FOUNDER  ·  1351',
+                textDirection: TextDirection.ltr,
+                style: TextStyle(fontSize: 10,
+                  letterSpacing: 1, color: _gold)),
+              SizedBox(height: 11),
+              Text('صفر قنبری درویش',
+                style: TextStyle(fontSize: 18,
+                  color: _ivory, fontWeight: FontWeight.w800,
+                  height: 1.5)),
+              SizedBox(height: 4),
+              Text('بنیان‌گذار کارخانه سهند',
+                style: TextStyle(fontSize: 13, color: _gold)),
+              SizedBox(height: 12),
+              Text('تهران، خیابان مولوی · سال ۱۳۵۱',
+                style: TextStyle(fontSize: 12,
+                  color: _muted, height: 1.8)),
+              SizedBox(height: 6),
+              Text('آغاز میراثی که نسل‌های بعد نام آن را حفظ کردند.',
+                style: TextStyle(fontSize: 12,
+                  color: _muted, height: 1.85)),
+            ],
+          ),
+        )),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Image.asset('assets/heritage/founder_original.jpg',
+            width: 125, height: 176,
+            fit: BoxFit.cover, alignment: Alignment.topCenter,
+            filterQuality: FilterQuality.high,
+            errorBuilder: (_, __, ___) => const SizedBox(
+              width: 125, height: 176,
+              child: ColoredBox(color: Color(0xFF15392C),
+                child: Icon(Icons.history_edu_outlined,
+                  size: 35, color: _gold))),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+class _SuccessorStoryCard extends StatelessWidget {
+  const _SuccessorStoryCard();
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: const Color(0xFF0A2018),
+      borderRadius: BorderRadius.circular(18),
+      border: Border.all(color: const Color(0x557C653D), width: .8),
+    ),
+    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Expanded(child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          Text('THE THIRD HEIR',
+            textDirection: TextDirection.ltr,
+            style: TextStyle(color: _gold, fontSize: 10, letterSpacing: 1.8)),
+          SizedBox(height: 10),
+          Text('حامد قنبری درویش',
+            style: TextStyle(color: _ivory,
+              fontSize: 18, fontWeight: FontWeight.w800)),
+          SizedBox(height: 5),
+          Text('رئیس کنسرسیوم سهند · سومین وارث',
+            style: TextStyle(color: _gold, fontSize: 12, height: 1.8)),
+          SizedBox(height: 11),
+          Text('ادامه‌دهندهٔ میراث پدر و توسعه‌دهندهٔ آن در قالب کنسرسیوم سهند.',
+            style: TextStyle(color: _muted, fontSize: 12, height: 1.9)),
+          SizedBox(height: 10),
+          Text('MBA · UOWD Dubai  |  DALF C2',
+            textDirection: TextDirection.ltr,
+            style: TextStyle(color: Color(0xFFAD9F81), fontSize: 10)),
+        ],
+      )),
+      const SizedBox(width: 11),
+      ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.asset('assets/images/1.png',
+          width: 94, height: 135,
+          fit: BoxFit.cover, alignment: Alignment.topCenter,
+          filterQuality: FilterQuality.high,
+          errorBuilder: (_, __, ___) => const SizedBox(
+            width: 94, height: 135,
+            child: ColoredBox(color: Color(0xFF15392C),
+              child: Icon(Icons.person_outline, color: _gold, size: 30))),
+        ),
+      ),
+    ]),
+  );
+}
+
+class _BookEntry extends StatelessWidget {
+  const _BookEntry();
+  @override
+  Widget build(BuildContext context) => Material(
+    color: const Color(0xFF0D3125),
+    borderRadius: BorderRadius.circular(18),
+    clipBehavior: Clip.antiAlias,
+    child: InkWell(
+      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => const PhilosophyBookPage())),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0xAAAB9158), width: .8),
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Row(children: const [
+          Icon(Icons.auto_stories_outlined, color: _gold, size: 32),
+          SizedBox(width: 13),
+          Expanded(child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('فلسفه مدیریت مرگ',
+                style: TextStyle(color: _ivory,
+                  fontSize: 18, fontWeight: FontWeight.w700)),
+              SizedBox(height: 5),
+              Text('از فروپاشی تا احیا · کتاب کامل ۹ فصل',
+                style: TextStyle(color: _muted, fontSize: 12)),
+              SizedBox(height: 5),
+              Text('به قلم حامد قنبری درویش',
+                style: TextStyle(color: _gold, fontSize: 11)),
+            ],
+          )),
+          Icon(Icons.arrow_back_ios_new_rounded, color: _gold, size: 17),
+        ]),
+      ),
+    ),
+  );
+}
+
+/// Retain the existing full nine-chapter book and its local offline asset.
 class PhilosophyBookPage extends StatefulWidget {
   const PhilosophyBookPage({super.key});
   @override
   State<PhilosophyBookPage> createState() => _PhilosophyBookPageState();
 }
-
 class _PhilosophyBookPageState extends State<PhilosophyBookPage> {
   late final WebViewController _controller;
   @override
@@ -287,12 +358,12 @@ class _PhilosophyBookPageState extends State<PhilosophyBookPage> {
       ..setBackgroundColor(const Color(0xFF071E1B))
       ..loadFlutterAsset('assets/heritage/philosophy_book.html');
   }
-
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: const Color(0xFF071E1B),
     appBar: AppBar(
-      backgroundColor: const Color(0xFF071E1B), foregroundColor: _gold,
+      backgroundColor: const Color(0xFF071E1B),
+      foregroundColor: _gold,
       title: const Text('فلسفه مدیریت مرگ'),
     ),
     body: WebViewWidget(controller: _controller),
