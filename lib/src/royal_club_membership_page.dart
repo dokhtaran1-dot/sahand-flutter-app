@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -23,6 +24,21 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
   final otp = TextEditingController();
 
   bool consent = false;
+  int resendRemaining = 0;
+  Timer? _resendTimer;
+
+  void _startCooldown() {
+    _resendTimer?.cancel();
+    if (!mounted) return;
+    setState(() { sent = true; resendRemaining = 60; otp.clear(); });
+    _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) { timer.cancel(); return; }
+      setState(() {
+        if (resendRemaining > 0) resendRemaining--;
+      });
+      if (resendRemaining == 0) timer.cancel();
+    });
+  }
   bool sent = false;
   bool busy = false;
   bool alreadyMember = false;
@@ -120,12 +136,20 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
         phone: normalizedPhone,
         shouldCreateUser: true,
       );
-      if (mounted) setState(() => sent = true);
+      if (mounted) _startCooldown();
+    } on AuthException catch (e) {
+      if (mounted) {
+        final msg = e.message.toLowerCase();
+        setState(() {
+          error = msg.contains('rate') || msg.contains('limit')
+            ? 'ارسال پیامک بیش از حد تکرار شده است؛ کمی بعد دوباره امتحان کنید.'
+            : 'ارسال پیامک ناموفق بود. شماره و اتصال اینترنت را بررسی کنید.';
+        });
+      }
     } catch (_) {
       if (mounted) {
-        setState(() {
-          error = 'ارسال پیامک انجام نشد. تنظیمات پیامک یا شماره را بررسی کنید.';
-        });
+        setState(() =>
+          error = 'خطا در ارسال پیامک؛ اتصال اینترنت و تنظیمات سرویس را بررسی کنید.');
       }
     } finally {
       if (mounted) setState(() => busy = false);
@@ -173,11 +197,19 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('عضویت شما با موفقیت ثبت شد')),
       );
+    } on AuthException catch (e) {
+      if (mounted) {
+        final msg = e.message.toLowerCase();
+        setState(() {
+          error = (msg.contains('expired') || msg.contains('invalid'))
+            ? 'کد نامعتبر یا منقضی شده است. پس از پایان شمارش، درخواست کد جدید بدهید.'
+            : 'تأیید پیامکی ناموفق بود. اینترنت و کد واردشده را بررسی کنید.';
+        });
+      }
     } catch (_) {
       if (mounted) {
-        setState(() {
-          error = 'تأیید یا ثبت اطلاعات ناموفق بود. کد و اتصال اینترنت را بررسی کنید.';
-        });
+        setState(() =>
+          error = 'تأیید کد یا ثبت عضویت انجام نشد. دوباره تلاش کنید.');
       }
     } finally {
       if (mounted) setState(() => busy = false);
@@ -186,6 +218,7 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
 
   @override
   void dispose() {
+    _resendTimer?.cancel();
     name.dispose();
     phone.dispose();
     otp.dispose();
@@ -314,6 +347,20 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
                       'اصلاح شماره',
                       style: TextStyle(color: gold),
                     ),
+                  ),
+                  TextButton.icon(
+                    onPressed: busy || resendRemaining > 0 ? null : sendCode,
+                    icon: const Icon(Icons.sms_outlined),
+                    label: Text(resendRemaining > 0
+                      ? 'ارسال مجدد کد تا $resendRemaining ثانیه'
+                      : 'ارسال مجدد کد پیامکی'),
+                  ),
+                  const Text(
+                    'تنها پس از دریافت کد، آن را وارد و تأیید کنید. '
+                    'برای امنیت، کد را در اختیار شخص دیگری نگذارید.',
+                    textAlign: TextAlign.center,
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(color: Colors.white54, fontSize: 12),
                   ),
                 ],
                 if (error != null)
