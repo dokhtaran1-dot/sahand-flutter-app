@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'rv_booking_poster_page.dart';
+import 'salon_preview_image.dart';
 
 /// Eight approved private salons, in the user's confirmed Royal One order.
 class RvGalleryPage extends StatelessWidget {
@@ -56,7 +57,7 @@ class RvGalleryPage extends StatelessWidget {
           itemCount: _salons.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: count, crossAxisSpacing: 12,
-            mainAxisSpacing: 14, childAspectRatio: 0.73,
+            mainAxisSpacing: 14, childAspectRatio: 0.88,
           ),
           itemBuilder: (context, i) {
             final item = _salons[i];
@@ -67,10 +68,7 @@ class RvGalleryPage extends StatelessWidget {
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(onTap: () => _open(context, i),
                   child: Stack(fit: StackFit.expand, children: [
-                    Image.asset(item.image, fit: BoxFit.cover,
-                      filterQuality: FilterQuality.high,
-                      errorBuilder: (_, __, ___) => const Center(
-                        child: Icon(Icons.broken_image_outlined, color: _gold, size: 45))),
+                    SalonPreviewImage(asset: item.image),
                     const DecoratedBox(decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter, end: Alignment.bottomCenter,
@@ -129,8 +127,10 @@ class _SalonImageViewerState extends State<_SalonImageViewer> {
         onPageChanged: (i) => setState(() => index = i),
         itemBuilder: (_, i) => InteractiveViewer(
           minScale: 1.0, maxScale: 5.0,
-          child: Center(child: Image.asset(widget.salons[i].image,
-            fit: BoxFit.contain, filterQuality: FilterQuality.high)),
+          child: Center(child: SizedBox(
+            width: MediaQuery.sizeOf(context).width * .92,
+            height: MediaQuery.sizeOf(context).height * .57,
+            child: SalonPreviewImage(asset: widget.salons[i].image))),
         ),
       )),
       SafeArea(top: false, child: Padding(
