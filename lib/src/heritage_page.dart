@@ -1,353 +1,696 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-const _bg = Color(0xFF06140F);
-const _panel = Color(0xFF0C251B);
-const _gold = Color(0xFFD8B874);
-const _ivory = Color(0xFFF4EBDA);
-const _muted = Color(0xFFBFB8A8);
+import 'royal_mall_page.dart';
+import 'royal_village_page.dart';
 
-/// The heritage page is an editorial family-history experience, not a
-/// full-screen poster. Portraits are kept as the original supplied assets.
-/// The Founder is the father; the son is the third heir and President.
-class HeritagePage extends StatelessWidget {
+const _green = Color(0xFF041A13);
+const _gold = Color(0xFFE4C17B);
+const _cream = Color(0xFFF4ECD8);
+
+/// Royal Heritage is the approved original FULL poster, not a new composition.
+/// Everything visible in the poster is preserved; native Flutter hit targets
+/// sit precisely over the 4 languages, 10 branches, founder, president,
+/// central SC sphere, menu and 5 bottom actions.
+class HeritagePage extends StatefulWidget {
   const HeritagePage({super.key});
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: _bg,
-    appBar: AppBar(
-      backgroundColor: _bg,
-      foregroundColor: _gold,
-      centerTitle: true,
-      toolbarHeight: 58,
-      title: const Text('SAHAND  ·  HERITAGE',
-        style: TextStyle(fontFamily: 'serif', fontSize: 14,
-          letterSpacing: 2.6, fontWeight: FontWeight.w600)),
-    ),
-    body: SafeArea(
-      top: false,
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 640),
-          child: Directionality(
-            textDirection: TextDirection.rtl,
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 6, 20, 44),
-              children: const [
-                _HeritageMasthead(),
-                SizedBox(height: 19),
-                _GoldDivider(),
-                SizedBox(height: 21),
-                Text('از پدر به پسر',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: _ivory, fontSize: 25,
-                    fontWeight: FontWeight.w700, height: 1.45)),
-                SizedBox(height: 6),
-                Text('یک نام، یک ریشه، یک میراث ماندگار',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: _muted, fontSize: 13,
-                    height: 1.8)),
-                SizedBox(height: 23),
-                _FounderStoryCard(),
-                SizedBox(height: 14),
-                _SuccessorStoryCard(),
-                SizedBox(height: 25),
-                _GoldDivider(),
-                SizedBox(height: 20),
-                _BookEntry(),
-                SizedBox(height: 26),
-                Text('A FATHER’S LEGACY · A SON’S CONTINUATION',
-                  textDirection: TextDirection.ltr,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Color(0xFFB29B6C),
-                    fontSize: 10, letterSpacing: 1.1)),
-              ],
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
+  State<HeritagePage> createState() => _HeritagePageState();
 }
 
-class _GoldDivider extends StatelessWidget {
-  const _GoldDivider();
-  @override
-  Widget build(BuildContext context) => const Row(children: [
-    Expanded(child: Divider(color: Color(0x665B6F59), thickness: 1)),
-    SizedBox(width: 12),
-    Icon(Icons.diamond_outlined, color: _gold, size: 15),
-    SizedBox(width: 12),
-    Expanded(child: Divider(color: Color(0x665B6F59), thickness: 1)),
-  ]);
+class _HeritageBranch {
+  const _HeritageBranch(this.id, this.name, this.fa, this.en,
+      this.ar, this.fr, this.x, this.y, this.width, this.height);
+  final String id, name, fa, en, ar, fr;
+  final double x, y, width, height;
 }
 
-class _HeritageMasthead extends StatelessWidget {
-  const _HeritageMasthead();
+class _HeritagePageState extends State<HeritagePage> {
+  static const double _artWidth = 941;
+  static const double _artHeight = 1672;
+  static const String _art =
+      'assets/heritage/royal_heritage_approved_poster.png';
 
-  @override
-  Widget build(BuildContext context) => const Column(children: [
-    SizedBox(height: 8),
-    _HeritageSphere(),
-    SizedBox(height: 1),
-    Text('SAHAND CONSORTIUM',
-      textAlign: TextAlign.center, textDirection: TextDirection.ltr,
-      style: TextStyle(fontFamily: 'serif', fontSize: 17,
-        color: _gold, letterSpacing: 2.7, fontWeight: FontWeight.w600)),
-    SizedBox(height: 7),
-    Text('TEHRAN  ·  EST. 1351',
-      textAlign: TextAlign.center, textDirection: TextDirection.ltr,
-      style: TextStyle(fontSize: 10,
-        color: _muted, letterSpacing: 2.7)),
-  ]);
-}
+  String _language = 'FA';
 
-/// Fully contained in its own box; the rings never overflow the top of page.
-class _HeritageSphere extends StatefulWidget {
-  const _HeritageSphere();
-  @override
-  State<_HeritageSphere> createState() => _HeritageSphereState();
-}
+  static const List<_HeritageBranch> _branches = [
+    _HeritageBranch('rm', 'Royal Mall Tabriz',
+        'رویال مال تبریز', 'Royal Mall Tabriz',
+        'رويال مول تبريز', 'Royal Mall Tabriz',
+        143, 555, 143, 147),
+    _HeritageBranch('rv', 'RV Royal Village Café',
+        'رویال ویلاژ کافه', 'Royal Village Café',
+        'رويال فيلاج كافيه', 'Le Royal Village Café',
+        43, 677, 157, 145),
+    _HeritageBranch('uae', 'UAE Construction & Development',
+        'ساخت‌وساز و توسعه امارات', 'UAE Construction & Development',
+        'البناء والتطوير في الإمارات', 'Construction et développement EAU',
+        37, 833, 167, 147),
+    _HeritageBranch('shirin', 'Shirin Sahand Azerbaijan',
+        'شیرین سهند آذربایجان', 'Shirin Sahand Azerbaijan',
+        'شيرين سهند أذربيجان', 'Shirin Sahand Azerbaïdjan',
+        133, 950, 175, 160),
+    _HeritageBranch('agriculture', 'Agriculture Stone Fruits',
+        'کشاورزی و میوه‌های هسته‌دار', 'Agriculture · Stone Fruits',
+        'الزراعة والفواكه ذات النواة', 'Agriculture · fruits à noyau',
+        296, 1003, 165, 164),
+    _HeritageBranch('iberchem', 'Iberchem Representation',
+        'نمایندگی ایبرکم', 'Iberchem Representation',
+        'وكالة إيبيركيم', 'Représentation Iberchem',
+        468, 1001, 169, 169),
+    _HeritageBranch('lova', 'Lova Coffee',
+        'قهوه لوا', 'Lova Coffee',
+        'قهوة لوفا', 'Café Lova',
+        637, 953, 160, 155),
+    _HeritageBranch('export', 'Export & Import Signature Product',
+        'صادرات و واردات محصولات ویژه', 'Export & Import Signature Product',
+        'الاستيراد والتصدير للمنتجات المميزة',
+        'Import-export · produits Signature',
+        733, 825, 160, 165),
+    _HeritageBranch('media', 'Media Advertising Studio HQ',
+        'رسانه، تبلیغات و استودیو', 'Media Advertising Studio HQ',
+        'الإعلام والإعلان والاستوديو',
+        'Média, publicité et studio',
+        730, 676, 165, 150),
+    _HeritageBranch('project', '1800 m² Project · Floor 3',
+        'پروژه ۱۸۰۰ مترمربعی، طبقه سوم',
+        '1800 m² Project · Floor 3',
+        'مشروع ١٨٠٠ م² · الطابق الثالث',
+        'Projet 1 800 m² · troisième étage',
+        632, 552, 156, 149),
+  ];
 
-class _HeritageSphereState extends State<_HeritageSphere>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController controller = AnimationController(
-      vsync: this, duration: const Duration(seconds: 28));
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (MediaQuery.of(context).disableAnimations) {
-      controller.stop();
-    } else if (!controller.isAnimating) {
-      controller.repeat();
+  String _tr(String fa, String en, String ar, String fr) {
+    switch (_language) {
+      case 'EN': return en;
+      case 'AR': return ar;
+      case 'FR': return fr;
+      default: return fa;
     }
   }
 
-  @override
-  void dispose() { controller.dispose(); super.dispose(); }
+  String _name(_HeritageBranch branch) {
+    switch (_language) {
+      case 'EN': return branch.en;
+      case 'AR': return branch.ar;
+      case 'FR': return branch.fr;
+      default: return branch.fa;
+    }
+  }
 
-  @override
-  Widget build(BuildContext context) => SizedBox(
-    height: 212,
-    child: AnimatedBuilder(
-      animation: controller,
-      builder: (context, _) {
-        final a = controller.value * math.pi * 2;
-        return Stack(alignment: Alignment.center, children: [
-          Transform.rotate(
-            angle: a,
-            child: Container(width: 192, height: 192,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0x887D967A), width: .75),
-                gradient: const SweepGradient(colors: [
-                  Color(0x0011AA88), Color(0x88D1AE66),
-                  Color(0x0011AA88), Color(0x55B7D1A2),
-                  Color(0x0011AA88),
-                ]),
-              )),
-          ),
-          Transform.rotate(
-            angle: -a * .7,
-            child: Container(width: 173, height: 173,
-              decoration: BoxDecoration(shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xAA9A7E4A), width: .8))),
-          ),
-          Container(
-            width: 153, height: 153,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const RadialGradient(
-                center: Alignment(-.36, -.5), radius: 1.2,
-                colors: [Color(0xFF3C715A), Color(0xFF164433), _bg]),
-              border: Border.all(color: _gold, width: 1.5),
-              boxShadow: const [
-                BoxShadow(color: Color(0x332D8D65),
-                    blurRadius: 27, spreadRadius: 3),
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('SC',
-                  textDirection: TextDirection.ltr,
-                  style: TextStyle(fontFamily: 'serif',
-                    fontSize: 60, color: _gold, letterSpacing: -3.5)),
-                const SizedBox(height: 1),
-                Container(height: 1, width: 65, color: _gold),
-                const SizedBox(height: 7),
-                const Text('1351',
-                  textDirection: TextDirection.ltr,
-                  style: TextStyle(fontSize: 12,
-                    letterSpacing: 3.5, color: _gold)),
-              ],
-            ),
-          ),
-        ]);
+  void _open(Widget page) => Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => page));
+
+  Future<void> _external(String url) async {
+    final uri = Uri.parse(url);
+    try {
+      final success = await launchUrl(uri,
+          mode: LaunchMode.externalApplication);
+      if (success) return;
+    } catch (_) {
+      // A native error sheet remains available when Android has no handler.
+    }
+    if (!mounted) return;
+    _notice(_tr('باز کردن نشانی ممکن نشد', 'Could not open this link',
+        'تعذر فتح الرابط', 'Impossible d’ouvrir ce lien'), url);
+  }
+
+  void _notice(String title, String description) {
+    showModalBottomSheet<void>(
+      context: context, backgroundColor: _green,
+      showDragHandle: true, isScrollControlled: true,
+      builder: (sheet) => SafeArea(child: Padding(
+        padding: const EdgeInsets.fromLTRB(25, 12, 25, 32),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Text(title, textAlign: TextAlign.center,
+              style: const TextStyle(color: _gold, fontSize: 21)),
+          const SizedBox(height: 12),
+          Text(description, textAlign: TextAlign.center,
+              style: const TextStyle(color: _cream, height: 1.7)),
+          const SizedBox(height: 15),
+          TextButton(onPressed: () => Navigator.pop(sheet),
+              child: Text(_tr('بستن', 'Close', 'إغلاق', 'Fermer'))),
+        ]),
+      )),
+    );
+  }
+
+  void _selectLanguage(String code) {
+    setState(() => _language = code);
+    final message = switch (code) {
+      'EN' => 'Royal Heritage · From Father to Son',
+      'AR' => 'التراث الملكي · من الأب إلى الابن',
+      'FR' => 'Héritage Royal · Du père au fils',
+      _ => 'میراث سهند · از پدر به پسر'
+    };
+    _notice(code + '  ·  ' + message,
+      _tr('زبان صفحه‌های تعاملی و معرفی شاخه‌ها تنظیم شد.',
+          'Interactive details and navigation now use this language.',
+          'تم اختيار اللغة للتفاصيل والقوائم التفاعلية.',
+          'Cette langue est active pour les fiches et les menus interactifs.'));
+  }
+
+  void _branch(_HeritageBranch branch) {
+    if (branch.id == 'rm') {
+      _open(const RoyalMallPage());
+      return;
+    }
+    if (branch.id == 'rv') {
+      _open(const RoyalVillagePage());
+      return;
+    }
+    if (branch.id == 'media') {
+      _media();
+      return;
+    }
+    final descriptions = <String, String>{
+      'uae': 'UAE Construction & Development · Sahand Consortium',
+      'shirin': 'Shirin Sahand Azerbaijan · Food manufacturing',
+      'agriculture': 'Agriculture · Stone fruits',
+      'iberchem': 'Iberchem · Representation',
+      'lova': 'Lova Coffee · Coffee branches',
+      'export': 'Export & Import · Signature Product',
+      'project': 'Royal Mall Tabriz · Third-floor 1800 m² project',
+    };
+    _open(_HeritageInfoPage(
+      title: _name(branch),
+      subtitle: descriptions[branch.id] ?? branch.name,
+      language: _language,
+      actionText: branch.id == 'project'
+        ? _tr('مشاهده رویال مال', 'Open Royal Mall',
+            'عرض رويال مول', 'Voir Royal Mall')
+        : _tr('وب‌سایت رسمی کنسرسیوم', 'Official consortium website',
+            'الموقع الرسمي', 'Site officiel'),
+      onAction: () {
+        if (branch.id == 'project') {
+          _open(const RoyalMallPage());
+        } else {
+          _external('https://sahand-consortium.com/');
+        }
       },
-    ),
-  );
-}
+    ));
+  }
 
-class _FounderStoryCard extends StatelessWidget {
-  const _FounderStoryCard();
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(13),
-    decoration: BoxDecoration(
-      color: _panel,
-      borderRadius: BorderRadius.circular(18),
-      border: Border.all(color: const Color(0x887C653D), width: .8),
+  void _founder() => _open(_HeritageProfilePage(
+    title: _tr('بنیان‌گذار سهند', 'Founder of Sahand',
+      'مؤسس سهند', 'Fondateur de Sahand'),
+    name: 'صفر قنبری درویش',
+    role: 'FOUNDER  ·  SINCE 1351',
+    photo: 'assets/heritage/founder_original.jpg',
+    description: _tr(
+      'آغاز کارخانه سهند در خیابان مولوی تهران در سال ۱۳۵۱؛ میراثی از پدر برای نسل‌های بعد.',
+      'Founded Sahand in 1351 in Tehran’s Molavi district, creating the legacy carried by the next generations.',
+      'تأسست سهند سنة ١٣٥١ في حي مولوي بطهران، وامتد إرثها إلى الأجيال التالية.',
+      'Création de Sahand en 1351 dans le quartier Molavi de Téhéran, à l’origine d’un héritage familial.',
     ),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Expanded(child: Padding(
-          padding: EdgeInsets.fromLTRB(1, 8, 12, 4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('THE FOUNDER  ·  1351',
-                textDirection: TextDirection.ltr,
-                style: TextStyle(fontSize: 10,
-                  letterSpacing: 1, color: _gold)),
-              SizedBox(height: 11),
-              Text('صفر قنبری درویش',
-                style: TextStyle(fontSize: 18,
-                  color: _ivory, fontWeight: FontWeight.w800,
-                  height: 1.5)),
-              SizedBox(height: 4),
-              Text('بنیان‌گذار کارخانه سهند',
-                style: TextStyle(fontSize: 13, color: _gold)),
-              SizedBox(height: 12),
-              Text('تهران، خیابان مولوی · سال ۱۳۵۱',
-                style: TextStyle(fontSize: 12,
-                  color: _muted, height: 1.8)),
-              SizedBox(height: 6),
-              Text('آغاز میراثی که نسل‌های بعد نام آن را حفظ کردند.',
-                style: TextStyle(fontSize: 12,
-                  color: _muted, height: 1.85)),
-            ],
+  ));
+
+  void _president() => _open(_HeritageProfilePage(
+    title: _tr('رئیس کنسرسیوم', 'President',
+       'رئيس الكونسورتيوم', 'Président'),
+    name: 'حامد قنبری درویش',
+    role: 'PRESIDENT  ·  THIRD HEIR OF SAHAND',
+    photo: 'assets/images/1.png',
+    description: _tr(
+      'سومین وارث سهند و ادامه‌دهنده میراث پدر؛ رئیس کنسرسیوم سهند. MBA از UOWD دبی و DALF C2 فرانسه.',
+      'Third heir of Sahand and President of Sahand Consortium, carrying forward his father’s legacy. MBA, UOWD Dubai; DALF C2.',
+      'الوريث الثالث لسهند ورئيس كونسورتيوم سهند، يواصل إرث والده.',
+      'Troisième héritier de Sahand et président du Consortium Sahand, poursuivant l’héritage de son père. MBA, UOWD Dubai ; DALF C2.',
+    ),
+  ));
+
+  void _history() => _open(_HeritageHistoryPage(language: _language));
+
+  void _branchesPage() => _open(_HeritageBranchListPage(
+    branches: _branches,
+    language: _language,
+    onSelected: _branch,
+  ));
+
+  void _media() => _open(const _HeritageMediaPage());
+
+  void _contact() => _open(_HeritageContactPage(
+    onOpenWebsite: () => _external('https://sahand-consortium.com/'),
+    onOpenInstagram: () => _external('https://www.instagram.com/the_royalmall/'),
+    language: _language,
+  ));
+
+  void _menu() {
+    final actions = [
+      (Icons.person_outline, 'President', _president),
+      (Icons.auto_stories_outlined, 'Our Heritage', _history),
+      (Icons.hub_outlined, 'Branches', _branchesPage),
+      (Icons.play_circle_outline, 'Media', _media),
+      (Icons.call_outlined, 'Contact Us', _contact),
+    ];
+    showModalBottomSheet<void>(
+      context: context, backgroundColor: _green,
+      isScrollControlled: true, showDragHandle: true,
+      builder: (sheet) => SafeArea(child: Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Text('SAHAND CONSORTIUM',
+              style: TextStyle(color: _gold, letterSpacing: 2,
+                  fontSize: 17)),
+          const SizedBox(height: 9),
+          ...actions.map((action) => ListTile(
+            leading: Icon(action.$1, color: _gold),
+            title: Text(action.$2, style: const TextStyle(color: _cream)),
+            trailing: const Icon(Icons.chevron_right, color: _gold),
+            onTap: () {
+              Navigator.pop(sheet);
+              action.$3();
+            },
+          )),
+          ListTile(
+            leading: const Icon(Icons.language, color: _gold),
+            title: Text(_tr('زبان / Language', 'Language',
+                'اللغة', 'Langue'),
+                style: const TextStyle(color: _cream)),
+            onTap: () {
+              Navigator.pop(sheet);
+              _languageMenu();
+            },
           ),
-        )),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.asset('assets/heritage/founder_original.jpg',
-            width: 125, height: 176,
-            fit: BoxFit.cover, alignment: Alignment.topCenter,
-            filterQuality: FilterQuality.high,
-            errorBuilder: (_, __, ___) => const SizedBox(
-              width: 125, height: 176,
-              child: ColoredBox(color: Color(0xFF15392C),
-                child: Icon(Icons.history_edu_outlined,
-                  size: 35, color: _gold))),
-          ),
-        ),
-      ],
-    ),
-  );
-}
+        ]),
+      )),
+    );
+  }
 
-class _SuccessorStoryCard extends StatelessWidget {
-  const _SuccessorStoryCard();
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: const Color(0xFF0A2018),
-      borderRadius: BorderRadius.circular(18),
-      border: Border.all(color: const Color(0x557C653D), width: .8),
-    ),
-    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Expanded(child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  void _languageMenu() {
+    showModalBottomSheet<void>(
+      context: context, backgroundColor: _green, showDragHandle: true,
+      builder: (sheet) => SafeArea(child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Text('THE THIRD HEIR',
-            textDirection: TextDirection.ltr,
-            style: TextStyle(color: _gold, fontSize: 10, letterSpacing: 1.8)),
-          SizedBox(height: 10),
-          Text('حامد قنبری درویش',
-            style: TextStyle(color: _ivory,
-              fontSize: 18, fontWeight: FontWeight.w800)),
-          SizedBox(height: 5),
-          Text('رئیس کنسرسیوم سهند · سومین وارث',
-            style: TextStyle(color: _gold, fontSize: 12, height: 1.8)),
-          SizedBox(height: 11),
-          Text('ادامه‌دهندهٔ میراث پدر و توسعه‌دهندهٔ آن در قالب کنسرسیوم سهند.',
-            style: TextStyle(color: _muted, fontSize: 12, height: 1.9)),
-          SizedBox(height: 10),
-          Text('MBA · UOWD Dubai  |  DALF C2',
-            textDirection: TextDirection.ltr,
-            style: TextStyle(color: Color(0xFFAD9F81), fontSize: 10)),
+          for (final code in const ['FA', 'EN', 'AR', 'FR'])
+            ListTile(
+              leading: Icon(_language == code
+                  ? Icons.check_circle : Icons.language, color: _gold),
+              title: Text(code,
+                  style: const TextStyle(color: _cream)),
+              onTap: () {
+                Navigator.pop(sheet);
+                _selectLanguage(code);
+              },
+            ),
         ],
       )),
-      const SizedBox(width: 11),
-      ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Image.asset('assets/images/1.png',
-          width: 94, height: 135,
-          fit: BoxFit.cover, alignment: Alignment.topCenter,
-          filterQuality: FilterQuality.high,
-          errorBuilder: (_, __, ___) => const SizedBox(
-            width: 94, height: 135,
-            child: ColoredBox(color: Color(0xFF15392C),
-              child: Icon(Icons.person_outline, color: _gold, size: 30))),
+    );
+  }
+
+  Widget _hit({
+    required double left, required double top,
+    required double width, required double height,
+    required String label, required VoidCallback onTap,
+    bool round = false,
+  }) => Positioned(
+    left: left, top: top, width: width, height: height,
+    child: Semantics(
+      button: true, label: label,
+      child: Tooltip(
+        message: label,
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            customBorder: round
+              ? const CircleBorder()
+              : RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            splashColor: const Color(0x55E4C17B),
+            highlightColor: const Color(0x33E4C17B),
+            onTap: onTap,
+            child: const SizedBox.expand(),
+          ),
         ),
       ),
-    ]),
+    ),
   );
-}
 
-class _BookEntry extends StatelessWidget {
-  const _BookEntry();
   @override
-  Widget build(BuildContext context) => Material(
-    color: const Color(0xFF0D3125),
-    borderRadius: BorderRadius.circular(18),
-    clipBehavior: Clip.antiAlias,
-    child: InkWell(
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => const PhilosophyBookPage())),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-        decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xAAAB9158), width: .8),
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: const Row(children: [
-          Icon(Icons.auto_stories_outlined, color: _gold, size: 32),
-          SizedBox(width: 13),
-          Expanded(child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('فلسفه مدیریت مرگ',
-                style: TextStyle(color: _ivory,
-                  fontSize: 18, fontWeight: FontWeight.w700)),
-              SizedBox(height: 5),
-              Text('از فروپاشی تا احیا · کتاب کامل ۹ فصل',
-                style: TextStyle(color: _muted, fontSize: 12)),
-              SizedBox(height: 5),
-              Text('به قلم حامد قنبری درویش',
-                style: TextStyle(color: _gold, fontSize: 11)),
-            ],
-          )),
-          Icon(Icons.arrow_back_ios_new_rounded, color: _gold, size: 17),
-        ]),
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: const Color(0xFF00150E),
+    body: AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: SafeArea(
+        child: LayoutBuilder(builder: (context, constraints) {
+          final width = math.min(constraints.maxWidth, 680.0);
+          final height = width * _artHeight / _artWidth;
+          return SingleChildScrollView(
+            child: Center(
+              child: SizedBox(
+                width: width, height: height,
+                child: FittedBox(
+                  fit: BoxFit.fill,
+                  child: SizedBox(
+                    width: _artWidth, height: _artHeight,
+                    child: Stack(children: [
+                      const Positioned.fill(child: Image(
+                        image: AssetImage(_art), fit: BoxFit.fill,
+                        filterQuality: FilterQuality.high,
+                        excludeFromSemantics: true,
+                      )),
+                      // Actual portrait touch areas, not an unrelated card UI.
+                      _hit(left: 18, top: 135, width: 288, height: 402,
+                        label: 'Sofr Ghanbari · Founder',
+                        onTap: _founder),
+                      _hit(left: 623, top: 135, width: 298, height: 402,
+                        label: 'Hamed Ghanbari · President',
+                        onTap: _president),
+                      _hit(left: 325, top: 60, width: 291, height: 231,
+                        label: 'Sahand Consortium · Since 1351',
+                        onTap: _history),
+                      // The ten bubbles match the ten labels drawn on poster.
+                      for (final branch in _branches)
+                        _hit(left: branch.x, top: branch.y,
+                          width: branch.width, height: branch.height,
+                          round: true, label: branch.name,
+                          onTap: () => _branch(branch)),
+                      // The central SC sphere is its own functional action.
+                      _hit(left: 310, top: 690, width: 315, height: 310,
+                        round: true, label: 'SC · Our Heritage',
+                        onTap: _history),
+                      _hit(left: 170, top: 1252, width: 594, height: 216,
+                        label: 'Royal Heritage · From Father to Son',
+                        onTap: _history),
+                      // Four functional language controls.
+                      _hit(left: 22, top: 11, width: 51, height: 49,
+                        label: 'فارسی FA',
+                        onTap: () => _selectLanguage('FA')),
+                      _hit(left: 76, top: 11, width: 49, height: 49,
+                        label: 'English EN',
+                        onTap: () => _selectLanguage('EN')),
+                      _hit(left: 128, top: 11, width: 50, height: 49,
+                        label: 'العربية AR',
+                        onTap: () => _selectLanguage('AR')),
+                      _hit(left: 179, top: 11, width: 52, height: 49,
+                        label: 'Français FR',
+                        onTap: () => _selectLanguage('FR')),
+                      _hit(left: 851, top: 6, width: 69, height: 66,
+                        label: 'Main menu', onTap: _menu),
+                      // Five bottom tabs: real Flutter navigation actions.
+                      _hit(left: 11, top: 1490, width: 186, height: 142,
+                        label: 'President', onTap: _president),
+                      _hit(left: 198, top: 1490, width: 180, height: 142,
+                        label: 'Our Heritage', onTap: _history),
+                      _hit(left: 380, top: 1490, width: 180, height: 142,
+                        label: 'Branches', onTap: _branchesPage),
+                      _hit(left: 564, top: 1490, width: 171, height: 142,
+                        label: 'Media', onTap: _media),
+                      _hit(left: 735, top: 1490, width: 195, height: 142,
+                        label: 'Contact Us', onTap: _contact),
+                    ]),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
       ),
     ),
   );
 }
 
-/// Retain the existing full nine-chapter book and its local offline asset.
+class _HeritageInfoPage extends StatelessWidget {
+  const _HeritageInfoPage({
+    required this.title, required this.subtitle,
+    required this.language, required this.actionText, required this.onAction,
+  });
+  final String title, subtitle, language, actionText;
+  final VoidCallback onAction;
+
+  @override
+  Widget build(BuildContext context) => _HeritageScreen(
+    title: title,
+    children: [
+      const Icon(Icons.public, color: _gold, size: 60),
+      const SizedBox(height: 25),
+      Text(title, textAlign: TextAlign.center,
+        style: const TextStyle(color: _cream, fontSize: 25)),
+      const SizedBox(height: 15),
+      Text(subtitle, textAlign: TextAlign.center,
+        style: const TextStyle(color: _gold, height: 1.6)),
+      const SizedBox(height: 35),
+      FilledButton.icon(
+        onPressed: onAction,
+        icon: const Icon(Icons.open_in_new),
+        label: Text(actionText),
+        style: FilledButton.styleFrom(
+          backgroundColor: _gold, foregroundColor: _green),
+      ),
+    ],
+  );
+}
+
+class _HeritageProfilePage extends StatelessWidget {
+  const _HeritageProfilePage({
+    required this.title, required this.name, required this.role,
+    required this.photo, required this.description,
+  });
+  final String title, name, role, photo, description;
+
+  @override
+  Widget build(BuildContext context) => _HeritageScreen(
+    title: title,
+    children: [
+      Center(child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Image.asset(
+          photo, height: 310, width: 290,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.high,
+          errorBuilder: (_, __, ___) => const SizedBox(
+            height: 170,
+            child: Icon(Icons.person_outline,
+              color: _gold, size: 60),
+          ),
+        ),
+      )),
+      const SizedBox(height: 23),
+      Text(name, textAlign: TextAlign.center,
+        style: const TextStyle(color: _cream,
+          fontSize: 26, fontWeight: FontWeight.bold)),
+      const SizedBox(height: 10),
+      Text(role, textAlign: TextAlign.center,
+        textDirection: TextDirection.ltr,
+        style: const TextStyle(color: _gold, letterSpacing: 1.5)),
+      const SizedBox(height: 20),
+      Text(description, textAlign: TextAlign.center,
+        style: const TextStyle(color: _cream, height: 1.9)),
+    ],
+  );
+}
+
+class _HeritageHistoryPage extends StatelessWidget {
+  const _HeritageHistoryPage({required this.language});
+  final String language;
+
+  @override
+  Widget build(BuildContext context) => _HeritageScreen(
+    title: 'ROYAL HERITAGE',
+    children: [
+      const Text('FROM FATHER TO SON',
+        textAlign: TextAlign.center,
+        style: TextStyle(letterSpacing: 2.3, color: _gold)),
+      const SizedBox(height: 23),
+      const Text('از پدر به پسر',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 29, color: _cream)),
+      const SizedBox(height: 15),
+      const Text(
+        'سهند از کارخانه‌ای در خیابان مولوی تهران در سال ۱۳۵۱ آغاز شد. '
+        'بنیان‌گذار، صفر قنبری درویش، این نام را بنا نهاد. '
+        'حامد قنبری درویش، سومین وارث، آن را در قالب کنسرسیوم سهند ادامه داد.',
+        textDirection: TextDirection.rtl, textAlign: TextAlign.center,
+        style: TextStyle(color: _cream, height: 2, fontSize: 16),
+      ),
+      const SizedBox(height: 25),
+      ClipRRect(borderRadius: BorderRadius.circular(15),
+        child: Image.asset('assets/heritage/founder_original.jpg',
+          height: 260, fit: BoxFit.contain)),
+      const SizedBox(height: 22),
+      FilledButton.icon(
+        style: FilledButton.styleFrom(
+          backgroundColor: _gold, foregroundColor: _green),
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => const PhilosophyBookPage())),
+        icon: const Icon(Icons.auto_stories),
+        label: const Text('فلسفه مدیریت مرگ · کتاب کامل ۹ فصل'),
+      ),
+    ],
+  );
+}
+
+class _HeritageBranchListPage extends StatelessWidget {
+  const _HeritageBranchListPage({
+    required this.branches, required this.language, required this.onSelected,
+  });
+  final List<_HeritageBranch> branches;
+  final String language;
+  final ValueChanged<_HeritageBranch> onSelected;
+  String _label(_HeritageBranch b) => switch (language) {
+    'EN' => b.en, 'AR' => b.ar, 'FR' => b.fr, _ => b.fa,
+  };
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: _green,
+    appBar: AppBar(
+      backgroundColor: _green, foregroundColor: _gold,
+      title: const Text('SAHAND · BRANCHES')),
+    body: SafeArea(child: ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: branches.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      itemBuilder: (context, i) => Material(
+        color: const Color(0xFF113323),
+        borderRadius: BorderRadius.circular(12),
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundColor: const Color(0xFF254C36),
+            child: Text((i + 1).toString(),
+              style: const TextStyle(color: _gold))),
+          title: Text(_label(branches[i]),
+            style: const TextStyle(color: _cream)),
+          trailing: const Icon(Icons.chevron_right, color: _gold),
+          onTap: () => onSelected(branches[i]),
+        ),
+      ),
+    )),
+  );
+}
+
+class _HeritageMediaPage extends StatelessWidget {
+  const _HeritageMediaPage();
+  static const _photos = [
+    ('Royal Mall', 'assets/image/Grand_Salon_Original.png'),
+    ('Royal One', 'assets/image/ROYAL_ONE_Home_RC_Ultra_Final.png'),
+    ('Royal Club', 'assets/image/RC_Games_Luxury.png'),
+  ];
+  @override
+  Widget build(BuildContext context) => _HeritageScreen(
+    title: 'SAHAND · MEDIA',
+    children: [
+      for (final photo in _photos) ...[
+        Card(
+          color: const Color(0xFF0B261D),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () => Navigator.push(context, MaterialPageRoute<void>(
+              builder: (_) => Scaffold(
+                backgroundColor: Colors.black,
+                appBar: AppBar(
+                  backgroundColor: Colors.black,
+                  foregroundColor: _gold,
+                  title: Text(photo.$1)),
+                body: InteractiveViewer(minScale: 1, maxScale: 5,
+                  child: Center(child: Image.asset(photo.$2,
+                      fit: BoxFit.contain))),
+              ))),
+            child: Column(children: [
+              AspectRatio(
+                aspectRatio: 1.65,
+                child: Image.asset(photo.$2, fit: BoxFit.cover,
+                  filterQuality: FilterQuality.high)),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(photo.$1,
+                  style: const TextStyle(color: _gold, fontSize: 16))),
+            ]),
+          ),
+        ),
+        const SizedBox(height: 12),
+      ],
+    ],
+  );
+}
+
+class _HeritageContactPage extends StatelessWidget {
+  const _HeritageContactPage({
+    required this.language,
+    required this.onOpenWebsite,
+    required this.onOpenInstagram,
+  });
+  final String language;
+  final VoidCallback onOpenWebsite, onOpenInstagram;
+  @override
+  Widget build(BuildContext context) => _HeritageScreen(
+    title: 'SAHAND · CONTACT US',
+    children: [
+      const Text('SAHAND CONSORTIUM',
+        textAlign: TextAlign.center,
+        style: TextStyle(color: _gold, fontSize: 22,
+          letterSpacing: 2)),
+      const SizedBox(height: 23),
+      ListTile(
+        leading: const Icon(Icons.language, color: _gold),
+        title: const Text('sahand-consortium.com',
+          style: TextStyle(color: _cream)),
+        onTap: onOpenWebsite,
+        trailing: const Icon(Icons.open_in_new, color: _gold),
+      ),
+      ListTile(
+        leading: const Icon(Icons.photo_camera_outlined, color: _gold),
+        title: const Text('Instagram · The Royal Mall',
+          style: TextStyle(color: _cream)),
+        onTap: onOpenInstagram,
+        trailing: const Icon(Icons.open_in_new, color: _gold),
+      ),
+      ListTile(
+        leading: const Icon(Icons.copy, color: _gold),
+        title: const Text('Copy official website',
+          style: TextStyle(color: _cream)),
+        onTap: () {
+          Clipboard.setData(
+              const ClipboardData(text: 'https://sahand-consortium.com/'));
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Website copied · لینک سایت کپی شد'),
+          ));
+        },
+      ),
+    ],
+  );
+}
+
+class _HeritageScreen extends StatelessWidget {
+  const _HeritageScreen({
+    required this.title, required this.children,
+  });
+  final String title;
+  final List<Widget> children;
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: _green,
+    appBar: AppBar(
+      backgroundColor: _green, foregroundColor: _gold,
+      centerTitle: true,
+      title: Text(title, style:
+        const TextStyle(fontSize: 15, letterSpacing: 1.1)),
+    ),
+    body: SafeArea(child: Center(child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 660),
+      child: ListView(
+        padding: const EdgeInsets.all(23),
+        children: children,
+      ),
+    ))),
+  );
+}
+
+/// The approved 9-chapter book is the only embedded HTML in this flow.
+/// The Heritage poster and its interactive controls are entirely native.
 class PhilosophyBookPage extends StatefulWidget {
   const PhilosophyBookPage({super.key});
   @override
   State<PhilosophyBookPage> createState() => _PhilosophyBookPageState();
 }
+
 class _PhilosophyBookPageState extends State<PhilosophyBookPage> {
   late final WebViewController _controller;
   @override
