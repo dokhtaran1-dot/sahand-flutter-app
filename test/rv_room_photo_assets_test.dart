@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sahand_consortium/src/rv_gallery_page.dart';
 import 'package:sahand_consortium/src/royal_village_entry_page.dart';
 import 'package:sahand_consortium/src/salon_preview_image.dart';
+import 'package:sahand_consortium/src/salon_detail_page.dart';
 
 /// These are the eight existing interior-photo assets, not the model-based
 /// booking posters. Check the app bundles them before shipping to customers.
@@ -64,6 +65,30 @@ void main() {
     ).toList();
     expect(assets, contains('assets/image/rv_lounge_imperial_classique.png'));
     expect(find.byType(SalonPreviewImage), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+
+  testWidgets('Choosing a real RV salon photo opens that salon detail, not a promotional poster',
+      (tester) async {
+    tester.view.physicalSize = const Size(432, 960);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(const MaterialApp(home: RvGalleryPage()));
+    await tester.pump();
+    await tester.tap(find.text('Salon Lumière').first);
+    await tester.pumpAndSettle();
+    expect(find.text('انتخاب سالن و مشاهدهٔ جزئیات رزرو'), findsOneWidget);
+    await tester.tap(find.text('انتخاب سالن و مشاهدهٔ جزئیات رزرو'));
+    await tester.pumpAndSettle();
+    expect(find.byType(SalonDetailPage), findsOneWidget);
+    final images = tester.widgetList<Image>(find.byType(Image))
+        .where((img) => img.image is AssetImage)
+        .map((img) => (img.image as AssetImage).assetName)
+        .toList();
+    expect(images, contains('assets/image/Salon_lumiere.png'));
     expect(tester.takeException(), isNull);
   });
 }
