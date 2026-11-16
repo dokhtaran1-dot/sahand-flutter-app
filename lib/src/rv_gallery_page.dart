@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'rv_booking_poster_page.dart';
+import 'salon_detail_page.dart';
 
 /// Eight approved private salons, in the user's confirmed Royal One order.
 class RvGalleryPage extends StatelessWidget {
@@ -113,7 +113,7 @@ class _SalonImageViewerState extends State<_SalonImageViewer> {
 
   void book() {
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => RvBookingPosterPage(salonName: widget.salons[index].name),
+      builder: (_) => SalonDetailPage(salonName: widget.salons[index].name),
     ));
   }
 
