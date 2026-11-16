@@ -7,7 +7,6 @@ import 'royal_club_game_page.dart';
 import 'rv_gallery_page.dart';
 import 'rv_media_page.dart';
 import 'salon_detail_page.dart';
-import 'rv_booking_poster_page.dart';
 
 class RoyalVillageEntryPage extends StatelessWidget {
   const RoyalVillageEntryPage({super.key});
@@ -18,14 +17,11 @@ class RoyalVillageEntryPage extends StatelessWidget {
   static const Color _gold = Color(0xFFD6B15E);
 
   void _openSalon(BuildContext context, String name) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const {
-        'Salon Doré', 'Salon Jardin', 'Salon Noir', 'Salon Âme du Poète',
-        'Salon Royal', 'Salon Privé', 'RV Lounge Impérial Classique', 'Salon Lumière',
-      }.contains(name)
-        ? RvBookingPosterPage(salonName: name)
-        : SalonDetailPage(salonName: name)),
-    );
+    // Always show the actual, individually named interior photograph and
+    // room-specific information before asking the guest to reserve.
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => SalonDetailPage(salonName: name),
+    ));
   }
 
   void _openGallery(BuildContext context) {
