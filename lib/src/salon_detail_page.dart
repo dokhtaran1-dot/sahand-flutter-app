@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'reservation_page.dart';
+import 'rv_salon_interior_image.dart';
 
 class SalonDetailPage extends StatefulWidget {
   final String salonName;
@@ -139,7 +140,9 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
     final images = manifest.listAssets()
         .where((path) => path.startsWith(prefix) && path.endsWith('.webp'))
         .toList()..sort();
-    return images.take(10).toList();
+    // Original room catalogue contains up to ten birthday designs and
+    // twenty cake models. Never silently truncate cakes to ten.
+    return images.take(kind == 'cake' ? 20 : 10).toList();
   }
 
   void _showUploadedGallery({required String kind}) {
@@ -159,7 +162,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
             child: Column(
               children: [
                 Text(
-                  isCake ? '۱۰ کیک اختصاصی' : '۱۰ دیزاین اختصاصی',
+                  isCake ? '۲۰ مدل کیک اختصاصی' : '۱۰ دیزاین تولد اختصاصی',
                   style: const TextStyle(
                     color: gold2,
                     fontSize: 21,
@@ -264,6 +267,34 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
     );
   }
 
+  /// Guests can always view the complete, unmodified room+design+cake sheet,
+  /// including cake models that have not yet been supplied as separate files.
+  void showOriginalCatalogue() {
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => Scaffold(
+        backgroundColor: bg,
+        appBar: AppBar(
+          backgroundColor: bg, foregroundColor: gold2,
+          title: Text(widget.salonName, textDirection: TextDirection.ltr),
+        ),
+        body: SafeArea(child: Column(children: [
+          const Padding(
+            padding: EdgeInsets.fromLTRB(18, 12, 18, 8),
+            child: Text('کاتالوگ اصلی سالن | عکس اتاق، دیزاین تولد و کیک',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: gold2, fontSize: 14)),
+          ),
+          Expanded(child: InteractiveViewer(
+            minScale: 1, maxScale: 5,
+            child: Center(child: Image.asset(
+              imagePath, fit: BoxFit.contain,
+              filterQuality: FilterQuality.high)),
+          )),
+        ])),
+      ),
+    ));
+  }
+
   void showDesigns() => _showUploadedGallery(kind: 'design');
 
   void showCakes() => _showUploadedGallery(kind: 'cake');
@@ -329,25 +360,8 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
               borderRadius: BorderRadius.circular(26),
               child: Stack(
                 children: [
-                  Image.asset(
-                    imagePath,
-                    width: double.infinity,
-                    height: 270,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) {
-                      return Container(
-                        height: 270,
-                        color: panel,
-                        child: const Center(
-                          child: Icon(
-                            Icons.meeting_room_outlined,
-                            color: gold,
-                            size: 70,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                  SizedBox(height: 270,
+                    child: RvSalonInteriorImage(asset: imagePath)),
                   Positioned.fill(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
@@ -388,6 +402,17 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
               ),
             ),
 
+            const SizedBox(height: 13),
+            OutlinedButton.icon(
+              key: const ValueKey('rv-original-room-catalogue'),
+              onPressed: showOriginalCatalogue,
+              icon: const Icon(Icons.collections_bookmark_outlined),
+              label: const Text('مشاهده کاتالوگ اصلی اتاق، دیزاین تولد و کیک'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: gold2,
+                side: const BorderSide(color: gold),
+                padding: const EdgeInsets.symmetric(vertical: 13)),
+            ),
             const SizedBox(height: 18),
 
             Text(
@@ -443,7 +468,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
 
             _ActionCard(
               icon: Icons.celebration_outlined,
-              title: '۱۰ مدل دیزاین اختصاصی',
+              title: '۱۰ دیزاین تولد اختصاصی',
               subtitle: selectedDesign == null
                   ? 'انتخاب تم و دیزاین مخصوص این سالن'
                   : 'دیزاین $selectedDesign انتخاب شده',
@@ -455,7 +480,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
 
             _ActionCard(
               icon: Icons.cake_outlined,
-              title: '۱۰ مدل کیک اختصاصی',
+              title: '۲۰ مدل کیک اختصاصی',
               subtitle: selectedCake == null
                   ? 'انتخاب کیک متناسب با سالن و مراسم'
                   : 'کیک $selectedCake انتخاب شده',
