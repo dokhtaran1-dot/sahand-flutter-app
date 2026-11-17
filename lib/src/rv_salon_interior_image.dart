@@ -1,23 +1,19 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
-/// Shows only the room INTERIOR from the original complete salon catalogue.
-///
-/// Each approved portrait PNG is a catalogue sheet: top-left = the actual room
-/// photograph; the rest includes Persian/English info, 10 birthday decorations
-/// and up to 20 cake models. The whole unmodified sheet remains available in
-/// the full catalogue viewer. We crop only the on-screen preview, not the asset.
-///
-/// Source poster coordinate system is 864 x 1536. Use fractional coordinates
-/// so the preview remains correct if the poster is exported at a higher DPI.
+/// The source PNG is a room+event catalogue sheet. The original room photo
+/// occupies the upper-left panel. Display the ENTIRE photo panel using contain,
+/// never BoxFit.cover: no part of the room photograph is cut off even when
+/// it appears in a square card, a round portal, or the expanded room viewer.
+/// The full original catalogue remains accessible on the detail page.
 class RvSalonInteriorImage extends StatelessWidget {
   const RvSalonInteriorImage({super.key, required this.asset});
   final String asset;
 
-  static const double _posterWidth = 864;
-  static const double _posterHeight = 1536;
-  // Top-left main room photograph, excluding the information/cake grid.
-  static const Rect _room = Rect.fromLTWH(.017, .022, .557, .237);
+  // Fractional dimensions of the photo panel in the approved 864x1536 sheet.
+  static const Size poster = Size(864, 1536);
+  static const Rect roomPanel = Rect.fromLTWH(.017, .022, .557, .237);
+  static const Color background = Color(0xFF061710);
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -27,34 +23,49 @@ class RvSalonInteriorImage extends StatelessWidget {
       if (!width.isFinite || !height.isFinite || width <= 0 || height <= 0) {
         return const SizedBox.shrink();
       }
-      final scale = math.max(
-        width / (_posterWidth * _room.width),
-        height / (_posterHeight * _room.height),
-      );
-      final sourceWidth = _posterWidth * scale;
-      final sourceHeight = _posterHeight * scale;
-      final left = -sourceWidth * (_room.left + _room.width / 2) + width / 2;
-      final top = -sourceHeight * (_room.top + _room.height / 2) + height / 2;
 
-      return ClipRect(
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Positioned(
-              left: left, top: top,
-              width: sourceWidth, height: sourceHeight,
-              child: Image.asset(
-                asset, fit: BoxFit.fill,
-                filterQuality: FilterQuality.high,
-                gaplessPlayback: true,
-                errorBuilder: (context, error, stack) => const ColoredBox(
-                  color: Color(0xFF0B2B20),
-                  child: Center(child: Icon(Icons.image_not_supported_outlined,
-                    color: Color(0xFFE4C17B), size: 28)),
-                ),
+      final sourceRoomWidth = poster.width * roomPanel.width;
+      final sourceRoomHeight = poster.height * roomPanel.height;
+      // CONTAIN: all four edges of the original room panel remain visible.
+      final scale = math.min(width / sourceRoomWidth,
+          height / sourceRoomHeight);
+      final roomWidth = sourceRoomWidth * scale;
+      final roomHeight = sourceRoomHeight * scale;
+      final sourceWidth = poster.width * scale;
+      final sourceHeight = poster.height * scale;
+
+      return ColoredBox(
+        color: background,
+        child: Center(
+          child: SizedBox(
+            width: roomWidth,
+            height: roomHeight,
+            child: ClipRect(
+              child: Stack(
+                clipBehavior: Clip.hardEdge,
+                children: [
+                  Positioned(
+                    left: -sourceWidth * roomPanel.left,
+                    top: -sourceHeight * roomPanel.top,
+                    width: sourceWidth,
+                    height: sourceHeight,
+                    child: Image.asset(
+                      asset,
+                      fit: BoxFit.fill,
+                      filterQuality: FilterQuality.high,
+                      gaplessPlayback: true,
+                      errorBuilder: (_, __, ___) => const ColoredBox(
+                        color: background,
+                        child: Center(child: Icon(
+                          Icons.image_not_supported_outlined,
+                          color: Color(0xFFE4C17B), size: 28)),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       );
     },
