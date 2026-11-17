@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'salon_detail_page.dart';
+import 'rv_salon_interior_image.dart';
 
 /// Eight approved private salons, in the user's confirmed Royal One order.
 class RvGalleryPage extends StatelessWidget {
@@ -67,12 +68,7 @@ class RvGalleryPage extends StatelessWidget {
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(onTap: () => _open(context, i),
                   child: Stack(fit: StackFit.expand, children: [
-                    Image.asset(item.image,
-                      fit: BoxFit.cover, alignment: Alignment.center,
-                      filterQuality: FilterQuality.high,
-                      errorBuilder: (_, __, ___) =>
-                          const Center(child: Icon(Icons.broken_image_outlined,
-                            color: _gold, size: 37))),
+                    RvSalonInteriorImage(asset: item.image),
                     const DecoratedBox(decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter, end: Alignment.bottomCenter,
