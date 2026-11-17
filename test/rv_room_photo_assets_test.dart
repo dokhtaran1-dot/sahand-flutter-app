@@ -102,13 +102,13 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(const MaterialApp(
-      home: SalonDetailPage(salonName: 'Salon Doré'),
+      home: SalonDetailPage(salonName: 'RV Lounge Impérial Classique'),
     ));
     await tester.pump();
     expect(find.byType(RvSalonInteriorImage), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('rv-original-room-catalogue')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const ValueKey('rv-select-20-cake-models')),
+    expect(find.byKey(const ValueKey('rv-select-cake-from-catalogue')),
         findsOneWidget);
     expect(find.text('کاتالوگ اصلی سالن | عکس اتاق، دیزاین تولد و کیک'),
         findsOneWidget);
