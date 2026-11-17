@@ -125,11 +125,7 @@ class _SalonImageViewerState extends State<_SalonImageViewer> {
           child: Center(child: SizedBox(
             width: MediaQuery.sizeOf(context).width * .92,
             height: MediaQuery.sizeOf(context).height * .57,
-            child: Image.asset(widget.salons[i].image,
-              fit: BoxFit.contain, filterQuality: FilterQuality.high,
-              errorBuilder: (_, __, ___) => const Center(
-                child: Text('تصویر این سالن در دسترس نیست',
-                  style: TextStyle(color: Color(0xFFD6B15E))))))),
+            child: RvSalonInteriorImage(asset: widget.salons[i].image))))),
         ),
       )),
       SafeArea(top: false, child: Padding(
