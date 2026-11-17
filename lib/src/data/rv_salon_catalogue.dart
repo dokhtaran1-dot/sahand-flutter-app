@@ -2,9 +2,7 @@
 /// royal_village_gallery.json (version 1), not from generic placeholders.
 /// IDs preserve the uploaded manifest; the seven source photos were restored
 /// from commit ac94557573e15519e35b3b5f7b99388bb2553bed and cropped
-/// from each original room's catalogue. The historical Royal file is
-/// mislabeled Émeraude, so Royale displays an explicit pending placeholder
-/// rather than a false picture. The user's manifest remains unchanged.
+/// from each original room's catalogue. The historical Royal file was labeled Émeraude, so it was not used. The Royal-labelled salon room image below is a separate existing user-library design image. The user's manifest remains unchanged.
 class RvSalonRecord {
   const RvSalonRecord({
     required this.id,
@@ -64,7 +62,7 @@ class RvSalonCatalogue {
       designCount: 10, cakeCount: 10,
       doubleVip: false),
     RvSalonRecord(id: 'royale', name: 'Salon Royale',
-      coverAsset: 'assets/image/rv_original_photos/royale_pending.jpg', galleryFolder: 'royal',
+      coverAsset: 'assets/image/rv_original_photos/royale.jpg', galleryFolder: 'royal',
       designCount: 10, cakeCount: 10,
       doubleVip: false),
   ];
