@@ -300,6 +300,14 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
   /// View the ORIGINAL complete room, birthday designs and cake sheet,
   /// preserving the poster even when not every cake has an individual file.
   void showOriginalCatalogue() {
+    final cataloguePath =
+        RvSalonCatalogue.originalCataloguePath(widget.salonName);
+    if (cataloguePath == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('تصویر اصلی Salon Royale هنوز تأیید نشده است.'),
+      ));
+      return;
+    }
     Navigator.of(context).push(MaterialPageRoute<void>(
       builder: (catalogueContext) => Scaffold(
         backgroundColor: bg,
@@ -317,7 +325,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
           Expanded(child: InteractiveViewer(
             minScale: 1, maxScale: 5,
             child: Center(child: Image.asset(
-              imagePath, fit: BoxFit.contain,
+              cataloguePath, fit: BoxFit.contain,
               filterQuality: FilterQuality.high)),
           )),
           SafeArea(top: false, child: Padding(
@@ -446,9 +454,12 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
             const SizedBox(height: 13),
             OutlinedButton.icon(
               key: const ValueKey('rv-original-room-catalogue'),
-              onPressed: showOriginalCatalogue,
+              onPressed: RvSalonCatalogue.originalCataloguePath(widget.salonName) == null
+                  ? null : showOriginalCatalogue,
               icon: const Icon(Icons.collections_bookmark_outlined),
-              label: const Text('مشاهده کاتالوگ اصلی اتاق، دیزاین تولد و کیک'),
+              label: Text(RvSalonCatalogue.originalCataloguePath(widget.salonName) == null
+                  ? 'عکس اصلی Salon Royale در انتظار تأیید'
+                  : 'مشاهده کاتالوگ اصلی اتاق، دیزاین تولد و کیک'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: gold2,
                 side: const BorderSide(color: gold),
