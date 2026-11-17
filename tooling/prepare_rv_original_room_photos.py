@@ -48,8 +48,8 @@ for room_id, original_filename in ROOM_SOURCES.items():
 
 royal_file = HERE / 'assets/rv/royal_room_jpeg.b64'
 royal_bytes = base64.b64decode(royal_file.read_text().strip(), validate=True)
-assert royal_bytes.startswith(b'\\xff\\xd8'), 'Royal photo JPEG missing'
-assert royal_bytes.endswith(b'\\xff\\xd9'), 'Royal photo JPEG incomplete'
+assert royal_bytes.startswith(bytes([0xff, 0xd8])), 'Royal photo JPEG missing'
+assert royal_bytes.endswith(bytes([0xff, 0xd9])), 'Royal photo JPEG incomplete'
 (ROOMS / 'royale.jpg').write_bytes(royal_bytes)
 
 for room_id in list(ROOM_SOURCES) + ['royale']:
