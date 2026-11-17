@@ -1,0 +1,71 @@
+name: Audit original RV salon photographs against recent promotional assets
+on:
+  push:
+    branches:
+      - feature/royal-one-online-rv-rc-media
+    paths:
+      - '.github/workflows/rv-original-photo-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+concurrency:
+  group: rv-original-photo-audit
+  cancel-in-progress: true
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Compare original 2026 salon assets with current images
+        run: |
+          python3 -m pip install --quiet pillow
+          python3 - <<'PY'
+          from PIL import Image,ImageOps,ImageDraw,ImageFont
+          from pathlib import Path
+          import subprocess,io,base64,json
+          old='ac94557573e15519e35b3b5f7b99388bb2553bed'
+          entries=[
+              ('Lumiere','salon_lumiere.png','Salon_lumiere.png'),
+              ('Noir','salon_noir.png','Salon_noir.png'),
+              ('Jardin','salon_jardin.png','salon_jardin.png'),
+              ('Prive','salon_prive.png','Salon_prive.png'),
+              ('Imperial','rv_lounge_imperial_classique.png','rv_lounge_imperial_classique.png'),
+              ('Dore','salon_dore.png','salon_dore.png'),
+              ('Ame du Poete','salon_ame_du_poete.png','salon_ame_du_poete.png'),
+              ('Royal','salon_royal.png','Salon_royal.png'),
+          ]
+          width,height=350,360
+          sheet=Image.new('RGB',(width*4,height*4),(20,26,22))
+          details=[]
+          d=ImageDraw.Draw(sheet)
+          for i,(name,oldname,newname) in enumerate(entries):
+              for typ,filename in [('OLD',oldname),('NEW',newname)]:
+                  if typ=='OLD':
+                      raw=subprocess.check_output(['git','show',f'{old}:assets/image/{filename}'])
+                  else:
+                      raw=Path('assets/image',filename).read_bytes()
+                  img=Image.open(io.BytesIO(raw)).convert('RGB')
+                  details.append({'room':name,'type':typ,'file':filename,'dimensions':img.size,'bytes':len(raw)})
+                  card=ImageOps.contain(img,(width-10,height-42))
+                  x=(i%4)*width + (0 if typ=='OLD' else 0)
+                  y=(i//4)*height*2 + (0 if typ=='OLD' else height)
+                  d.rectangle((x,y,x+width-1,y+height-1),outline=(176,149,86),width=2)
+                  sheet.paste(card,(x+(width-card.width)//2,y+35))
+                  d.text((x+14,y+10),f'{name} : {typ}',fill=(255,225,170))
+          out=Path('docs/rv-audit')
+          out.mkdir(parents=True,exist_ok=True)
+          buffer=io.BytesIO()
+          sheet.save(buffer,format='JPEG',quality=72,optimize=True)
+          (out/'old-vs-new-preview.b64').write_text(base64.b64encode(buffer.getvalue()).decode('ascii'))
+          (out/'comparison-metadata.json').write_text(json.dumps(details,indent=2))
+          print('Audit preview generated:',len(buffer.getvalue()),'bytes')
+          PY
+      - name: Commit text-only image preview for inspection
+        run: |
+          git config user.name "royal-one-audit-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/rv-audit/old-vs-new-preview.b64 docs/rv-audit/comparison-metadata.json
+          git diff --staged --quiet || (git commit -m "Audit original RV salon photography before replacing promo models" && git push origin HEAD:feature/royal-one-online-rv-rc-media)
