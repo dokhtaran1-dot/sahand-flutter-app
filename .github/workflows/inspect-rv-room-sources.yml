@@ -38,7 +38,13 @@ jobs:
                   if name not in ['Salons.png','royal_village.png','Grand_Salon_Original.png','Salon_royal.png']:
                       w,h=im.size
                       im=im.crop((int(w*.008),int(h*.014),int(w*.582),int(h*.225)))
-                  im.thumbnail((450,300))
+                  if name == 'Salons.png':
+                      w,h=im.size
+                      im=im.crop((int(w*.04),int(h*.18),int(w*.96),int(h*.82)))
+                  if name == 'royal_village.png':
+                      w,h=im.size
+                      im=im.crop((int(w*.02),int(h*.38),int(w*.98),int(h*.80)))
+                  im.thumbnail((800,980))
                   out=io.BytesIO()
                   im.save(out,format='JPEG',quality=50,optimize=True)
                   encoded=base64.b64encode(out.getvalue()).decode('ascii')
