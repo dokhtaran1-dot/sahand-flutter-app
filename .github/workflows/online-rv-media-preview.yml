@@ -1,4 +1,4 @@
-name: Royal One Secure RV Online + RC Realtime + Media v1.0.33 (isolated APK)
+name: Royal One Secure RV Online + RC Realtime + Media v1.0.34 (isolated APK)
 on:
   push:
     branches:
@@ -80,12 +80,12 @@ jobs:
           old='        release {\n'
           if content.count(old)!=1:
               raise SystemExit('Unexpected Android release signing configuration')
-          gradle.write_text(content.replace(old,old+'            applicationIdSuffix = ".onlinepreview33"\n'))
+          gradle.write_text(content.replace(old,old+'            applicationIdSuffix = ".onlinepreview34"\n'))
           manifest=Path('android/app/src/main/AndroidManifest.xml')
           content=manifest.read_text()
           if 'android:label="ROYAL 1"' not in content:
               raise SystemExit('Unexpected launcher label')
-          manifest.write_text(content.replace('android:label="ROYAL 1"','android:label="ROYAL ONE VIP v1.0.33"'))
+          manifest.write_text(content.replace('android:label="ROYAL 1"','android:label="ROYAL ONE VIP v1.0.34"'))
           PY
       - name: Rebuild approved second page image
         run: |
@@ -116,7 +116,7 @@ jobs:
           fi
       - name: Verify heritage UI is analyzable
         run: |
-          flutter analyze --no-pub --no-fatal-infos --no-fatal-warnings lib/src/heritage_page.dart lib/src/home_page.dart lib/src/ettehad_page.dart lib/src/reservation_page.dart lib/src/reservation_store.dart lib/src/my_reservations_page.dart lib/src/rv_online_booking_service.dart lib/src/rv_online_requests_page.dart lib/src/royal_club_membership_page.dart lib/src/rv_media_page.dart lib/src/royal_village_entry_page.dart lib/src/rv_gallery_page.dart lib/src/photo_orbit.dart lib/src/royal_explore_page.dart
+          flutter analyze --no-pub --no-fatal-infos --no-fatal-warnings lib/src/heritage_page.dart lib/src/home_page.dart lib/src/ettehad_page.dart lib/src/reservation_page.dart lib/src/reservation_store.dart lib/src/my_reservations_page.dart lib/src/rv_online_booking_service.dart lib/src/rv_online_requests_page.dart lib/src/royal_club_membership_page.dart lib/src/rv_media_page.dart lib/src/royal_village_entry_page.dart lib/src/rv_gallery_page.dart lib/src/photo_orbit.dart lib/src/royal_explore_page.dart lib/src/salon_detail_page.dart lib/src/rv_salon_interior_image.dart
           test -s assets/heritage/founder_original.jpg
           test -s assets/heritage/philosophy_book.html
           test -s assets/heritage/royal_heritage_approved_poster.png
@@ -131,27 +131,39 @@ jobs:
             salon_ame_du_poete.png Salon_royal.png; do
             test -s "assets/image/$photo"
           done
-          grep -F "Image.asset(widget.images[i]" lib/src/photo_orbit.dart
+          # Display the top-left ROOM photograph from the original full
+          # catalogue rather than its birthday/cake grids in each thumbnail.
+          grep -F "RvSalonInteriorImage(asset: widget.images[i])" lib/src/photo_orbit.dart
           grep -F "PhotoOrbit(images: _photos" lib/src/royal_village_entry_page.dart
-          grep -F "Image.asset(item.image" lib/src/rv_gallery_page.dart
+          grep -F "RvSalonInteriorImage(asset: item.image)" lib/src/rv_gallery_page.dart
+          grep -F "RvSalonInteriorImage(asset: imagePath)" lib/src/salon_detail_page.dart
+          for key in dore prive noir royal lumiere jardin ame_du_poete imperial; do
+            for n in 01 02 03 04 05 06 07 08 09 10; do
+              test -s "assets/image/salon_gallery/${key}/design_${n}.webp"
+              test -s "assets/image/salon_gallery/${key}/cake_${n}.webp"
+            done
+          done
+          # Only the FIRST ten cakes exist as individually extracted files;
+          # the complete original catalogue shows 20 and is navigable in-app.
+          grep -F "itemCount: 20" lib/src/salon_detail_page.dart
           ! grep -F "assets/image/booking_posters/" lib/src/rv_gallery_page.dart
           ! grep -F "assets/image/booking_posters/" lib/src/royal_village_entry_page.dart
       - name: Build isolated ARM64 preview APK
         shell: bash
         run: |
           set -euo pipefail
-          flutter build apk --release --split-per-abi --build-name 1.0.32 --build-number 34 \
+          flutter build apk --release --split-per-abi --build-name 1.0.34 --build-number 35 \
             --dart-define=ROYAL_CLUB_BACKEND_READY=true \
             --dart-define=SUPABASE_URL=https://jwddfcsikkialxzbrhle.supabase.co \
             --dart-define=SUPABASE_ANON_KEY=sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve
-          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ROYAL_ONE_RV_ONLINE_v1.0.33_ARM64.apk
-          test -s ROYAL_ONE_RV_ONLINE_v1.0.33_ARM64.apk
-          sha256sum ROYAL_ONE_RV_ONLINE_v1.0.33_ARM64.apk
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ROYAL_ONE_RV_ONLINE_v1.0.34_ARM64.apk
+          test -s ROYAL_ONE_RV_ONLINE_v1.0.34_ARM64.apk
+          sha256sum ROYAL_ONE_RV_ONLINE_v1.0.34_ARM64.apk
       - name: Upload verified preview artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ROYAL_ONE_RV_ONLINE_v1.0.33_ARM64
-          path: ROYAL_ONE_RV_ONLINE_v1.0.33_ARM64.apk
+          name: ROYAL_ONE_RV_ONLINE_v1.0.34_ARM64
+          path: ROYAL_ONE_RV_ONLINE_v1.0.34_ARM64.apk
           compression-level: 0
       - name: Publish prerelease (not production)
         env:
@@ -160,14 +172,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          tag='royal-one-rv-online-v1.0.33'
-          apk='ROYAL_ONE_RV_ONLINE_v1.0.33_ARM64.apk'
+          tag='royal-one-rv-online-v1.0.34'
+          apk='ROYAL_ONE_RV_ONLINE_v1.0.34_ARM64.apk'
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" "$apk" --clobber
           else
             gh release create "$tag" "$apk" \
               --target "$GITHUB_SHA" \
-              --title 'ROYAL ONE v1.0.33 — RV online requests and RC verified live scores' \
-              --notes 'ISOLATED TEST BUILD. RV requests now submit to secure Supabase after phone OTP and remain PENDING until management confirms. RC uses realtime verified-only score table and pending claims; no real rewards. The full ORIGINAL approved Royal Heritage poster is fit entirely inside the native Flutter app with every top portrait and bottom native action visible; branch details remain native and never redirect to an external mini-site. RV promotional media plays original audio only after official upload and management publication. SMS login offers safe retry and a resend cooldown. Approved final home art, rotating SC, floating seven visual entrances and five bilingual footer links, Heritage father/president, offline RS, RH, and RV salons retained. RV salon and VIP previews now use the eight original project room-interior image assets instead of the model-based reservation posters, and the ninth placeholder Grand Salon was removed from the eight-salon collection. The photographic provenance of project assets remains unverified. No MP4 is shipped; NO public release.' \
+              --title 'ROYAL ONE v1.0.34 — RV online requests and RC verified live scores' \
+              --notes 'ISOLATED TEST BUILD. RV requests now submit to secure Supabase after phone OTP and remain PENDING until management confirms. RC uses realtime verified-only score table and pending claims; no real rewards. The full ORIGINAL approved Royal Heritage poster is fit entirely inside the native Flutter app with every top portrait and bottom native action visible; branch details remain native and never redirect to an external mini-site. RV promotional media plays original audio only after official upload and management publication. SMS login offers safe retry and a resend cooldown. Approved final home art, rotating SC, floating seven visual entrances and five bilingual footer links, Heritage father/president, offline RS, RH, and RV salons retained. RV salon previews are now cropped to the actual room photograph in each original catalogue, preserving the complete poster in the zoomable room details. Each room has 10 birthday-design images and 10 separate cake images; 20 numbered cake models can be viewed and selected from the full original catalogue (the remaining 10 are not falsely presented as individual image files). The ninth placeholder Grand Salon remains excluded. The photographic provenance of project assets remains unverified. No MP4 is shipped; NO public release.' \
               --prerelease
           fi
