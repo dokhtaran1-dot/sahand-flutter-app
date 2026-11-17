@@ -125,7 +125,7 @@ class _SalonImageViewerState extends State<_SalonImageViewer> {
           child: Center(child: SizedBox(
             width: MediaQuery.sizeOf(context).width * .92,
             height: MediaQuery.sizeOf(context).height * .57,
-            child: RvSalonInteriorImage(asset: widget.salons[i].image))))),
+            child: RvSalonInteriorImage(asset: widget.salons[i].image)))),
         ),
       )),
       SafeArea(top: false, child: Padding(
