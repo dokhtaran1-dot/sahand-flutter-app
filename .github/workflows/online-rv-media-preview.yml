@@ -1,4 +1,4 @@
-name: Royal One Secure RV Online + RC Realtime + Media v1.0.32 (isolated APK)
+name: Royal One Secure RV Online + RC Realtime + Media v1.0.33 (isolated APK)
 on:
   push:
     branches:
@@ -68,6 +68,8 @@ jobs:
           test -s assets/image/booking_posters/prive.png
           test -s assets/image/Salon_noir.png
           test -s assets/image/Salon_prive.png
+          test -s assets/image/royal_one_home_final_cropped.jpg
+          test -s assets/image/royal_one_sc_rotating.png
           test -s assets/rs/index.html
       - name: Isolate preview app without replacing installed Royal One
         run: |
@@ -78,12 +80,12 @@ jobs:
           old='        release {\n'
           if content.count(old)!=1:
               raise SystemExit('Unexpected Android release signing configuration')
-          gradle.write_text(content.replace(old,old+'            applicationIdSuffix = ".onlinepreview31"\n'))
+          gradle.write_text(content.replace(old,old+'            applicationIdSuffix = ".onlinepreview33"\n'))
           manifest=Path('android/app/src/main/AndroidManifest.xml')
           content=manifest.read_text()
           if 'android:label="ROYAL 1"' not in content:
               raise SystemExit('Unexpected launcher label')
-          manifest.write_text(content.replace('android:label="ROYAL 1"','android:label="ROYAL ONE VIP v1.0.32"'))
+          manifest.write_text(content.replace('android:label="ROYAL 1"','android:label="ROYAL ONE VIP v1.0.33"'))
           PY
       - name: Rebuild approved second page image
         run: |
@@ -114,12 +116,12 @@ jobs:
           fi
       - name: Verify heritage UI is analyzable
         run: |
-          flutter analyze --no-pub --no-fatal-infos --no-fatal-warnings lib/src/heritage_page.dart lib/src/home_page.dart lib/src/ettehad_page.dart lib/src/reservation_page.dart lib/src/reservation_store.dart lib/src/my_reservations_page.dart lib/src/rv_online_booking_service.dart lib/src/rv_online_requests_page.dart lib/src/royal_club_membership_page.dart lib/src/rv_media_page.dart lib/src/royal_village_entry_page.dart lib/src/rv_gallery_page.dart lib/src/photo_orbit.dart
+          flutter analyze --no-pub --no-fatal-infos --no-fatal-warnings lib/src/heritage_page.dart lib/src/home_page.dart lib/src/ettehad_page.dart lib/src/reservation_page.dart lib/src/reservation_store.dart lib/src/my_reservations_page.dart lib/src/rv_online_booking_service.dart lib/src/rv_online_requests_page.dart lib/src/royal_club_membership_page.dart lib/src/rv_media_page.dart lib/src/royal_village_entry_page.dart lib/src/rv_gallery_page.dart lib/src/photo_orbit.dart lib/src/royal_explore_page.dart
           test -s assets/heritage/founder_original.jpg
           test -s assets/heritage/philosophy_book.html
           test -s assets/heritage/royal_heritage_approved_poster.png
       - name: Test 10 branches 4 languages and 5 footer actions
-        run: flutter test test/heritage_poster_interactions_test.dart test/compact_home_portals_test.dart test/ettehad_button_actions_test.dart test/rv_online_flow_test.dart test/rv_room_photo_assets_test.dart
+        run: flutter test test/heritage_poster_interactions_test.dart test/compact_home_portals_test.dart test/ettehad_button_actions_test.dart test/rv_online_flow_test.dart test/rv_room_photo_assets_test.dart test/royal_navigation_test.dart
       - name: Verify all eight VIP room images replace poster-model crops
         run: |
           set -euo pipefail
@@ -138,18 +140,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          flutter build apk --release --split-per-abi --build-name 1.0.32 --build-number 33 \
+          flutter build apk --release --split-per-abi --build-name 1.0.32 --build-number 34 \
             --dart-define=ROYAL_CLUB_BACKEND_READY=true \
             --dart-define=SUPABASE_URL=https://jwddfcsikkialxzbrhle.supabase.co \
             --dart-define=SUPABASE_ANON_KEY=sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve
-          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ROYAL_ONE_RV_ONLINE_v1.0.32_ARM64.apk
-          test -s ROYAL_ONE_RV_ONLINE_v1.0.32_ARM64.apk
-          sha256sum ROYAL_ONE_RV_ONLINE_v1.0.32_ARM64.apk
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ROYAL_ONE_RV_ONLINE_v1.0.33_ARM64.apk
+          test -s ROYAL_ONE_RV_ONLINE_v1.0.33_ARM64.apk
+          sha256sum ROYAL_ONE_RV_ONLINE_v1.0.33_ARM64.apk
       - name: Upload verified preview artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ROYAL_ONE_RV_ONLINE_v1.0.32_ARM64
-          path: ROYAL_ONE_RV_ONLINE_v1.0.32_ARM64.apk
+          name: ROYAL_ONE_RV_ONLINE_v1.0.33_ARM64
+          path: ROYAL_ONE_RV_ONLINE_v1.0.33_ARM64.apk
           compression-level: 0
       - name: Publish prerelease (not production)
         env:
@@ -158,14 +160,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          tag='royal-one-rv-online-v1.0.32'
-          apk='ROYAL_ONE_RV_ONLINE_v1.0.32_ARM64.apk'
+          tag='royal-one-rv-online-v1.0.33'
+          apk='ROYAL_ONE_RV_ONLINE_v1.0.33_ARM64.apk'
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" "$apk" --clobber
           else
             gh release create "$tag" "$apk" \
               --target "$GITHUB_SHA" \
-              --title 'ROYAL ONE v1.0.32 — RV online requests and RC verified live scores' \
-              --notes 'ISOLATED TEST BUILD. RV requests now submit to secure Supabase after phone OTP and remain PENDING until management confirms. RC uses realtime verified-only score table and pending claims; no real rewards. The full ORIGINAL approved Royal Heritage poster is fit entirely inside the native Flutter app with every top portrait and bottom native action visible; branch details remain native and never redirect to an external mini-site. RV promotional media plays original audio only after official upload and management publication. SMS login offers safe retry and a resend cooldown. Compact SC, floating RM RC RV, Heritage father/president, offline RS, RH, and RV salons retained. RV salon and VIP previews now use the eight original project room-interior image assets instead of the model-based reservation posters, and the ninth placeholder Grand Salon was removed from the eight-salon collection. The photographic provenance of project assets remains unverified. No MP4 is shipped; NO public release.' \
+              --title 'ROYAL ONE v1.0.33 — RV online requests and RC verified live scores' \
+              --notes 'ISOLATED TEST BUILD. RV requests now submit to secure Supabase after phone OTP and remain PENDING until management confirms. RC uses realtime verified-only score table and pending claims; no real rewards. The full ORIGINAL approved Royal Heritage poster is fit entirely inside the native Flutter app with every top portrait and bottom native action visible; branch details remain native and never redirect to an external mini-site. RV promotional media plays original audio only after official upload and management publication. SMS login offers safe retry and a resend cooldown. Approved final home art, rotating SC, floating seven visual entrances and five bilingual footer links, Heritage father/president, offline RS, RH, and RV salons retained. RV salon and VIP previews now use the eight original project room-interior image assets instead of the model-based reservation posters, and the ninth placeholder Grand Salon was removed from the eight-salon collection. The photographic provenance of project assets remains unverified. No MP4 is shipped; NO public release.' \
               --prerelease
           fi
