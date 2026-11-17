@@ -244,7 +244,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
       actions: [IconButton(tooltip: 'گالری', icon: const Icon(Icons.photo_library_outlined), onPressed: () => _openGallery(context))]),
     body: ListView(children: [
       AspectRatio(aspectRatio: 1.65, child: Stack(fit: StackFit.expand, children: [
-        const RvSalonInteriorImage(asset: 'assets/image/rv_lounge_imperial_classique.png'),
+        const RvSalonInteriorImage(asset: 'assets/image/rv_original_photos/rv_lounge_imperial.jpg'),
         const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Color(0xFF061710)]))),
         const Positioned(left: 20, right: 20, bottom: 16, child: Column(mainAxisSize: MainAxisSize.min, children: [
           Text('RV', style: TextStyle(fontFamily: 'serif', fontSize: 50, color: _gold)),
