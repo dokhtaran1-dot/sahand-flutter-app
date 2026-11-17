@@ -62,7 +62,10 @@ void main() {
         w is Semantics && w.properties.label ==
         'کافه رویال ویلاژ | Royal Village');
     await tester.tap(rv);
-    await tester.pumpAndSettle();
+    // RV's photo orbit intentionally animates indefinitely; do not wait for
+    // the scheduler to become completely idle after this navigation.
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 400));
     expect(find.byType(RoyalVillagePage), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
