@@ -25,15 +25,17 @@ jobs:
           from PIL import Image
           photos=['salon_lumiere.png','salon_noir.png','salon_jardin.png','salon_prive.png',
                   'rv_lounge_imperial_classique.png','salon_dore.png','salon_ame_du_poete.png',
-                  'salon_de_lame.png','Salons.png','royal_village.png']
+                  'salon_de_lame.png','Salons.png','royal_village.png',
+                  'Grand_Salon_Original.png','Salon_royal.png']
           for name in photos:
               path='assets/image/'+name
               try:
-                  data=subprocess.check_output(['git','show','FETCH_HEAD:'+path],stderr=subprocess.DEVNULL)
+                  ref='HEAD' if name in ['Grand_Salon_Original.png','Salon_royal.png'] else 'FETCH_HEAD'
+                  data=subprocess.check_output(['git','show',ref+':'+path],stderr=subprocess.DEVNULL)
                   im=Image.open(io.BytesIO(data)).convert('RGB')
                   # Crop the original full-resolution room photo panel,
                   # excluding text, people portraits and cake/design catalogue.
-                  if name not in ['Salons.png','royal_village.png']:
+                  if name not in ['Salons.png','royal_village.png','Grand_Salon_Original.png','Salon_royal.png']:
                       w,h=im.size
                       im=im.crop((int(w*.008),int(h*.014),int(w*.582),int(h*.225)))
                   im.thumbnail((450,300))
