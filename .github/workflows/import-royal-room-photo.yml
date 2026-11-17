@@ -1,0 +1,42 @@
+name: Import restored Salon Royale interior photo
+on:
+  push:
+    branches: [feature/royal-one-online-rv-rc-media]
+    paths: ['.github/workflows/import-royal-room-photo.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import-royal-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore previously supplied Royal room interior photo
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64
+          p=Path('assets/rv/royal_room_jpeg.b64')
+          blob=base64.b64decode(p.read_text().strip(),validate=True)
+          assert blob.startswith(bytes([0xff,0xd8])) and blob.endswith(bytes([0xff,0xd9]))
+          out=Path('assets/image/rv_original_photos/royale.jpg')
+          out.parent.mkdir(parents=True,exist_ok=True)
+          out.write_bytes(blob)
+          assert out.stat().st_size > 10000
+          print('Salon Royale photo verified:',out.stat().st_size,'bytes')
+          PY
+      - name: Commit the photo to isolated preview branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'royal-one-preview-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f assets/image/rv_original_photos/royale.jpg
+          if git diff --cached --quiet; then
+            echo 'Room photo already exists, no commit needed'
+          else
+            git commit -m 'RV: add original Royal-labelled room image without people'
+            git push origin HEAD:feature/royal-one-online-rv-rc-media
+          fi
