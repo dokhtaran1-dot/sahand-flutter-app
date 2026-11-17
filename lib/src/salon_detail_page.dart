@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'reservation_page.dart';
 import 'rv_salon_interior_image.dart';
+import 'data/rv_salon_catalogue.dart';
 
 class SalonDetailPage extends StatefulWidget {
   final String salonName;
@@ -36,22 +37,9 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
     'Salon Âme du Poète': ['Poème d’Amour – Piano', 'Rose de Paris – Violin', 'Rêve du Poète – Lounge'],
     'Salon Jardin': ['Jardin de Rêve – Piano', 'Fleurs de Paris – Violin', 'Matin au Jardin – Lounge'],
     'Salon Lumière': ['Lumière Blanche – Piano', 'Venise Éternelle – Violin', 'Clair de Lumière – Lounge'],
-    'Salon Royal': ['Couronne Royale – Piano', 'Majesté – Violin', 'Royal Signature – Lounge'],
+    'Salon Royale': ['Couronne Royale – Piano', 'Majesté – Violin', 'Royal Signature – Lounge'],
     'RV Lounge Impérial Classique': ['Impérial Classique – Piano', 'Prestige – Violin', 'Royal Night – Lounge'],
     'Grand Salon': ['Grand Élégance – Piano', 'La Cérémonie – Violin', 'Royal Evening – Lounge'],
-  };
-
-  final Map<String, String> salonImages = {
-    'Salon Lumière': 'assets/image/Salon_lumiere.png',
-    'Salon Noir': 'assets/image/Salon_noir.png',
-    'Salon Jardin': 'assets/image/salon_jardin.png',
-    'Salon Privé': 'assets/image/Salon_prive.png',
-    'RV Lounge Impérial Classique':
-        'assets/image/rv_lounge_imperial_classique.png',
-    'Salon Doré': 'assets/image/salon_dore.png',
-    'Salon Âme du Poète': 'assets/image/salon_ame_du_poete.png',
-    'Salon Royal': 'assets/image/Salon_royal.png',
-    'Grand Salon': 'assets/image/Rv_page2.png',
   };
 
   final Map<String, String> salonDescriptions = {
@@ -69,13 +57,19 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
         'ترکیب طراحی مدرن و فضای طلایی برای یک مراسم لوکس.',
     'Salon Âme du Poète':
         'فضایی شاعرانه، نوستالژیک و متفاوت با شخصیت هنری.',
-    'Salon Royal':
+    'Salon Royale':
         'فضای کلاسیک و سلطنتی برای پذیرایی‌ها و مراسم رسمی.',
   };
 
   String get imagePath =>
-      salonImages[widget.salonName] ??
+      RvSalonCatalogue.forName(widget.salonName)?.coverAsset ??
       'assets/image/Rv_page2.png';
+
+  int get _cakeCount =>
+      RvSalonCatalogue.forName(widget.salonName)?.cakeCount ?? 10;
+
+  int get _designCount =>
+      RvSalonCatalogue.forName(widget.salonName)?.designCount ?? 10;
 
   String get description =>
       salonDescriptions[widget.salonName] ??
@@ -111,38 +105,17 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
     }
   }
 
-  static const Map<String, String> galleryFolders = {
-    'Salon Doré': 'dore',
-    'Salon Privé': 'prive',
-    'Salon Âme du Poète': 'ame_du_poete',
-    'Salon Noir': 'noir',
-    'Salon Royal': 'royal',
-    'Salon Lumière': 'lumiere',
-    'Salon Jardin': 'jardin',
-    'RV Lounge Impérial Classique': 'imperial',
-  };
-
   Future<List<String>> _uploadedImages(String kind) async {
-    const keys = {
-      'Salon Doré': 'dore',
-      'Salon Privé': 'prive',
-      'Salon Noir': 'noir',
-      'Salon Royal': 'royal',
-      'Salon Lumière': 'lumiere',
-      'Salon Jardin': 'jardin',
-      'Salon Âme du Poète': 'ame_du_poete',
-      'RV Lounge Impérial Classique': 'imperial',
-    };
-    final key = keys[widget.salonName];
-    if (key == null) return const [];
+    final salon = RvSalonCatalogue.forName(widget.salonName);
+    if (salon == null) return const [];
+    final key = salon.galleryFolder;
     final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
     final prefix = 'assets/image/salon_gallery/$key/${kind}_';
     final images = manifest.listAssets()
         .where((path) => path.startsWith(prefix) && path.endsWith('.webp'))
         .toList()..sort();
-    // Original room catalogue contains up to ten birthday designs and
-    // twenty cake models. Never silently truncate cakes to ten.
-    return images.take(kind == 'cake' ? 20 : 10).toList();
+    // Model counts are taken from the user's original eight-salon manifest.
+    return images.take(kind == 'cake' ? _cakeCount : _designCount).toList();
   }
 
   void _showUploadedGallery({required String kind}) {
@@ -162,7 +135,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
             child: Column(
               children: [
                 Text(
-                  isCake ? '۲۰ مدل کیک اختصاصی' : '۱۰ دیزاین تولد اختصاصی',
+                  isCake ? '$_cakeCount مدل کیک اختصاصی' : '$_designCount دیزاین تولد اختصاصی',
                   style: const TextStyle(
                     color: gold2,
                     fontSize: 21,
@@ -173,10 +146,10 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
                 Text(widget.salonName,
                     style: const TextStyle(color: Colors.white54)),
                 const SizedBox(height: 14),
-                if (isCake) const Padding(
+                if (isCake && _cakeCount > 10) const Padding(
                   padding: EdgeInsets.fromLTRB(4, 0, 4, 9),
                   child: Text(
-                    '۱۰ عکس کیک جداگانه موجود است؛ همه ۲۰ مدل در کاتالوگ اصلی سالن دیده می‌شوند.',
+                    '۱۰ عکس کیک جداگانه موجود است؛ ۲۰ مدل در کاتالوگ اصلی سالن دیده می‌شوند.',
                     textAlign: TextAlign.center,
                     textDirection: TextDirection.rtl,
                     style: TextStyle(color: Colors.white70, fontSize: 12),
@@ -268,7 +241,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
                     },
                   ),
                 ),
-                if (isCake) TextButton.icon(
+                if (isCake && _cakeCount > 10) TextButton.icon(
                   onPressed: () {
                     Navigator.of(sheetContext).pop();
                     showOriginalCatalogue();
@@ -284,9 +257,9 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
     );
   }
 
-  /// Models 11-20 appear on the original catalogue image rather than in the
-  /// gallery archive. Selecting their printed number records the exact model
-  /// requested without inventing extra individual photo files.
+  /// Only the Imperial Lounge has 20 numbered cake models in the supplied
+  /// source manifest. For the other seven salons the catalogue declares ten.
+  /// This does not invent remote images for models not bundled locally.
   Future<void> chooseCakeNumber(BuildContext catalogueContext) async {
     final choice = await showModalBottomSheet<int>(
       context: catalogueContext,
@@ -303,7 +276,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 5, crossAxisSpacing: 8, mainAxisSpacing: 8),
-              itemCount: 20,
+              itemCount: _cakeCount,
               itemBuilder: (_, index) => OutlinedButton(
                 onPressed: () => Navigator.of(sheet).pop(index + 1),
                 style: OutlinedButton.styleFrom(
@@ -324,8 +297,8 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
     if (catalogueContext.mounted) Navigator.of(catalogueContext).pop();
   }
 
-  /// View the ORIGINAL complete room photograph, 10 birthday designs and
-  /// 20 cake thumbnails in the unmodified user-supplied source catalogue.
+  /// View the ORIGINAL complete room, birthday designs and cake sheet,
+  /// preserving the poster even when not every cake has an individual file.
   void showOriginalCatalogue() {
     Navigator.of(context).push(MaterialPageRoute<void>(
       builder: (catalogueContext) => Scaffold(
@@ -350,12 +323,12 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
           SafeArea(top: false, child: Padding(
             padding: const EdgeInsets.all(12),
             child: SizedBox(width: double.infinity, child: FilledButton.icon(
-              key: const ValueKey('rv-select-20-cake-models'),
+              key: const ValueKey('rv-select-cake-from-catalogue'),
               style: FilledButton.styleFrom(
                 backgroundColor: gold2, foregroundColor: bg),
               onPressed: () => chooseCakeNumber(catalogueContext),
               icon: const Icon(Icons.cake_outlined),
-              label: const Text('انتخاب شماره کیک از ۲۰ مدل کاتالوگ'),
+              label: Text('انتخاب شماره کیک از $_cakeCount مدل کاتالوگ'),
             )),
           )),
         ])),
@@ -536,7 +509,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
 
             _ActionCard(
               icon: Icons.celebration_outlined,
-              title: '۱۰ دیزاین تولد اختصاصی',
+              title: '$_designCount دیزاین تولد اختصاصی',
               subtitle: selectedDesign == null
                   ? 'انتخاب تم و دیزاین مخصوص این سالن'
                   : 'دیزاین $selectedDesign انتخاب شده',
@@ -548,7 +521,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
 
             _ActionCard(
               icon: Icons.cake_outlined,
-              title: '۲۰ مدل کیک اختصاصی',
+              title: '$_cakeCount مدل کیک اختصاصی',
               subtitle: selectedCake == null
                   ? 'انتخاب کیک متناسب با سالن و مراسم'
                   : 'کیک $selectedCake انتخاب شده',
