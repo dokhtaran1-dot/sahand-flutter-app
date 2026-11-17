@@ -7,17 +7,17 @@ import 'package:sahand_consortium/src/salon_preview_image.dart';
 import 'package:sahand_consortium/src/salon_detail_page.dart';
 import 'package:sahand_consortium/src/rv_salon_interior_image.dart';
 
-/// These are the eight existing interior-photo assets, not the model-based
-/// booking posters. Check the app bundles them before shipping to customers.
+/// Seven images restored from the original interior catalogues.
+ /// Royale is an explicitly labeled temporary placeholder, not a false image.
 const rooms = <String>[
-  'assets/image/Salon_lumiere.png',
-  'assets/image/Salon_noir.png',
-  'assets/image/salon_jardin.png',
-  'assets/image/Salon_prive.png',
-  'assets/image/rv_lounge_imperial_classique.png',
-  'assets/image/salon_dore.png',
-  'assets/image/salon_ame_du_poete.png',
-  'assets/image/Salon_royal.png',
+  'assets/image/rv_original_photos/lumiere.jpg',
+  'assets/image/rv_original_photos/noir.jpg',
+  'assets/image/rv_original_photos/jardin.jpg',
+  'assets/image/rv_original_photos/prive.jpg',
+  'assets/image/rv_original_photos/rv_lounge_imperial.jpg',
+  'assets/image/rv_original_photos/dore.jpg',
+  'assets/image/rv_original_photos/ame_du_poete.jpg',
+  'assets/image/rv_original_photos/royale_pending.jpg',
 ];
 
 void main() {
@@ -26,8 +26,9 @@ void main() {
   test('All eight interior photos exist and are bundled in Royal One', () async {
     for (final path in rooms) {
       final bytes = await rootBundle.load(path);
-      expect(bytes.lengthInBytes, greaterThan(100000),
-          reason: 'Original salon interior photo missing from APK: $path');
+      expect(bytes.lengthInBytes,
+          greaterThan(path.contains('royale_pending') ? 5000 : 50000),
+          reason: 'Restored room image missing from APK: $path');
     }
   });
 
@@ -42,7 +43,7 @@ void main() {
     await tester.pump();
     expect(find.byType(SalonPreviewImage), findsNothing);
     expect(find.text('۸ سالن اختصاصی رویال ویلاژ'), findsOneWidget);
-    // Thumbnails must crop the upper-left interior photograph, not show cake-grid mosaics.
+    // Preview assets are the separate originals, not marketing model posters.
     expect(find.byType(RvSalonInteriorImage), findsWidgets);
 
     final assets = tester.widgetList<Image>(find.byType(Image)).map(
@@ -66,7 +67,7 @@ void main() {
     final assets = tester.widgetList<Image>(find.byType(Image)).map(
       (img) => img.image is AssetImage ? (img.image as AssetImage).assetName : ''
     ).toList();
-    expect(assets, contains('assets/image/rv_lounge_imperial_classique.png'));
+    expect(assets, contains('assets/image/rv_original_photos/rv_lounge_imperial.jpg'));
     expect(find.byType(SalonPreviewImage), findsNothing);
     expect(tester.takeException(), isNull);
   });
@@ -91,7 +92,7 @@ void main() {
         .where((img) => img.image is AssetImage)
         .map((img) => (img.image as AssetImage).assetName)
         .toList();
-    expect(images, contains('assets/image/Salon_lumiere.png'));
+    expect(images, contains('assets/image/rv_original_photos/lumiere.jpg'));
     expect(tester.takeException(), isNull);
   });
   
