@@ -173,6 +173,15 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
                 Text(widget.salonName,
                     style: const TextStyle(color: Colors.white54)),
                 const SizedBox(height: 14),
+                if (isCake) const Padding(
+                  padding: EdgeInsets.fromLTRB(4, 0, 4, 9),
+                  child: Text(
+                    '۱۰ عکس کیک جداگانه موجود است؛ همه ۲۰ مدل در کاتالوگ اصلی سالن دیده می‌شوند.',
+                    textAlign: TextAlign.center,
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                  ),
+                ),
                 Expanded(
                   child: FutureBuilder<List<String>>(
                     future: _uploadedImages(kind),
@@ -259,6 +268,14 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
                     },
                   ),
                 ),
+                if (isCake) TextButton.icon(
+                  onPressed: () {
+                    Navigator.of(sheetContext).pop();
+                    showOriginalCatalogue();
+                  },
+                  icon: const Icon(Icons.collections_bookmark_outlined),
+                  label: const Text('دیدن ۲۰ مدل و انتخاب از کاتالوگ کامل'),
+                ),
               ],
             ),
           ),
@@ -267,11 +284,51 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
     );
   }
 
-  /// Guests can always view the complete, unmodified room+design+cake sheet,
-  /// including cake models that have not yet been supplied as separate files.
+  /// Models 11-20 appear on the original catalogue image rather than in the
+  /// gallery archive. Selecting their printed number records the exact model
+  /// requested without inventing extra individual photo files.
+  Future<void> chooseCakeNumber(BuildContext catalogueContext) async {
+    final choice = await showModalBottomSheet<int>(
+      context: catalogueContext,
+      backgroundColor: panel,
+      isScrollControlled: true,
+      builder: (sheet) => SafeArea(child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Text('شماره مدل کیک را از کاتالوگ اصلی انتخاب کنید',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: gold2, fontSize: 18)),
+          const SizedBox(height: 12),
+          SizedBox(height: 276,
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 5, crossAxisSpacing: 8, mainAxisSpacing: 8),
+              itemCount: 20,
+              itemBuilder: (_, index) => OutlinedButton(
+                onPressed: () => Navigator.of(sheet).pop(index + 1),
+                style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  foregroundColor: gold2,
+                  side: BorderSide(
+                    color: selectedCake == index + 1 ? gold2 : gold),
+                ),
+                child: Text('${index + 1}'),
+              ),
+            ),
+          ),
+        ]),
+      )),
+    );
+    if (!mounted || choice == null) return;
+    setState(() => selectedCake = choice);
+    if (catalogueContext.mounted) Navigator.of(catalogueContext).pop();
+  }
+
+  /// View the ORIGINAL complete room photograph, 10 birthday designs and
+  /// 20 cake thumbnails in the unmodified user-supplied source catalogue.
   void showOriginalCatalogue() {
     Navigator.of(context).push(MaterialPageRoute<void>(
-      builder: (_) => Scaffold(
+      builder: (catalogueContext) => Scaffold(
         backgroundColor: bg,
         appBar: AppBar(
           backgroundColor: bg, foregroundColor: gold2,
@@ -289,6 +346,17 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
             child: Center(child: Image.asset(
               imagePath, fit: BoxFit.contain,
               filterQuality: FilterQuality.high)),
+          )),
+          SafeArea(top: false, child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: SizedBox(width: double.infinity, child: FilledButton.icon(
+              key: const ValueKey('rv-select-20-cake-models'),
+              style: FilledButton.styleFrom(
+                backgroundColor: gold2, foregroundColor: bg),
+              onPressed: () => chooseCakeNumber(catalogueContext),
+              icon: const Icon(Icons.cake_outlined),
+              label: const Text('انتخاب شماره کیک از ۲۰ مدل کاتالوگ'),
+            )),
           )),
         ])),
       ),
