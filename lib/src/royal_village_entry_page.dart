@@ -7,6 +7,7 @@ import 'royal_club_game_page.dart';
 import 'rv_gallery_page.dart';
 import 'rv_media_page.dart';
 import 'salon_detail_page.dart';
+import 'rv_salon_interior_image.dart';
 
 class RoyalVillageEntryPage extends StatelessWidget {
   const RoyalVillageEntryPage({super.key});
@@ -297,12 +298,8 @@ class _SalonCard extends StatelessWidget {
   Widget build(BuildContext context) => Semantics(button: true, label: name, child: Material(
     color: const Color(0xFF10291D), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: const BorderSide(color: Color(0xFF806B40))), clipBehavior: Clip.antiAlias,
     child: InkWell(onTap: onTap, child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      AspectRatio(aspectRatio: 1.08, child: Image.asset(image,
-        fit: BoxFit.cover, alignment: Alignment.center,
-        filterQuality: FilterQuality.high,
-        errorBuilder: (_, __, ___) => const Center(
-          child: Icon(Icons.broken_image_outlined,
-            color: Color(0xFFD6B15E), size: 40)))),
+      AspectRatio(aspectRatio: 1.08,
+        child: RvSalonInteriorImage(asset: image)),
       Padding(padding: const EdgeInsets.all(12), child: Text(name, style: const TextStyle(color: Color(0xFFE7C77D), fontFamily: 'serif', fontSize: 16))),
       const Padding(padding: EdgeInsets.fromLTRB(12, 0, 12, 14), child: Row(children: [Expanded(child: Text('بزرگ‌نمایی تصویر', textDirection: TextDirection.rtl, style: TextStyle(fontSize: 12))), Icon(Icons.arrow_forward, size: 18, color: Color(0xFFE7C77D))])),
     ])),
