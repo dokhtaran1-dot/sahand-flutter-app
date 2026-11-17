@@ -1,4 +1,4 @@
-name: Royal One Secure RV Online + RC Realtime + Media v1.0.36 (isolated APK)
+name: Royal One Secure RV Online + RC Realtime + Media v1.0.37 (isolated APK)
 on:
   push:
     branches:
@@ -80,12 +80,12 @@ jobs:
           old='        release {\n'
           if content.count(old)!=1:
               raise SystemExit('Unexpected Android release signing configuration')
-          gradle.write_text(content.replace(old,old+'            applicationIdSuffix = ".onlinepreview36"\n'))
+          gradle.write_text(content.replace(old,old+'            applicationIdSuffix = ".onlinepreview37"\n'))
           manifest=Path('android/app/src/main/AndroidManifest.xml')
           content=manifest.read_text()
           if 'android:label="ROYAL 1"' not in content:
               raise SystemExit('Unexpected launcher label')
-          manifest.write_text(content.replace('android:label="ROYAL 1"','android:label="ROYAL ONE VIP v1.0.36"'))
+          manifest.write_text(content.replace('android:label="ROYAL 1"','android:label="ROYAL ONE VIP v1.0.37"'))
           PY
       - name: Rebuild approved second page image
         run: |
@@ -131,8 +131,13 @@ jobs:
             salon_ame_du_poete.png Salon_royal.png; do
             test -s "assets/image/$photo"
           done
-          # Fit the entire interior photograph without cropping, while keeping
-          # the separate birthday/cake poster available in room details.
+          # The original interior images were restored from the earlier
+          # royalty catalogues, NOT the newer promotional posters with people.
+          for room in lumiere noir jardin prive rv_lounge_imperial dore ame_du_poete; do
+            test -s "assets/image/rv_original_photos/${room}.jpg"
+            test -s "assets/image/rv_original_catalogues/${room}.png"
+          done
+          test -s assets/image/rv_original_photos/royale_pending.jpg
           grep -F "RvSalonInteriorImage(asset: widget.images[i])" lib/src/photo_orbit.dart
           grep -F "PhotoOrbit(images: _photos" lib/src/royal_village_entry_page.dart
           grep -F "RvSalonInteriorImage(asset: item.image)" lib/src/rv_gallery_page.dart
@@ -154,18 +159,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          flutter build apk --release --split-per-abi --build-name 1.0.36 --build-number 37 \
+          flutter build apk --release --split-per-abi --build-name 1.0.37 --build-number 38 \
             --dart-define=ROYAL_CLUB_BACKEND_READY=true \
             --dart-define=SUPABASE_URL=https://jwddfcsikkialxzbrhle.supabase.co \
             --dart-define=SUPABASE_ANON_KEY=sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve
-          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ROYAL_ONE_RV_ONLINE_v1.0.36_ARM64.apk
-          test -s ROYAL_ONE_RV_ONLINE_v1.0.36_ARM64.apk
-          sha256sum ROYAL_ONE_RV_ONLINE_v1.0.36_ARM64.apk
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ROYAL_ONE_RV_ONLINE_v1.0.37_ARM64.apk
+          test -s ROYAL_ONE_RV_ONLINE_v1.0.37_ARM64.apk
+          sha256sum ROYAL_ONE_RV_ONLINE_v1.0.37_ARM64.apk
       - name: Upload verified preview artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ROYAL_ONE_RV_ONLINE_v1.0.36_ARM64
-          path: ROYAL_ONE_RV_ONLINE_v1.0.36_ARM64.apk
+          name: ROYAL_ONE_RV_ONLINE_v1.0.37_ARM64
+          path: ROYAL_ONE_RV_ONLINE_v1.0.37_ARM64.apk
           compression-level: 0
       - name: Publish prerelease (not production)
         env:
@@ -174,14 +179,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          tag='royal-one-rv-online-v1.0.36'
-          apk='ROYAL_ONE_RV_ONLINE_v1.0.36_ARM64.apk'
+          tag='royal-one-rv-online-v1.0.37'
+          apk='ROYAL_ONE_RV_ONLINE_v1.0.37_ARM64.apk'
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" "$apk" --clobber
           else
             gh release create "$tag" "$apk" \
               --target "$GITHUB_SHA" \
-              --title 'ROYAL ONE v1.0.36 — RV online requests and RC verified live scores' \
-              --notes 'ISOLATED TEST BUILD. RV requests now submit to secure Supabase after phone OTP and remain PENDING until management confirms. RC uses realtime verified-only score table and pending claims; no real rewards. The full ORIGINAL approved Royal Heritage poster is fit entirely inside the native Flutter app with every top portrait and bottom native action visible; branch details remain native and never redirect to an external mini-site. RV promotional media plays original audio only after official upload and management publication. SMS login offers safe retry and a resend cooldown. Approved final home art, rotating SC, floating seven visual entrances and five bilingual footer links, Heritage father/president, offline RS, RH, and RV salons retained. RV salon previews and expanded photo viewers now show the entire room photograph uncropped using contain fit, preserving the complete original catalogue separately in room details. Each room has 10 birthday-design images and 10 separate cake images; ONLY RV Lounge Impérial Classique declares 20 cake models in the source JSON, viewable as numbered catalogue choices (the remaining 10 are not falsely presented as individual image files). The ninth placeholder Grand Salon remains excluded. The photographic provenance of project assets remains unverified. No MP4 is shipped; NO public release.' \
+              --title 'ROYAL ONE v1.0.37 — RV online requests and RC verified live scores' \
+              --notes 'ISOLATED TEST BUILD. RV requests now submit to secure Supabase after phone OTP and remain PENDING until management confirms. RC uses realtime verified-only score table and pending claims; no real rewards. The full ORIGINAL approved Royal Heritage poster is fit entirely inside the native Flutter app with every top portrait and bottom native action visible; branch details remain native and never redirect to an external mini-site. RV promotional media plays original audio only after official upload and management publication. SMS login offers safe retry and a resend cooldown. Approved final home art, rotating SC, floating seven visual entrances and five bilingual footer links, Heritage father/president, offline RS, RH, and RV salons retained. Seven RV interiors now use independently extracted original room photographs restored from the user's earlier Royal Village catalogues (commit ac945575), never the later advertising model posters. The photo is shown uncropped across portals/cards/details. Each original full birthday-and-cake catalogue is preserved separately. Salon Royale is marked pending because the historical asset was actually labeled Émeraude; we will not falsely claim that is Royale. Each room has 10 birthday-design images and 10 separate cake images; ONLY RV Lounge Impérial Classique declares 20 cake models in the source JSON, viewable as numbered catalogue choices (the remaining 10 are not falsely presented as individual image files). The ninth placeholder Grand Salon remains excluded. The photographic provenance of project assets remains unverified. No MP4 is shipped; NO public release.' \
               --prerelease
           fi
