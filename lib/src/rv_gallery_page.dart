@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'salon_detail_page.dart';
 import 'rv_salon_interior_image.dart';
+import 'data/rv_salon_catalogue.dart';
 
 /// Eight approved private salons, in the user's confirmed Royal One order.
 class RvGalleryPage extends StatelessWidget {
@@ -9,16 +10,10 @@ class RvGalleryPage extends StatelessWidget {
   static const Color _bg = Color(0xFF04140F);
   static const Color _gold = Color(0xFFD6B15E);
 
-  static const List<({String name, String image})> _salons = [
-    (name: 'Salon Lumière', image: 'assets/image/Salon_lumiere.png'),
-    (name: 'Salon Noir', image: 'assets/image/Salon_noir.png'),
-    (name: 'Salon Jardin', image: 'assets/image/salon_jardin.png'),
-    (name: 'Salon Privé', image: 'assets/image/Salon_prive.png'),
-    (name: 'RV Lounge Impérial Classique', image: 'assets/image/rv_lounge_imperial_classique.png'),
-    (name: 'Salon Doré', image: 'assets/image/salon_dore.png'),
-    (name: 'Salon Âme du Poète', image: 'assets/image/salon_ame_du_poete.png'),
-    (name: 'Salon Royal', image: 'assets/image/Salon_royal.png'),
-  ];
+  static final List<({String name, String image})> _salons =
+      RvSalonCatalogue.salons
+          .map((salon) => (name: salon.name, image: salon.coverAsset))
+          .toList(growable: false);
 
   static void _open(BuildContext context, int index) {
     Navigator.of(context).push(MaterialPageRoute(
