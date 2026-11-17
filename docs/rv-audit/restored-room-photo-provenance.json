@@ -1,0 +1,121 @@
+[
+  {
+    "room": "lumiere",
+    "original": "salon_lumiere.png",
+    "blob_commit": "ac94557573e15519e35b3b5f7b99388bb2553bed",
+    "source_size": [
+      1024,
+      1536
+    ],
+    "pixel_crop": [
+      20,
+      37,
+      571,
+      407
+    ],
+    "photo_path": "assets/image/rv_original_photos/lumiere.jpg",
+    "poster_path": "assets/image/rv_original_catalogues/lumiere.png"
+  },
+  {
+    "room": "noir",
+    "original": "salon_noir.png",
+    "blob_commit": "ac94557573e15519e35b3b5f7b99388bb2553bed",
+    "source_size": [
+      1024,
+      1536
+    ],
+    "pixel_crop": [
+      20,
+      37,
+      571,
+      407
+    ],
+    "photo_path": "assets/image/rv_original_photos/noir.jpg",
+    "poster_path": "assets/image/rv_original_catalogues/noir.png"
+  },
+  {
+    "room": "jardin",
+    "original": "salon_jardin.png",
+    "blob_commit": "ac94557573e15519e35b3b5f7b99388bb2553bed",
+    "source_size": [
+      1024,
+      1536
+    ],
+    "pixel_crop": [
+      20,
+      37,
+      571,
+      407
+    ],
+    "photo_path": "assets/image/rv_original_photos/jardin.jpg",
+    "poster_path": "assets/image/rv_original_catalogues/jardin.png"
+  },
+  {
+    "room": "prive",
+    "original": "salon_prive.png",
+    "blob_commit": "ac94557573e15519e35b3b5f7b99388bb2553bed",
+    "source_size": [
+      1024,
+      1536
+    ],
+    "pixel_crop": [
+      20,
+      37,
+      571,
+      407
+    ],
+    "photo_path": "assets/image/rv_original_photos/prive.jpg",
+    "poster_path": "assets/image/rv_original_catalogues/prive.png"
+  },
+  {
+    "room": "rv_lounge_imperial",
+    "original": "rv_lounge_imperial_classique.png",
+    "blob_commit": "ac94557573e15519e35b3b5f7b99388bb2553bed",
+    "source_size": [
+      1024,
+      1536
+    ],
+    "pixel_crop": [
+      20,
+      37,
+      571,
+      407
+    ],
+    "photo_path": "assets/image/rv_original_photos/rv_lounge_imperial.jpg",
+    "poster_path": "assets/image/rv_original_catalogues/rv_lounge_imperial.png"
+  },
+  {
+    "room": "dore",
+    "original": "salon_dore.png",
+    "blob_commit": "ac94557573e15519e35b3b5f7b99388bb2553bed",
+    "source_size": [
+      1024,
+      1536
+    ],
+    "pixel_crop": [
+      20,
+      37,
+      571,
+      407
+    ],
+    "photo_path": "assets/image/rv_original_photos/dore.jpg",
+    "poster_path": "assets/image/rv_original_catalogues/dore.png"
+  },
+  {
+    "room": "ame_du_poete",
+    "original": "salon_ame_du_poete.png",
+    "blob_commit": "ac94557573e15519e35b3b5f7b99388bb2553bed",
+    "source_size": [
+      3072,
+      4608
+    ],
+    "pixel_crop": [
+      61,
+      111,
+      1714,
+      1221
+    ],
+    "photo_path": "assets/image/rv_original_photos/ame_du_poete.jpg",
+    "poster_path": "assets/image/rv_original_catalogues/ame_du_poete.png"
+  }
+]
