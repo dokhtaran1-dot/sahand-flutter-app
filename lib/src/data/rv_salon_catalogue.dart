@@ -25,11 +25,11 @@ class RvSalonCatalogue {
   /// The app's previously approved display order is retained.
   static const salons = <RvSalonRecord>[
     RvSalonRecord(id: 'lumiere', name: 'Salon Lumière',
-      coverAsset: 'assets/image/salon_lumiere.png', galleryFolder: 'lumiere',
+      coverAsset: 'assets/image/Salon_lumiere.png', galleryFolder: 'lumiere',
       designCount: 10, cakeCount: 10,
       doubleVip: false),
     RvSalonRecord(id: 'noir', name: 'Salon Noir',
-      coverAsset: 'assets/image/salon_noir.png', galleryFolder: 'noir',
+      coverAsset: 'assets/image/Salon_noir.png', galleryFolder: 'noir',
       designCount: 10, cakeCount: 10,
       doubleVip: false),
     RvSalonRecord(id: 'jardin', name: 'Salon Jardin',
@@ -37,7 +37,7 @@ class RvSalonCatalogue {
       designCount: 10, cakeCount: 10,
       doubleVip: false),
     RvSalonRecord(id: 'prive', name: 'Salon Privé',
-      coverAsset: 'assets/image/salon_prive.png', galleryFolder: 'prive',
+      coverAsset: 'assets/image/Salon_prive.png', galleryFolder: 'prive',
       designCount: 10, cakeCount: 10,
       doubleVip: false),
     RvSalonRecord(id: 'rv_lounge_imperial', name: 'RV Lounge Impérial Classique',
