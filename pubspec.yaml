@@ -40,6 +40,8 @@ flutter:
     - assets/image/jd_signature/
     - assets/image/rv_upload/
     - assets/image/booking_posters/
+    - assets/image/rv_original_photos/
+    - assets/image/rv_original_catalogues/
     - assets/image/salon_gallery/dore/
     - assets/image/salon_gallery/prive/
     - assets/image/salon_gallery/noir/
