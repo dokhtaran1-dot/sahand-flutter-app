@@ -7,8 +7,7 @@ import 'package:sahand_consortium/src/salon_preview_image.dart';
 import 'package:sahand_consortium/src/salon_detail_page.dart';
 import 'package:sahand_consortium/src/rv_salon_interior_image.dart';
 
-/// Seven images restored from the original interior catalogues.
- /// Royale is an explicitly labeled temporary placeholder, not a false image.
+/// Seven catalogues restored from archival interiors; the Royal-labelled user-library room image is separate. No advertising-model posters.
 const rooms = <String>[
   'assets/image/rv_original_photos/lumiere.jpg',
   'assets/image/rv_original_photos/noir.jpg',
@@ -17,7 +16,7 @@ const rooms = <String>[
   'assets/image/rv_original_photos/rv_lounge_imperial.jpg',
   'assets/image/rv_original_photos/dore.jpg',
   'assets/image/rv_original_photos/ame_du_poete.jpg',
-  'assets/image/rv_original_photos/royale_pending.jpg',
+  'assets/image/rv_original_photos/royale.jpg',
 ];
 
 void main() {
@@ -27,7 +26,7 @@ void main() {
     for (final path in rooms) {
       final bytes = await rootBundle.load(path);
       expect(bytes.lengthInBytes,
-          greaterThan(path.contains('royale_pending') ? 5000 : 50000),
+          greaterThan(path.contains('royale.jpg') ? 10000 : 50000),
           reason: 'Restored room image missing from APK: $path');
     }
   });
