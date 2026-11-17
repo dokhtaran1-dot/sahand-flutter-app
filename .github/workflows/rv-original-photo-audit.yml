@@ -61,11 +61,26 @@ jobs:
           sheet.save(buffer,format='JPEG',quality=72,optimize=True)
           (out/'old-vs-new-preview.b64').write_text(base64.b64encode(buffer.getvalue()).decode('ascii'))
           (out/'comparison-metadata.json').write_text(json.dumps(details,indent=2))
+          extras=[('Original 8 salon sheet','Salons.png'),
+                  ('Original Royal-label asset','salon_royal.png'),
+                  ('Source of Royal under earlier name','salon_de_lame.png')]
+          extra_sheet=Image.new('RGB',(640,len(extras)*550),(24,25,22))
+          draw=ImageDraw.Draw(extra_sheet)
+          for i,(label,filename) in enumerate(extras):
+              content=subprocess.check_output(['git','show',f'{old}:assets/image/{filename}'])
+              im=Image.open(io.BytesIO(content)).convert('RGB')
+              reduced=ImageOps.contain(im,(630,510))
+              extra_sheet.paste(reduced,((640-reduced.width)//2,i*550+30))
+              draw.text((10,i*550+5),label,fill=(255,225,170))
+          extra_buff=io.BytesIO()
+          extra_sheet.save(extra_buff,format='JPEG',quality=72,optimize=True)
+          (out/'royal-source-check.b64').write_text(base64.b64encode(extra_buff.getvalue()).decode('ascii'))
+
           print('Audit preview generated:',len(buffer.getvalue()),'bytes')
           PY
       - name: Commit text-only image preview for inspection
         run: |
           git config user.name "royal-one-audit-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/rv-audit/old-vs-new-preview.b64 docs/rv-audit/comparison-metadata.json
+          git add docs/rv-audit/old-vs-new-preview.b64 docs/rv-audit/comparison-metadata.json docs/rv-audit/royal-source-check.b64
           git diff --staged --quiet || (git commit -m "Audit original RV salon photography before replacing promo models" && git push origin HEAD:feature/royal-one-online-rv-rc-media)
