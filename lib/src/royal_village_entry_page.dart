@@ -8,6 +8,7 @@ import 'rv_gallery_page.dart';
 import 'rv_media_page.dart';
 import 'salon_detail_page.dart';
 import 'rv_salon_interior_image.dart';
+import 'data/rv_salon_catalogue.dart';
 
 class RoyalVillageEntryPage extends StatelessWidget {
   const RoyalVillageEntryPage({super.key});
@@ -205,19 +206,12 @@ class RoyalVillageEntryPage extends StatelessWidget {
     );
   }
 
-  static const _salons = ['Salon Lumière', 'Salon Noir', 'Salon Jardin', 'Salon Privé', 'RV Lounge Impérial Classique', 'Salon Doré', 'Salon Âme du Poète', 'Salon Royal'];
-  // Room interiors already bundled in the original project. The former
-  // booking_posters/* pictures depict advertising models, not the salon itself.
-  static const _photos = [
-    'assets/image/Salon_lumiere.png',
-    'assets/image/Salon_noir.png',
-    'assets/image/salon_jardin.png',
-    'assets/image/Salon_prive.png',
-    'assets/image/rv_lounge_imperial_classique.png',
-    'assets/image/salon_dore.png',
-    'assets/image/salon_ame_du_poete.png',
-    'assets/image/Salon_royal.png',
-  ];
+  // Preserve the app's approved display order while keeping all names,
+  // source IDs and image paths in one original-catalogue registry.
+  static final List<String> _salons = RvSalonCatalogue.salons
+      .map((salon) => salon.name).toList(growable: false);
+  static final List<String> _photos = RvSalonCatalogue.salons
+      .map((salon) => salon.coverAsset).toList(growable: false);
 
   void _showFullPhoto(BuildContext context, String title, String asset) {
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => Scaffold(
