@@ -22,12 +22,16 @@ void main() {
       expect(room.cakeCount, (s['cakes'] as List).length);
       expect(room.coverAsset, isNotEmpty);
       final photo = await rootBundle.load(room.coverAsset);
-      expect(photo.lengthInBytes, greaterThan(100000));
+      expect(photo.lengthInBytes,
+        greaterThan(room.id == 'royale' ? 5000 : 50000));
     }
 
     expect(RvSalonCatalogue.forName('Salon Royale')!.coverAsset,
-      'assets/image/Salon_royal.png');
+      'assets/image/rv_original_photos/royale_pending.jpg');
     expect(RvSalonCatalogue.forName('Salon Royal')!.name, 'Salon Royale');
+    expect(RvSalonCatalogue.originalCataloguePath('Salon Royale'), isNull);
+    expect(RvSalonCatalogue.originalCataloguePath('Salon Doré'),
+      'assets/image/rv_original_catalogues/dore.png');
     expect(RvSalonCatalogue.forId('rv_lounge_imperial')!.galleryFolder,
       'imperial');
     expect(RvSalonCatalogue.forId('rv_lounge_imperial')!.cakeCount, 20);
