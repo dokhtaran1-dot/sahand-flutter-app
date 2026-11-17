@@ -35,6 +35,7 @@ flutter:
     - assets/rs/
     - assets/rs/fonts/
     - assets/image/
+    - assets/rv/royal_village_gallery.json
     - assets/images/1.png
     - assets/image/jd_signature/
     - assets/image/rv_upload/
