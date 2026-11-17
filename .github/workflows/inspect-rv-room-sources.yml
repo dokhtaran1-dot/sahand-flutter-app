@@ -1,0 +1,41 @@
+name: Inspect alternate Royal Village original room artwork
+on:
+  push:
+    branches: [feature/royal-one-online-rv-rc-media]
+    paths: ['.github/workflows/inspect-rv-room-sources.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create limited-size previews of historical art for visual verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin final-screen-assets
+          python3 -m pip install --quiet --break-system-packages pillow
+          python3 - <<'PY'
+          import subprocess, io, base64, json
+          from PIL import Image
+          photos=['salon_lumiere.png','salon_noir.png','salon_jardin.png','salon_prive.png',
+                  'rv_lounge_imperial_classique.png','salon_dore.png','salon_ame_du_poete.png',
+                  'salon_de_lame.png','Salons.png','royal_village.png']
+          for name in photos:
+              path='assets/image/'+name
+              try:
+                  data=subprocess.check_output(['git','show','FETCH_HEAD:'+path],stderr=subprocess.DEVNULL)
+                  im=Image.open(io.BytesIO(data)).convert('RGB')
+                  im.thumbnail((360,360))
+                  out=io.BytesIO()
+                  im.save(out,format='JPEG',quality=50,optimize=True)
+                  encoded=base64.b64encode(out.getvalue()).decode('ascii')
+                  print('ROOM_PREVIEW '+json.dumps({'file':name,'original_size':len(data),'width':im.width,'height':im.height,'b64':encoded},separators=(',',':')),flush=True)
+              except Exception as e:
+                  print('ROOM_PREVIEW_ERROR '+name+': '+str(e),flush=True)
+          PY
