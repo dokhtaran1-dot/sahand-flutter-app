@@ -126,7 +126,6 @@ class _SalonImageViewerState extends State<_SalonImageViewer> {
             width: MediaQuery.sizeOf(context).width * .92,
             height: MediaQuery.sizeOf(context).height * .57,
             child: RvSalonInteriorImage(asset: widget.salons[i].image)))),
-        ),
       )),
       SafeArea(top: false, child: Padding(
         padding: const EdgeInsets.fromLTRB(17, 8, 17, 22),
