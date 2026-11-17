@@ -1,0 +1,307 @@
+{
+  "app": {
+    "name": "Royal Village",
+    "version": 1,
+    "cdnBaseUrl": "https://YOUR-CDN-DOMAIN.com/royal-village"
+  },
+  "salons": [
+    {
+      "id": "dore",
+      "name": "Salon Doré",
+      "coverAsset": "assets/image/salon_dore.png",
+      "designs": [
+        "salons/dore/designs/01.webp",
+        "salons/dore/designs/02.webp",
+        "salons/dore/designs/03.webp",
+        "salons/dore/designs/04.webp",
+        "salons/dore/designs/05.webp",
+        "salons/dore/designs/06.webp",
+        "salons/dore/designs/07.webp",
+        "salons/dore/designs/08.webp",
+        "salons/dore/designs/09.webp",
+        "salons/dore/designs/10.webp"
+      ],
+      "cakes": [
+        "salons/dore/cakes/01.webp",
+        "salons/dore/cakes/02.webp",
+        "salons/dore/cakes/03.webp",
+        "salons/dore/cakes/04.webp",
+        "salons/dore/cakes/05.webp",
+        "salons/dore/cakes/06.webp",
+        "salons/dore/cakes/07.webp",
+        "salons/dore/cakes/08.webp",
+        "salons/dore/cakes/09.webp",
+        "salons/dore/cakes/10.webp"
+      ]
+    },
+    {
+      "id": "jardin",
+      "name": "Salon Jardin",
+      "coverAsset": "assets/image/salon_jardin.png",
+      "designs": [
+        "salons/jardin/designs/01.webp",
+        "salons/jardin/designs/02.webp",
+        "salons/jardin/designs/03.webp",
+        "salons/jardin/designs/04.webp",
+        "salons/jardin/designs/05.webp",
+        "salons/jardin/designs/06.webp",
+        "salons/jardin/designs/07.webp",
+        "salons/jardin/designs/08.webp",
+        "salons/jardin/designs/09.webp",
+        "salons/jardin/designs/10.webp"
+      ],
+      "cakes": [
+        "salons/jardin/cakes/01.webp",
+        "salons/jardin/cakes/02.webp",
+        "salons/jardin/cakes/03.webp",
+        "salons/jardin/cakes/04.webp",
+        "salons/jardin/cakes/05.webp",
+        "salons/jardin/cakes/06.webp",
+        "salons/jardin/cakes/07.webp",
+        "salons/jardin/cakes/08.webp",
+        "salons/jardin/cakes/09.webp",
+        "salons/jardin/cakes/10.webp"
+      ]
+    },
+    {
+      "id": "lumiere",
+      "name": "Salon Lumière",
+      "coverAsset": "assets/image/salon_lumiere.png",
+      "designs": [
+        "salons/lumiere/designs/01.webp",
+        "salons/lumiere/designs/02.webp",
+        "salons/lumiere/designs/03.webp",
+        "salons/lumiere/designs/04.webp",
+        "salons/lumiere/designs/05.webp",
+        "salons/lumiere/designs/06.webp",
+        "salons/lumiere/designs/07.webp",
+        "salons/lumiere/designs/08.webp",
+        "salons/lumiere/designs/09.webp",
+        "salons/lumiere/designs/10.webp"
+      ],
+      "cakes": [
+        "salons/lumiere/cakes/01.webp",
+        "salons/lumiere/cakes/02.webp",
+        "salons/lumiere/cakes/03.webp",
+        "salons/lumiere/cakes/04.webp",
+        "salons/lumiere/cakes/05.webp",
+        "salons/lumiere/cakes/06.webp",
+        "salons/lumiere/cakes/07.webp",
+        "salons/lumiere/cakes/08.webp",
+        "salons/lumiere/cakes/09.webp",
+        "salons/lumiere/cakes/10.webp"
+      ]
+    },
+    {
+      "id": "royale",
+      "name": "Salon Royale",
+      "coverAsset": "assets/image/salon_royale.png",
+      "designs": [
+        "salons/royale/designs/01.webp",
+        "salons/royale/designs/02.webp",
+        "salons/royale/designs/03.webp",
+        "salons/royale/designs/04.webp",
+        "salons/royale/designs/05.webp",
+        "salons/royale/designs/06.webp",
+        "salons/royale/designs/07.webp",
+        "salons/royale/designs/08.webp",
+        "salons/royale/designs/09.webp",
+        "salons/royale/designs/10.webp"
+      ],
+      "cakes": [
+        "salons/royale/cakes/01.webp",
+        "salons/royale/cakes/02.webp",
+        "salons/royale/cakes/03.webp",
+        "salons/royale/cakes/04.webp",
+        "salons/royale/cakes/05.webp",
+        "salons/royale/cakes/06.webp",
+        "salons/royale/cakes/07.webp",
+        "salons/royale/cakes/08.webp",
+        "salons/royale/cakes/09.webp",
+        "salons/royale/cakes/10.webp"
+      ]
+    },
+    {
+      "id": "noir",
+      "name": "Salon Noir",
+      "coverAsset": "assets/image/salon_noir.png",
+      "designs": [
+        "salons/noir/designs/01.webp",
+        "salons/noir/designs/02.webp",
+        "salons/noir/designs/03.webp",
+        "salons/noir/designs/04.webp",
+        "salons/noir/designs/05.webp",
+        "salons/noir/designs/06.webp",
+        "salons/noir/designs/07.webp",
+        "salons/noir/designs/08.webp",
+        "salons/noir/designs/09.webp",
+        "salons/noir/designs/10.webp"
+      ],
+      "cakes": [
+        "salons/noir/cakes/01.webp",
+        "salons/noir/cakes/02.webp",
+        "salons/noir/cakes/03.webp",
+        "salons/noir/cakes/04.webp",
+        "salons/noir/cakes/05.webp",
+        "salons/noir/cakes/06.webp",
+        "salons/noir/cakes/07.webp",
+        "salons/noir/cakes/08.webp",
+        "salons/noir/cakes/09.webp",
+        "salons/noir/cakes/10.webp"
+      ]
+    },
+    {
+      "id": "ame_du_poete",
+      "name": "Salon Âme du Poète",
+      "coverAsset": "assets/image/salon_ame_du_poete.png",
+      "designs": [
+        "salons/ame_du_poete/designs/01.webp",
+        "salons/ame_du_poete/designs/02.webp",
+        "salons/ame_du_poete/designs/03.webp",
+        "salons/ame_du_poete/designs/04.webp",
+        "salons/ame_du_poete/designs/05.webp",
+        "salons/ame_du_poete/designs/06.webp",
+        "salons/ame_du_poete/designs/07.webp",
+        "salons/ame_du_poete/designs/08.webp",
+        "salons/ame_du_poete/designs/09.webp",
+        "salons/ame_du_poete/designs/10.webp"
+      ],
+      "cakes": [
+        "salons/ame_du_poete/cakes/01.webp",
+        "salons/ame_du_poete/cakes/02.webp",
+        "salons/ame_du_poete/cakes/03.webp",
+        "salons/ame_du_poete/cakes/04.webp",
+        "salons/ame_du_poete/cakes/05.webp",
+        "salons/ame_du_poete/cakes/06.webp",
+        "salons/ame_du_poete/cakes/07.webp",
+        "salons/ame_du_poete/cakes/08.webp",
+        "salons/ame_du_poete/cakes/09.webp",
+        "salons/ame_du_poete/cakes/10.webp"
+      ]
+    },
+    {
+      "id": "prive",
+      "name": "Salon Privé",
+      "coverAsset": "assets/image/salon_prive.png",
+      "designs": [
+        "salons/prive/designs/01.webp",
+        "salons/prive/designs/02.webp",
+        "salons/prive/designs/03.webp",
+        "salons/prive/designs/04.webp",
+        "salons/prive/designs/05.webp",
+        "salons/prive/designs/06.webp",
+        "salons/prive/designs/07.webp",
+        "salons/prive/designs/08.webp",
+        "salons/prive/designs/09.webp",
+        "salons/prive/designs/10.webp"
+      ],
+      "cakes": [
+        "salons/prive/cakes/01.webp",
+        "salons/prive/cakes/02.webp",
+        "salons/prive/cakes/03.webp",
+        "salons/prive/cakes/04.webp",
+        "salons/prive/cakes/05.webp",
+        "salons/prive/cakes/06.webp",
+        "salons/prive/cakes/07.webp",
+        "salons/prive/cakes/08.webp",
+        "salons/prive/cakes/09.webp",
+        "salons/prive/cakes/10.webp"
+      ]
+    },
+    {
+      "id": "rv_lounge_imperial",
+      "name": "RV Lounge Impérial Classique",
+      "coverAsset": "assets/image/rv_lounge_imperial_classique.png",
+      "designs": [
+        "salons/rv_lounge_imperial/designs/01.webp",
+        "salons/rv_lounge_imperial/designs/02.webp",
+        "salons/rv_lounge_imperial/designs/03.webp",
+        "salons/rv_lounge_imperial/designs/04.webp",
+        "salons/rv_lounge_imperial/designs/05.webp",
+        "salons/rv_lounge_imperial/designs/06.webp",
+        "salons/rv_lounge_imperial/designs/07.webp",
+        "salons/rv_lounge_imperial/designs/08.webp",
+        "salons/rv_lounge_imperial/designs/09.webp",
+        "salons/rv_lounge_imperial/designs/10.webp"
+      ],
+      "cakes": [
+        "salons/rv_lounge_imperial/cakes/01.webp",
+        "salons/rv_lounge_imperial/cakes/02.webp",
+        "salons/rv_lounge_imperial/cakes/03.webp",
+        "salons/rv_lounge_imperial/cakes/04.webp",
+        "salons/rv_lounge_imperial/cakes/05.webp",
+        "salons/rv_lounge_imperial/cakes/06.webp",
+        "salons/rv_lounge_imperial/cakes/07.webp",
+        "salons/rv_lounge_imperial/cakes/08.webp",
+        "salons/rv_lounge_imperial/cakes/09.webp",
+        "salons/rv_lounge_imperial/cakes/10.webp",
+        "salons/rv_lounge_imperial/cakes/11.webp",
+        "salons/rv_lounge_imperial/cakes/12.webp",
+        "salons/rv_lounge_imperial/cakes/13.webp",
+        "salons/rv_lounge_imperial/cakes/14.webp",
+        "salons/rv_lounge_imperial/cakes/15.webp",
+        "salons/rv_lounge_imperial/cakes/16.webp",
+        "salons/rv_lounge_imperial/cakes/17.webp",
+        "salons/rv_lounge_imperial/cakes/18.webp",
+        "salons/rv_lounge_imperial/cakes/19.webp",
+        "salons/rv_lounge_imperial/cakes/20.webp"
+      ],
+      "doubleVip": {
+        "included": true,
+        "pricingPerHourToman": {
+          "2": 50000000,
+          "3": 57000000,
+          "4": 64000000,
+          "5": 71000000,
+          "6": 78000000,
+          "7": 85000000,
+          "8": 92000000,
+          "9": 99000000,
+          "10": 106000000
+        }
+      }
+    }
+  ],
+  "extras": {
+    "hookah": {
+      "enabled": true,
+      "items": []
+    },
+    "fruit": {
+      "enabled": true,
+      "items": []
+    },
+    "desserts": {
+      "enabled": true,
+      "items": []
+    },
+    "coldDrinks": {
+      "enabled": true,
+      "items": []
+    },
+    "hotDrinks": {
+      "enabled": true,
+      "items": []
+    },
+    "fingerFood": {
+      "enabled": true,
+      "items": []
+    },
+    "mainFood": {
+      "enabled": true,
+      "items": []
+    },
+    "flowers": {
+      "enabled": true,
+      "items": []
+    },
+    "candles": {
+      "enabled": true,
+      "items": []
+    },
+    "photography": {
+      "enabled": true,
+      "items": []
+    }
+  }
+}
