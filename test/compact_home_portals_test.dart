@@ -55,7 +55,8 @@ void main() {
     await tester.tap(sc);
     await tester.pumpAndSettle();
     expect(find.byType(HeritagePage), findsOneWidget);
-    await tester.pageBack();
+    // Heritage is a full-screen approved poster with no native back chevron.
+    Navigator.of(tester.element(find.byType(HeritagePage))).pop();
     await tester.pumpAndSettle();
     final rv = find.byWidgetPredicate((w) =>
         w is Semantics && w.properties.label ==
