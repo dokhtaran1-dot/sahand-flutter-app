@@ -1,0 +1,207 @@
+name: Royal One My Profile v1.0.40 (isolated APK)
+on:
+  push:
+    branches:
+      - feature/royal-one-online-rv-rc-media
+    paths:
+      - '.github/workflows/online-rv-media-preview.yml'
+      - 'lib/**'
+      - 'test/**'
+      - 'assets/**'
+      - 'pubspec.yaml'
+
+  workflow_dispatch:
+
+concurrency:
+  group: royal-one-my-profile-preview
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build-rv-online-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+      - name: Install official launcher icons for adaptive Android resources
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s tooling/royal1_icon_round.png
+          for dir in \
+            android/app/src/main/res/mipmap-mdpi \
+            android/app/src/main/res/mipmap-hdpi \
+            android/app/src/main/res/mipmap-xhdpi \
+            android/app/src/main/res/mipmap-xxhdpi \
+            android/app/src/main/res/mipmap-xxxhdpi; do
+            mkdir -p "$dir"
+            rm -f "$dir/ic_launcher.jpg" "$dir/ic_launcher.png" "$dir/ic_launcher_round.png" "$dir/ic_launcher_foreground.png"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher.png"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher_round.png"
+            cp tooling/royal1_icon_round.png "$dir/ic_launcher_foreground.png"
+          done
+      - name: Restore original approved RV artwork archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -s assets/image/Royal_Village_App_Upload.zip ]; then
+            git fetch --no-tags --depth=1 origin ac94557573e15519e35b3b5f7b99388bb2553bed
+            git show ac94557573e15519e35b3b5f7b99388bb2553bed:assets/image/Royal_Village_App_Upload.zip > assets/image/Royal_Village_App_Upload.zip
+          fi
+          unzip -tq assets/image/Royal_Village_App_Upload.zip
+          mkdir -p assets/image/rv_upload
+          unzip -o assets/image/Royal_Village_App_Upload.zip -d assets/image/rv_upload
+          unzip -tq assets/image/RV_salon_galleries_ready.zip
+          unzip -o assets/image/RV_salon_galleries_ready.zip -d .
+          unzip -tq assets/image/RV_8_final_imperial_ultra.zip
+          unzip -o assets/image/RV_8_final_imperial_ultra.zip -d .
+          test -s assets/image/booking_posters/noir.png
+          test -s assets/image/booking_posters/prive.png
+          test -s assets/image/Salon_noir.png
+          test -s assets/image/Salon_prive.png
+          test -s assets/image/royal_one_home_final_cropped.jpg
+          test -s assets/image/royal_one_sc_rotating.png
+          test -s assets/rs/index.html
+          test -s assets/re/index.html
+          grep -F 'data:image/webp;base64,' assets/re/index.html
+      - name: Isolate preview app without replacing installed Royal One
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          gradle=Path('android/app/build.gradle.kts')
+          content=gradle.read_text()
+          old='        release {\n'
+          if content.count(old)!=1:
+              raise SystemExit('Unexpected Android release signing configuration')
+          gradle.write_text(content.replace(old,old+'            applicationIdSuffix = ".myprofilepreview40"\n'))
+          manifest=Path('android/app/src/main/AndroidManifest.xml')
+          content=manifest.read_text()
+          if 'android:label="ROYAL 1"' not in content:
+              raise SystemExit('Unexpected launcher label')
+          manifest.write_text(content.replace('android:label="ROYAL 1"','android:label="ROYAL ONE VIP v1.0.40"'))
+          PY
+      - name: Rebuild approved second page image
+        run: |
+          python3 - <<'PY'
+          import base64, pathlib, re
+          root=pathlib.Path('.')
+          parts=[]
+          for i in range(1,14):
+              file=root/f'lib/src/page2_data_{i}.dart'
+              m=re.search(r"=\s*'([^']*)';",file.read_text(),re.S)
+              if not m:
+                  raise SystemExit(f'Could not recover approved image chunk: {file}')
+              parts.append(m.group(1))
+          out=root/'assets/image/royal1_page2_final.jpg'
+          raw=base64.b64decode(''.join(parts),validate=True)
+          if not(raw.startswith(b'\xff\xd8') and raw.endswith(b'\xff\xd9')):
+              raise SystemExit('Approved second page is not a full JPEG')
+          out.write_bytes(raw)
+          PY
+      - name: Install Flutter packages
+        run: flutter pub get
+      - name: Patch optional app_links compileSdk version if installed
+        shell: bash
+        run: |
+          plugin_gradle="$HOME/.pub-cache/hosted/pub.dev/app_links-6.4.1/android/build.gradle"
+          if [ -f "$plugin_gradle" ]; then
+            sed -i 's/flutter\.compileSdkVersion/35/g; s/flutter\.minSdkVersion/23/g' "$plugin_gradle"
+          fi
+      - name: Verify heritage UI is analyzable
+        run: |
+          flutter analyze --no-pub --no-fatal-infos --no-fatal-warnings lib/src/heritage_page.dart lib/src/home_page.dart lib/src/royal_one_my_profile_page.dart lib/src/ettehad_page.dart lib/src/reservation_page.dart lib/src/reservation_store.dart lib/src/my_reservations_page.dart lib/src/rv_online_booking_service.dart lib/src/rv_online_requests_page.dart lib/src/royal_club_membership_page.dart lib/src/rv_media_page.dart lib/src/royal_village_entry_page.dart lib/src/rv_gallery_page.dart lib/src/photo_orbit.dart lib/src/royal_explore_page.dart lib/src/salon_detail_page.dart lib/src/rv_salon_interior_image.dart
+          test -s assets/re/index.html
+          test -s assets/heritage/founder_original.jpg
+          test -s assets/heritage/philosophy_book.html
+          test -s assets/heritage/royal_heritage_approved_poster.png
+      - name: Test 10 branches 4 languages and 5 footer actions
+        run: flutter test test/heritage_poster_interactions_test.dart test/compact_home_portals_test.dart test/ettehad_button_actions_test.dart test/re_minisite_asset_test.dart test/rv_online_flow_test.dart test/rv_room_photo_assets_test.dart test/rv_original_manifest_test.dart test/royal_navigation_test.dart test/royal_one_my_profile_test.dart
+      - name: Verify all eight VIP room images replace poster-model crops
+        run: |
+          set -euo pipefail
+          for photo in \
+            Salon_lumiere.png Salon_noir.png salon_jardin.png Salon_prive.png \
+            rv_lounge_imperial_classique.png salon_dore.png \
+            salon_ame_du_poete.png Salon_royal.png; do
+            test -s "assets/image/$photo"
+          done
+          # The original interior images were restored from the earlier
+          # royalty catalogues, NOT the newer promotional posters with people.
+          for room in lumiere noir jardin prive rv_lounge_imperial dore ame_du_poete; do
+            test -s "assets/image/rv_original_photos/${room}.jpg"
+            test -s "assets/image/rv_original_catalogues/${room}.png"
+          done
+          test -s assets/image/rv_original_photos/royale.jpg
+          grep -F "RvSalonInteriorImage(asset: widget.images[i])" lib/src/photo_orbit.dart
+          grep -F "PhotoOrbit(images: _photos" lib/src/royal_village_entry_page.dart
+          grep -F "RvSalonInteriorImage(asset: item.image)" lib/src/rv_gallery_page.dart
+          grep -F "RvSalonInteriorImage(asset: imagePath)" lib/src/salon_detail_page.dart
+          for key in dore prive noir royal lumiere jardin ame_du_poete imperial; do
+            for n in 01 02 03 04 05 06 07 08 09 10; do
+              test -s "assets/image/salon_gallery/${key}/design_${n}.webp"
+              test -s "assets/image/salon_gallery/${key}/cake_${n}.webp"
+            done
+          done
+          # Only the FIRST ten cakes exist as individually extracted files;
+          # the complete original catalogue shows 20 and is navigable in-app.
+          grep -F "itemCount: _cakeCount" lib/src/salon_detail_page.dart
+          test -s assets/rv/royal_village_gallery.json
+          grep -F "Salon Royale" assets/rv/royal_village_gallery.json
+          ! grep -F "assets/image/booking_posters/" lib/src/rv_gallery_page.dart
+          ! grep -F "assets/image/booking_posters/" lib/src/royal_village_entry_page.dart
+      - name: Build isolated ARM64 preview APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter build apk --release --split-per-abi --build-name 1.0.40 --build-number 40 \
+            --dart-define=ROYAL_CLUB_BACKEND_READY=true \
+            --dart-define=SUPABASE_URL=https://jwddfcsikkialxzbrhle.supabase.co \
+            --dart-define=SUPABASE_ANON_KEY=sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ROYAL_ONE_MY_PROFILE_v1.0.40_ARM64.apk
+          test -s ROYAL_ONE_MY_PROFILE_v1.0.40_ARM64.apk
+          sha256sum ROYAL_ONE_MY_PROFILE_v1.0.40_ARM64.apk
+      - name: Upload verified preview artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ROYAL_ONE_MY_PROFILE_v1.0.40_ARM64
+          path: ROYAL_ONE_MY_PROFILE_v1.0.40_ARM64.apk
+          compression-level: 0
+      - name: Publish prerelease (not production)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > release_notes.md <<'NOTES'
+          ISOLATED TEST BUILD — NOT PUBLIC PRODUCTION.
+          Seven room photos were restored from the original historical Royal Village image catalogues.
+          Salon Royale uses the separately labelled prior Royal room visual from the user's asset Library.
+          All eight photo previews show interior spaces instead of advertising models. Photos appear
+          uncropped in portals, cards and detail pages. The seven original birthday/cake posters
+          remain separately accessible. Salon Doré has 10 cakes; only the Imperial Lounge has 20
+          numbered cake models. The published consumer app remains unchanged.
+          The Royal One My Profile second page now uses emerald-and-gold styling with two
+          intentionally empty approved photo slots and internal navigation to Heritage,
+          Royal Club account and Explore. This is not a public production release.
+          NOTES
+          tag='royal-one-my-profile-v1.0.40'
+          apk='ROYAL_ONE_MY_PROFILE_v1.0.40_ARM64.apk'
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" "$apk" --clobber
+          else
+            gh release create "$tag" "$apk" \
+              --target "$GITHUB_SHA" \
+              --title 'ROYAL ONE v1.0.40 — My Profile preview + RV/RC features' \
+              --notes-file release_notes.md \
+              --prerelease
+          fi

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'rv_booking_poster_page.dart';
-import 'salon_preview_image.dart';
+import 'salon_detail_page.dart';
+import 'rv_salon_interior_image.dart';
+import 'data/rv_salon_catalogue.dart';
 
 /// Eight approved private salons, in the user's confirmed Royal One order.
 class RvGalleryPage extends StatelessWidget {
@@ -9,16 +10,10 @@ class RvGalleryPage extends StatelessWidget {
   static const Color _bg = Color(0xFF04140F);
   static const Color _gold = Color(0xFFD6B15E);
 
-  static const List<({String name, String image})> _salons = [
-    (name: 'Salon Lumière', image: 'assets/image/booking_posters/lumiere.png'),
-    (name: 'Salon Noir', image: 'assets/image/booking_posters/noir.png'),
-    (name: 'Salon Jardin', image: 'assets/image/booking_posters/jardin.png'),
-    (name: 'Salon Privé', image: 'assets/image/booking_posters/prive.png'),
-    (name: 'RV Lounge Impérial Classique', image: 'assets/image/booking_posters/imperial.png'),
-    (name: 'Salon Doré', image: 'assets/image/booking_posters/dore.png'),
-    (name: 'Salon Âme du Poète', image: 'assets/image/booking_posters/ame_du_poete.png'),
-    (name: 'Salon Royal', image: 'assets/image/booking_posters/royal.png'),
-  ];
+  static final List<({String name, String image})> _salons =
+      RvSalonCatalogue.salons
+          .map((salon) => (name: salon.name, image: salon.coverAsset))
+          .toList(growable: false);
 
   static void _open(BuildContext context, int index) {
     Navigator.of(context).push(MaterialPageRoute(
@@ -68,14 +63,14 @@ class RvGalleryPage extends StatelessWidget {
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(onTap: () => _open(context, i),
                   child: Stack(fit: StackFit.expand, children: [
-                    SalonPreviewImage(asset: item.image),
+                    RvSalonInteriorImage(asset: item.image),
                     const DecoratedBox(decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter, end: Alignment.bottomCenter,
                         stops: [0, .52, 1],
                         colors: [Colors.transparent, Color(0x11000000), Color(0xE6000000)]))),
                     Positioned(left: 10, right: 10, bottom: 15,
-                      child: Column(children: [
+                      child: Column(mainAxisSize: MainAxisSize.min, children: [
                         Text(item.name, textAlign: TextAlign.center,
                           style: const TextStyle(color: Colors.white,
                             fontWeight: FontWeight.w800, fontSize: 14)),
@@ -109,7 +104,7 @@ class _SalonImageViewerState extends State<_SalonImageViewer> {
 
   void book() {
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => RvBookingPosterPage(salonName: widget.salons[index].name),
+      builder: (_) => SalonDetailPage(salonName: widget.salons[index].name),
     ));
   }
 
@@ -130,8 +125,7 @@ class _SalonImageViewerState extends State<_SalonImageViewer> {
           child: Center(child: SizedBox(
             width: MediaQuery.sizeOf(context).width * .92,
             height: MediaQuery.sizeOf(context).height * .57,
-            child: SalonPreviewImage(asset: widget.salons[i].image))),
-        ),
+            child: RvSalonInteriorImage(asset: widget.salons[i].image)))),
       )),
       SafeArea(top: false, child: Padding(
         padding: const EdgeInsets.fromLTRB(17, 8, 17, 22),

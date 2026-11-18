@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'reservation_page.dart';
+import 'rv_salon_interior_image.dart';
+import 'data/rv_salon_catalogue.dart';
 
 class SalonDetailPage extends StatefulWidget {
   final String salonName;
@@ -35,22 +37,9 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
     'Salon Âme du Poète': ['Poème d’Amour – Piano', 'Rose de Paris – Violin', 'Rêve du Poète – Lounge'],
     'Salon Jardin': ['Jardin de Rêve – Piano', 'Fleurs de Paris – Violin', 'Matin au Jardin – Lounge'],
     'Salon Lumière': ['Lumière Blanche – Piano', 'Venise Éternelle – Violin', 'Clair de Lumière – Lounge'],
-    'Salon Royal': ['Couronne Royale – Piano', 'Majesté – Violin', 'Royal Signature – Lounge'],
+    'Salon Royale': ['Couronne Royale – Piano', 'Majesté – Violin', 'Royal Signature – Lounge'],
     'RV Lounge Impérial Classique': ['Impérial Classique – Piano', 'Prestige – Violin', 'Royal Night – Lounge'],
     'Grand Salon': ['Grand Élégance – Piano', 'La Cérémonie – Violin', 'Royal Evening – Lounge'],
-  };
-
-  final Map<String, String> salonImages = {
-    'Salon Lumière': 'assets/image/Salon_lumiere.png',
-    'Salon Noir': 'assets/image/Salon_noir.png',
-    'Salon Jardin': 'assets/image/salon_jardin.png',
-    'Salon Privé': 'assets/image/Salon_prive.png',
-    'RV Lounge Impérial Classique':
-        'assets/image/rv_lounge_imperial_classique.png',
-    'Salon Doré': 'assets/image/salon_dore.png',
-    'Salon Âme du Poète': 'assets/image/salon_ame_du_poete.png',
-    'Salon Royal': 'assets/image/Salon_royal.png',
-    'Grand Salon': 'assets/image/Rv_page2.png',
   };
 
   final Map<String, String> salonDescriptions = {
@@ -68,13 +57,19 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
         'ترکیب طراحی مدرن و فضای طلایی برای یک مراسم لوکس.',
     'Salon Âme du Poète':
         'فضایی شاعرانه، نوستالژیک و متفاوت با شخصیت هنری.',
-    'Salon Royal':
+    'Salon Royale':
         'فضای کلاسیک و سلطنتی برای پذیرایی‌ها و مراسم رسمی.',
   };
 
   String get imagePath =>
-      salonImages[widget.salonName] ??
+      RvSalonCatalogue.forName(widget.salonName)?.coverAsset ??
       'assets/image/Rv_page2.png';
+
+  int get _cakeCount =>
+      RvSalonCatalogue.forName(widget.salonName)?.cakeCount ?? 10;
+
+  int get _designCount =>
+      RvSalonCatalogue.forName(widget.salonName)?.designCount ?? 10;
 
   String get description =>
       salonDescriptions[widget.salonName] ??
@@ -110,36 +105,17 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
     }
   }
 
-  static const Map<String, String> galleryFolders = {
-    'Salon Doré': 'dore',
-    'Salon Privé': 'prive',
-    'Salon Âme du Poète': 'ame_du_poete',
-    'Salon Noir': 'noir',
-    'Salon Royal': 'royal',
-    'Salon Lumière': 'lumiere',
-    'Salon Jardin': 'jardin',
-    'RV Lounge Impérial Classique': 'imperial',
-  };
-
   Future<List<String>> _uploadedImages(String kind) async {
-    const keys = {
-      'Salon Doré': 'dore',
-      'Salon Privé': 'prive',
-      'Salon Noir': 'noir',
-      'Salon Royal': 'royal',
-      'Salon Lumière': 'lumiere',
-      'Salon Jardin': 'jardin',
-      'Salon Âme du Poète': 'ame_du_poete',
-      'RV Lounge Impérial Classique': 'imperial',
-    };
-    final key = keys[widget.salonName];
-    if (key == null) return const [];
+    final salon = RvSalonCatalogue.forName(widget.salonName);
+    if (salon == null) return const [];
+    final key = salon.galleryFolder;
     final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
     final prefix = 'assets/image/salon_gallery/$key/${kind}_';
     final images = manifest.listAssets()
         .where((path) => path.startsWith(prefix) && path.endsWith('.webp'))
         .toList()..sort();
-    return images.take(10).toList();
+    // Model counts are taken from the user's original eight-salon manifest.
+    return images.take(kind == 'cake' ? _cakeCount : _designCount).toList();
   }
 
   void _showUploadedGallery({required String kind}) {
@@ -159,7 +135,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
             child: Column(
               children: [
                 Text(
-                  isCake ? '۱۰ کیک اختصاصی' : '۱۰ دیزاین اختصاصی',
+                  isCake ? '$_cakeCount مدل کیک اختصاصی' : '$_designCount دیزاین تولد اختصاصی',
                   style: const TextStyle(
                     color: gold2,
                     fontSize: 21,
@@ -170,6 +146,15 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
                 Text(widget.salonName,
                     style: const TextStyle(color: Colors.white54)),
                 const SizedBox(height: 14),
+                if (isCake && _cakeCount > 10) const Padding(
+                  padding: EdgeInsets.fromLTRB(4, 0, 4, 9),
+                  child: Text(
+                    '۱۰ عکس کیک جداگانه موجود است؛ ۲۰ مدل در کاتالوگ اصلی سالن دیده می‌شوند.',
+                    textAlign: TextAlign.center,
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                  ),
+                ),
                 Expanded(
                   child: FutureBuilder<List<String>>(
                     future: _uploadedImages(kind),
@@ -256,12 +241,107 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
                     },
                   ),
                 ),
+                if (isCake && _cakeCount > 10) TextButton.icon(
+                  onPressed: () {
+                    Navigator.of(sheetContext).pop();
+                    showOriginalCatalogue();
+                  },
+                  icon: const Icon(Icons.collections_bookmark_outlined),
+                  label: const Text('دیدن ۲۰ مدل و انتخاب از کاتالوگ کامل'),
+                ),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  /// Only the Imperial Lounge has 20 numbered cake models in the supplied
+  /// source manifest. For the other seven salons the catalogue declares ten.
+  /// This does not invent remote images for models not bundled locally.
+  Future<void> chooseCakeNumber(BuildContext catalogueContext) async {
+    final choice = await showModalBottomSheet<int>(
+      context: catalogueContext,
+      backgroundColor: panel,
+      isScrollControlled: true,
+      builder: (sheet) => SafeArea(child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Text('شماره مدل کیک را از کاتالوگ اصلی انتخاب کنید',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: gold2, fontSize: 18)),
+          const SizedBox(height: 12),
+          SizedBox(height: 276,
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 5, crossAxisSpacing: 8, mainAxisSpacing: 8),
+              itemCount: _cakeCount,
+              itemBuilder: (_, index) => OutlinedButton(
+                onPressed: () => Navigator.of(sheet).pop(index + 1),
+                style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  foregroundColor: gold2,
+                  side: BorderSide(
+                    color: selectedCake == index + 1 ? gold2 : gold),
+                ),
+                child: Text('${index + 1}'),
+              ),
+            ),
+          ),
+        ]),
+      )),
+    );
+    if (!mounted || choice == null) return;
+    setState(() => selectedCake = choice);
+    if (catalogueContext.mounted) Navigator.of(catalogueContext).pop();
+  }
+
+  /// View the ORIGINAL complete room, birthday designs and cake sheet,
+  /// preserving the poster even when not every cake has an individual file.
+  void showOriginalCatalogue() {
+    final cataloguePath =
+        RvSalonCatalogue.originalCataloguePath(widget.salonName);
+    if (cataloguePath == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('تصویر اصلی Salon Royale هنوز تأیید نشده است.'),
+      ));
+      return;
+    }
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (catalogueContext) => Scaffold(
+        backgroundColor: bg,
+        appBar: AppBar(
+          backgroundColor: bg, foregroundColor: gold2,
+          title: Text(widget.salonName, textDirection: TextDirection.ltr),
+        ),
+        body: SafeArea(child: Column(children: [
+          const Padding(
+            padding: EdgeInsets.fromLTRB(18, 12, 18, 8),
+            child: Text('کاتالوگ اصلی سالن | عکس اتاق، دیزاین تولد و کیک',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: gold2, fontSize: 14)),
+          ),
+          Expanded(child: InteractiveViewer(
+            minScale: 1, maxScale: 5,
+            child: Center(child: Image.asset(
+              cataloguePath, fit: BoxFit.contain,
+              filterQuality: FilterQuality.high)),
+          )),
+          SafeArea(top: false, child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: SizedBox(width: double.infinity, child: FilledButton.icon(
+              key: const ValueKey('rv-select-cake-from-catalogue'),
+              style: FilledButton.styleFrom(
+                backgroundColor: gold2, foregroundColor: bg),
+              onPressed: () => chooseCakeNumber(catalogueContext),
+              icon: const Icon(Icons.cake_outlined),
+              label: Text('انتخاب شماره کیک از $_cakeCount مدل کاتالوگ'),
+            )),
+          )),
+        ])),
+      ),
+    ));
   }
 
   void showDesigns() => _showUploadedGallery(kind: 'design');
@@ -329,25 +409,8 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
               borderRadius: BorderRadius.circular(26),
               child: Stack(
                 children: [
-                  Image.asset(
-                    imagePath,
-                    width: double.infinity,
-                    height: 270,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) {
-                      return Container(
-                        height: 270,
-                        color: panel,
-                        child: const Center(
-                          child: Icon(
-                            Icons.meeting_room_outlined,
-                            color: gold,
-                            size: 70,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                  SizedBox(height: 270,
+                    child: RvSalonInteriorImage(asset: imagePath)),
                   Positioned.fill(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
@@ -388,6 +451,20 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
               ),
             ),
 
+            const SizedBox(height: 13),
+            OutlinedButton.icon(
+              key: const ValueKey('rv-original-room-catalogue'),
+              onPressed: RvSalonCatalogue.originalCataloguePath(widget.salonName) == null
+                  ? null : showOriginalCatalogue,
+              icon: const Icon(Icons.collections_bookmark_outlined),
+              label: Text(RvSalonCatalogue.originalCataloguePath(widget.salonName) == null
+                  ? 'عکس اصلی Salon Royale در انتظار تأیید'
+                  : 'مشاهده کاتالوگ اصلی اتاق، دیزاین تولد و کیک'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: gold2,
+                side: const BorderSide(color: gold),
+                padding: const EdgeInsets.symmetric(vertical: 13)),
+            ),
             const SizedBox(height: 18),
 
             Text(
@@ -443,7 +520,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
 
             _ActionCard(
               icon: Icons.celebration_outlined,
-              title: '۱۰ مدل دیزاین اختصاصی',
+              title: '$_designCount دیزاین تولد اختصاصی',
               subtitle: selectedDesign == null
                   ? 'انتخاب تم و دیزاین مخصوص این سالن'
                   : 'دیزاین $selectedDesign انتخاب شده',
@@ -455,7 +532,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
 
             _ActionCard(
               icon: Icons.cake_outlined,
-              title: '۱۰ مدل کیک اختصاصی',
+              title: '$_cakeCount مدل کیک اختصاصی',
               subtitle: selectedCake == null
                   ? 'انتخاب کیک متناسب با سالن و مراسم'
                   : 'کیک $selectedCake انتخاب شده',

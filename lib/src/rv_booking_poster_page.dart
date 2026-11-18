@@ -15,7 +15,7 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
   static const Map<String, String> posters = {
     'Salon Doré': 'dore', 'Salon Jardin': 'jardin',
     'Salon Noir': 'noir', 'Salon Âme du Poète': 'ame_du_poete',
-    'Salon Royal': 'royal', 'RV Lounge Impérial Classique': 'imperial',
+    'Salon Royale': 'royal', 'Salon Royal': 'royal', 'RV Lounge Impérial Classique': 'imperial',
     'Salon Lumière': 'lumiere', 'Salon Privé': 'prive', 'Grand Salon': 'grand',
   };
   static const Map<String, List<String>> music = {

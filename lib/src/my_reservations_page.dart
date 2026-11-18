@@ -1,4 +1,4 @@
-import 'my_reservations_page.dart';
+import 'rv_online_requests_page.dart';
 import 'package:flutter/material.dart';
 import 'reservation_store.dart';
 
@@ -21,6 +21,12 @@ class MyReservationsPage extends StatelessWidget {
           elevation: 0,
           centerTitle: true,
           foregroundColor: goldLight,
+          actions: [IconButton(
+            tooltip: 'پیگیری وضعیت آنلاین',
+            icon: const Icon(Icons.cloud_done_outlined),
+            onPressed: () => Navigator.push(context, MaterialPageRoute<void>(
+              builder: (_) => const RvOnlineRequestsPage())),
+          )],
           title: const Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -74,7 +80,7 @@ class MyReservationsPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
                       const Text(
-                        'هنوز رزروی ثبت نشده',
+                        'هنوز درخواست محلی ذخیره نشده',
                         style: TextStyle(
                           color: goldLight,
                           fontSize: 21,
@@ -83,7 +89,7 @@ class MyReservationsPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 9),
                       const Text(
-                        'رزروهای Royal Village شما در این بخش نمایش داده می‌شوند.',
+                        'برای بررسی درخواست‌های ثبت‌شده در سرور، آیکون ابر بالای صفحه را بزنید.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white54,
@@ -170,8 +176,11 @@ class MyReservationsPage extends StatelessWidget {
                           ),
                           IconButton(
                             onPressed: () {
+                              // Only the device copy is deleted. A server request
+                              // remains pending until management reviews it.
                               ReservationStore.instance.removeAt(index);
                             },
+                            tooltip: 'حذف از این گوشی، نه لغو درخواست آنلاین',
                             icon: const Icon(
                               Icons.delete_outline_rounded,
                               color: Colors.white38,
@@ -234,23 +243,21 @@ class MyReservationsPage extends StatelessWidget {
                             color: gold.withOpacity(.40),
                           ),
                         ),
-                        child: const Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.check_circle_outline_rounded,
-                              color: goldLight,
-                              size: 19,
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              'درخواست رزرو ثبت شده',
-                              style: TextStyle(
-                                color: goldLight,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                            Icon(item.onlineId == null
+                                ? Icons.save_outlined
+                                : Icons.cloud_done_outlined,
+                              color: goldLight, size: 19),
+                            const SizedBox(width: 8),
+                            Flexible(child: Text(
+                              item.onlineId == null
+                                ? 'پیش‌نویس محلی؛ به مدیریت ارسال نشده'
+                                : 'ارسال آنلاین؛ در انتظار بررسی مدیریت',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: goldLight, fontWeight: FontWeight.bold))),
                           ],
                         ),
                       ),

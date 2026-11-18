@@ -1,0 +1,94 @@
+name: Restore original room interiors from the earlier Royal Village catalogues
+on:
+  push:
+    branches:
+      - feature/royal-one-online-rv-rc-media
+    paths:
+      - '.github/workflows/rv-original-photo-restore.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+concurrency:
+  group: rv-original-photo-restore
+  cancel-in-progress: true
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore original approved interior photographs without models
+        run: |
+          python3 -m pip install --quiet pillow
+          python3 - <<'PY'
+          from PIL import Image,ImageOps,ImageDraw
+          from pathlib import Path
+          import subprocess,io,base64,json
+          old='ac94557573e15519e35b3b5f7b99388bb2553bed'
+          rooms=[
+              ('lumiere','salon_lumiere.png'),
+              ('noir','salon_noir.png'),
+              ('jardin','salon_jardin.png'),
+              ('prive','salon_prive.png'),
+              ('rv_lounge_imperial','rv_lounge_imperial_classique.png'),
+              ('dore','salon_dore.png'),
+              ('ame_du_poete','salon_ame_du_poete.png'),
+          ]
+          photos=Path('assets/image/rv_original_photos')
+          posters=Path('assets/image/rv_original_catalogues')
+          audit=Path('docs/rv-audit')
+          photos.mkdir(parents=True,exist_ok=True)
+          posters.mkdir(parents=True,exist_ok=True)
+          audit.mkdir(parents=True,exist_ok=True)
+          records=[]
+          for room,source in rooms:
+              raw=subprocess.check_output(['git','show',f'{old}:assets/image/{source}'])
+              image=Image.open(io.BytesIO(raw)).convert('RGB')
+              w,h=image.size
+              # The source's ROOM photograph is the upper-left section.
+              # These coordinates intentionally omit the black poster header,
+              # right-hand marketing copy, and birthday/cake grid underneath.
+              box=(round(w*.020),round(h*.024),round(w*.558),round(h*.265))
+              crop=image.crop(box)
+              if min(crop.size)<200:
+                  raise RuntimeError(f'Unexpected source dimensions for {source}: {image.size}')
+              crop.save(photos/f'{room}.jpg',format='JPEG',quality=92,optimize=True)
+              (posters/f'{room}.png').write_bytes(raw)
+              records.append({'room':room,'original':source,'blob_commit':old,
+                'source_size':image.size,'pixel_crop':box,
+                'photo_path':str(photos/f'{room}.jpg'),
+                'poster_path':str(posters/f'{room}.png')})
+          # Historical 'salon_royal.png' is actually labeled Salon Émeraude.
+          # Never pass that photo off as the user-approved Salon Royale.
+          w,h=1100,720
+          placeholder=Image.new('RGB',(w,h),(5,30,23))
+          draw=ImageDraw.Draw(placeholder)
+          draw.rectangle((25,25,w-25,h-25),outline=(186,154,94),width=7)
+          draw.text((w//2-170,h//2-60),'SALON ROYALE',fill=(240,210,150))
+          draw.text((w//2-280,h//2+2),'Original room photograph pending',fill=(245,224,175))
+          placeholder.save(photos/'royale_pending.jpg',quality=94,optimize=True)
+          # Quick photographic-only proof sheet; no advertising images.
+          sheet=Image.new('RGB',(4*340,2*282),(6,25,19))
+          d=ImageDraw.Draw(sheet)
+          names=[r[0] for r in rooms]+['royale_pending']
+          for i,room in enumerate(names):
+              im=Image.open(photos/f'{room}.jpg').convert('RGB')
+              fit=ImageOps.contain(im,(330,235))
+              x=(i%4)*340; y=(i//4)*282
+              d.rectangle((x+4,y+4,x+336,y+276),outline=(190,154,86),width=2)
+              sheet.paste(fit,(x+5+(330-fit.width)//2,y+34+(235-fit.height)//2))
+              d.text((x+14,y+10),room,fill=(255,223,153))
+          buff=io.BytesIO()
+          sheet.save(buff,format='JPEG',quality=83,optimize=True)
+          (audit/'restored-room-interiors.b64').write_text(base64.b64encode(buff.getvalue()).decode('ascii'))
+          (audit/'restored-room-photo-provenance.json').write_text(json.dumps(records,indent=2))
+          print('Restored original photos:',len(rooms),'Royal pending source, proof sheet bytes:',len(buff.getvalue()))
+          PY
+      - name: Commit verified original sources and images to trial branch only
+        run: |
+          git config user.name "royal-one-room-restore-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/image/rv_original_photos/ assets/image/rv_original_catalogues/ docs/rv-audit/restored-room-interiors.b64 docs/rv-audit/restored-room-photo-provenance.json
+          git diff --staged --quiet || (git commit -m "Restore seven original RV interiors and full catalogues; do not mislabel Royal" && git push origin HEAD:feature/royal-one-online-rv-rc-media)

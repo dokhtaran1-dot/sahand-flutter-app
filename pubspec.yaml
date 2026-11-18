@@ -33,12 +33,16 @@ flutter:
     - assets/rh/index.html
     - assets/rh/assets/
     - assets/rs/
+    - assets/re/index.html
     - assets/rs/fonts/
     - assets/image/
+    - assets/rv/royal_village_gallery.json
     - assets/images/1.png
     - assets/image/jd_signature/
     - assets/image/rv_upload/
     - assets/image/booking_posters/
+    - assets/image/rv_original_photos/
+    - assets/image/rv_original_catalogues/
     - assets/image/salon_gallery/dore/
     - assets/image/salon_gallery/prive/
     - assets/image/salon_gallery/noir/

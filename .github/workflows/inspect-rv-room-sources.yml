@@ -1,0 +1,54 @@
+name: Inspect alternate Royal Village original room artwork
+on:
+  push:
+    branches: [feature/royal-one-online-rv-rc-media]
+    paths: ['.github/workflows/inspect-rv-room-sources.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create limited-size previews of historical art for visual verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin final-screen-assets
+          python3 -m pip install --quiet --break-system-packages pillow
+          python3 - <<'PY'
+          import subprocess, io, base64, json
+          from PIL import Image
+          photos=['salon_lumiere.png','salon_noir.png','salon_jardin.png','salon_prive.png',
+                  'rv_lounge_imperial_classique.png','salon_dore.png','salon_ame_du_poete.png',
+                  'salon_de_lame.png','Salons.png','royal_village.png',
+                  'Grand_Salon_Original.png','Salon_royal.png']
+          for name in photos:
+              path='assets/image/'+name
+              try:
+                  ref='HEAD' if name in ['Grand_Salon_Original.png','Salon_royal.png'] else 'FETCH_HEAD'
+                  data=subprocess.check_output(['git','show',ref+':'+path],stderr=subprocess.DEVNULL)
+                  im=Image.open(io.BytesIO(data)).convert('RGB')
+                  # Crop the original full-resolution room photo panel,
+                  # excluding text, people portraits and cake/design catalogue.
+                  if name not in ['Salons.png','royal_village.png','Grand_Salon_Original.png','Salon_royal.png']:
+                      w,h=im.size
+                      im=im.crop((int(w*.008),int(h*.014),int(w*.582),int(h*.225)))
+                  if name == 'Salons.png':
+                      w,h=im.size
+                      im=im.crop((int(w*.04),int(h*.18),int(w*.96),int(h*.82)))
+                  if name == 'royal_village.png':
+                      w,h=im.size
+                      im=im.crop((int(w*.02),int(h*.38),int(w*.98),int(h*.80)))
+                  im.thumbnail((800,980))
+                  out=io.BytesIO()
+                  im.save(out,format='JPEG',quality=50,optimize=True)
+                  encoded=base64.b64encode(out.getvalue()).decode('ascii')
+                  print('ROOM_PREVIEW '+json.dumps({'file':name,'original_size':len(data),'width':im.width,'height':im.height,'b64':encoded},separators=(',',':')),flush=True)
+              except Exception as e:
+                  print('ROOM_PREVIEW_ERROR '+name+': '+str(e),flush=True)
+          PY

@@ -1,0 +1,162 @@
+[
+  {
+    "room": "Lumiere",
+    "type": "OLD",
+    "file": "salon_lumiere.png",
+    "dimensions": [
+      1024,
+      1536
+    ],
+    "bytes": 2638764
+  },
+  {
+    "room": "Lumiere",
+    "type": "NEW",
+    "file": "Salon_lumiere.png",
+    "dimensions": [
+      941,
+      1672
+    ],
+    "bytes": 2253833
+  },
+  {
+    "room": "Noir",
+    "type": "OLD",
+    "file": "salon_noir.png",
+    "dimensions": [
+      1024,
+      1536
+    ],
+    "bytes": 2616619
+  },
+  {
+    "room": "Noir",
+    "type": "NEW",
+    "file": "Salon_noir.png",
+    "dimensions": [
+      941,
+      1672
+    ],
+    "bytes": 2007317
+  },
+  {
+    "room": "Jardin",
+    "type": "OLD",
+    "file": "salon_jardin.png",
+    "dimensions": [
+      1024,
+      1536
+    ],
+    "bytes": 2786978
+  },
+  {
+    "room": "Jardin",
+    "type": "NEW",
+    "file": "salon_jardin.png",
+    "dimensions": [
+      941,
+      1672
+    ],
+    "bytes": 2185448
+  },
+  {
+    "room": "Prive",
+    "type": "OLD",
+    "file": "salon_prive.png",
+    "dimensions": [
+      1024,
+      1536
+    ],
+    "bytes": 2475791
+  },
+  {
+    "room": "Prive",
+    "type": "NEW",
+    "file": "Salon_prive.png",
+    "dimensions": [
+      941,
+      1672
+    ],
+    "bytes": 2087509
+  },
+  {
+    "room": "Imperial",
+    "type": "OLD",
+    "file": "rv_lounge_imperial_classique.png",
+    "dimensions": [
+      1024,
+      1536
+    ],
+    "bytes": 2464725
+  },
+  {
+    "room": "Imperial",
+    "type": "NEW",
+    "file": "rv_lounge_imperial_classique.png",
+    "dimensions": [
+      941,
+      1672
+    ],
+    "bytes": 2176657
+  },
+  {
+    "room": "Dore",
+    "type": "OLD",
+    "file": "salon_dore.png",
+    "dimensions": [
+      1024,
+      1536
+    ],
+    "bytes": 2690059
+  },
+  {
+    "room": "Dore",
+    "type": "NEW",
+    "file": "salon_dore.png",
+    "dimensions": [
+      941,
+      1672
+    ],
+    "bytes": 2192637
+  },
+  {
+    "room": "Ame du Poete",
+    "type": "OLD",
+    "file": "salon_ame_du_poete.png",
+    "dimensions": [
+      3072,
+      4608
+    ],
+    "bytes": 11571609
+  },
+  {
+    "room": "Ame du Poete",
+    "type": "NEW",
+    "file": "salon_ame_du_poete.png",
+    "dimensions": [
+      941,
+      1672
+    ],
+    "bytes": 2161418
+  },
+  {
+    "room": "Royal",
+    "type": "OLD",
+    "file": "salon_royal.png",
+    "dimensions": [
+      1024,
+      1536
+    ],
+    "bytes": 2807157
+  },
+  {
+    "room": "Royal",
+    "type": "NEW",
+    "file": "Salon_royal.png",
+    "dimensions": [
+      941,
+      1672
+    ],
+    "bytes": 2092853
+  }
+]
