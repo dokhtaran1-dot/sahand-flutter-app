@@ -44,8 +44,12 @@ void main() {
     await tester.pumpWidget(const MaterialApp(
       home: RoyalOneMyProfilePage(),
     ));
-    await tester.ensureVisible(
+    // The third navigation tile is lazily built below the initial viewport.
+    // Scroll the ListView until the target is mounted before tapping it.
+    await tester.scrollUntilVisible(
       find.byKey(const ValueKey('my-profile-explore-action')),
+      180,
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.tap(
       find.byKey(const ValueKey('my-profile-explore-action')),
