@@ -5,6 +5,7 @@ import 'ettehad_page.dart';
 import 'heritage_page.dart';
 import 'royal_club_game_page.dart';
 import 'royal_club_profile_page.dart';
+import 'royal_one_my_profile_page.dart';
 import 'royal_explore_page.dart';
 import 'royal_harmonia_page.dart';
 import 'royal_mall_page.dart';
@@ -191,7 +192,7 @@ class _HomePageState extends State<HomePage>
             _hotspot(label: 'رزرو | Reservations', x: 594, y: 1375,
               w: 163, h: 132, onTap: () => _push(const RvGalleryPage())),
             _hotspot(label: 'حساب من | Profile', x: 758, y: 1375,
-              w: 175, h: 132, onTap: () => _push(const RoyalClubProfilePage())),
+              w: 175, h: 132, onTap: () => _push(const RoyalOneMyProfilePage())),
             _hotspot(label: 'منو | Menu', x: 908, y: 75,
               w: 80, h: 65, onTap: _openMenu),
             _hotspot(label: 'انتخاب زبان | Languages',
