@@ -175,7 +175,11 @@ class _EttehadPageState extends State<EttehadPage> {
           else
             _localFallback(),
           if (_loading)
-            const Center(child: CircularProgressIndicator(color: gold)),
+            const Center(
+              child: Text('در حال آماده‌سازی مینی‌سایت RE…',
+                textDirection: TextDirection.rtl,
+                style: TextStyle(color: gold, fontSize: 15)),
+            ),
         ]),
         bottomNavigationBar: SafeArea(
           child: Padding(
