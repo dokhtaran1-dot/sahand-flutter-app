@@ -33,6 +33,7 @@ flutter:
     - assets/rh/index.html
     - assets/rh/assets/
     - assets/rs/
+    - assets/re/index.html
     - assets/rs/fonts/
     - assets/image/
     - assets/rv/royal_village_gallery.json
