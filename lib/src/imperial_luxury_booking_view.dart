@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'rv_salon_interior_image.dart';
 
 /// Interactive Imperial Lounge booking presentation based on the approved
 /// emerald-and-gold reference. The owning SalonDetailPage retains all state,
 /// catalogs, selections and reservation submission.
 class ImperialLuxuryBookingView extends StatelessWidget {
   const ImperialLuxuryBookingView({
-    super.key, required this.salonName,
+    super.key, required this.salonName, required this.imageAsset,
     required this.date, required this.time,
     required this.designCount, required this.cakeCount,
     required this.designNumber, required this.cakeNumber,
@@ -15,6 +16,7 @@ class ImperialLuxuryBookingView extends StatelessWidget {
   });
 
   final String salonName;
+  final String imageAsset;
   final DateTime? date;
   final TimeOfDay? time;
   final int designCount;
@@ -59,7 +61,36 @@ class ImperialLuxuryBookingView extends StatelessWidget {
               textDirection: TextDirection.ltr,
               style: TextStyle(color: gold, fontSize: 10,
                 letterSpacing: 2.5))),
-            const SizedBox(height: 18),
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: SizedBox(
+                height: 142,
+                child: Stack(fit: StackFit.expand, children: [
+                  RvSalonInteriorImage(asset: imageAsset),
+                  const DecoratedBox(decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.transparent, Color(0xBB020705)]))),
+                  const Positioned(bottom: 12, right: 14,
+                    child: Text('تصویر اصلی سالن',
+                      style: TextStyle(color: goldLight,
+                        fontWeight: FontWeight.bold, fontSize: 13))),
+                ]),
+              ),
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              key: const ValueKey('rv-original-room-catalogue'),
+              onPressed: onCatalogue,
+              icon: const Icon(Icons.collections_bookmark_outlined),
+              label: const Text('مشاهده کاتالوگ اصلی و مدل‌های کیک'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: goldLight,
+                side: const BorderSide(color: gold),
+                padding: const EdgeInsets.symmetric(vertical: 12))),
+            const SizedBox(height: 14),
             Row(children: [
               Expanded(child: _LuxuryChoice(
                 key: const ValueKey('imperial-date'),
@@ -128,16 +159,6 @@ class ImperialLuxuryBookingView extends StatelessWidget {
               ]),
             ),
             const SizedBox(height: 14),
-            OutlinedButton.icon(
-              key: const ValueKey('imperial-catalogue'),
-              onPressed: onCatalogue,
-              icon: const Icon(Icons.collections_bookmark_outlined),
-              label: const Text('مشاهده عکس و کاتالوگ اصلی سالن'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: goldLight,
-                side: const BorderSide(color: gold),
-                padding: const EdgeInsets.all(15))),
-            const SizedBox(height: 15),
             SizedBox(height: 56, child: FilledButton(
               key: const ValueKey('imperial-continue-reservation'),
               onPressed: onReserve,
