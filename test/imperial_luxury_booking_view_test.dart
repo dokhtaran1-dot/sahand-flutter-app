@@ -15,6 +15,7 @@ void main() {
     await tester.pumpWidget(MaterialApp(
       home: ImperialLuxuryBookingView(
         salonName: 'RV Lounge Impérial Classique',
+        imageAsset: 'assets/image/rv_original_photos/rv_lounge_imperial.jpg',
         date: null, time: null,
         designCount: 10, cakeCount: 20,
         designNumber: null, cakeNumber: null, music: null,
