@@ -36,11 +36,17 @@ void main() {
     expect(find.byKey(const ValueKey('imperial-time')), findsOneWidget);
     expect(find.text('10 دیزاین تولد اختصاصی'), findsOneWidget);
     expect(find.text('20 مدل کیک اختصاصی'), findsOneWidget);
-    expect(find.text('۳ موسیقی اختصاصی'), findsOneWidget);
-
     await tester.tap(find.byKey(const ValueKey('imperial-date')));
     await tester.pump();
     expect(taps, 1);
+
+    // The music card is below the first viewport and is lazily mounted.
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('imperial-music')),
+      230,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('۳ موسیقی اختصاصی'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
