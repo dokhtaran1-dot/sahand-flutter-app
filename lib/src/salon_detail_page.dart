@@ -417,6 +417,7 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
     if (widget.salonName == 'RV Lounge Impérial Classique') {
       return ImperialLuxuryBookingView(
         salonName: widget.salonName,
+        imageAsset: imagePath,
         date: selectedDate,
         time: selectedTime,
         designCount: _designCount,
