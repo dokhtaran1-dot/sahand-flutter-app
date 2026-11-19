@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'reservation_page.dart';
 import 'rv_salon_interior_image.dart';
 import 'data/rv_salon_catalogue.dart';
+import 'imperial_luxury_booking_view.dart';
 
 class SalonDetailPage extends StatefulWidget {
   final String salonName;
@@ -350,6 +351,37 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
 
   List<String> get _musicOptions => salonMusic[widget.salonName] ?? const ['Royal Piano', 'Royal Violin', 'Royal Lounge'];
 
+  void _chooseImperialMusic() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: const Color(0xFF081B12),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22))),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            const Text('موسیقی اختصاصی سالن',
+              style: TextStyle(color: gold2, fontSize: 18,
+                fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            ..._musicOptions.map((track) => ListTile(
+              leading: const Icon(Icons.music_note, color: gold2),
+              title: Text(track, textDirection: TextDirection.ltr),
+              trailing: selectedMusic == track
+                ? const Icon(Icons.check_circle, color: gold2) : null,
+              onTap: () {
+                setState(() => selectedMusic = track);
+                Navigator.of(sheetContext).pop();
+              },
+            )),
+          ]),
+        ),
+      ),
+    );
+  }
+
+
   void reserve() {
     if (selectedDate == null || selectedTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -382,6 +414,29 @@ class _SalonDetailPageState extends State<SalonDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.salonName == 'RV Lounge Impérial Classique') {
+      return ImperialLuxuryBookingView(
+        salonName: widget.salonName,
+        imageAsset: imagePath,
+        date: selectedDate,
+        time: selectedTime,
+        designCount: _designCount,
+        cakeCount: _cakeCount,
+        designNumber: selectedDesign,
+        cakeNumber: selectedCake,
+        music: selectedMusic,
+        onDate: pickDate,
+        onTime: pickTime,
+        onDesigns: showDesigns,
+        onCakes: showCakes,
+        onMusic: _chooseImperialMusic,
+        onCatalogue:
+            RvSalonCatalogue.originalCataloguePath(widget.salonName) == null
+                ? null
+                : showOriginalCatalogue,
+        onReserve: reserve,
+      );
+    }
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(

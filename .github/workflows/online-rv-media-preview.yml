@@ -1,8 +1,8 @@
-name: Royal One Member Profile v1.0.41 (isolated APK)
+name: Royal One Imperial Lounge v1.0.42 (isolated APK)
 on:
   push:
     branches:
-      - feature/royal-one-profile-member-dashboard
+      - feature/rv-imperial-luxury-reservation
     paths:
       - '.github/workflows/online-rv-media-preview.yml'
       - 'lib/**'
@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: royal-one-member-profile-preview
+  group: royal-one-imperial-preview
   cancel-in-progress: true
 
 permissions:
@@ -82,12 +82,12 @@ jobs:
           old='        release {\n'
           if content.count(old)!=1:
               raise SystemExit('Unexpected Android release signing configuration')
-          gradle.write_text(content.replace(old,old+'            applicationIdSuffix = ".memberprofilepreview41"\n'))
+          gradle.write_text(content.replace(old,old+'            applicationIdSuffix = ".imperialpreview42"\n'))
           manifest=Path('android/app/src/main/AndroidManifest.xml')
           content=manifest.read_text()
           if 'android:label="ROYAL 1"' not in content:
               raise SystemExit('Unexpected launcher label')
-          manifest.write_text(content.replace('android:label="ROYAL 1"','android:label="ROYAL ONE VIP v1.0.41"'))
+          manifest.write_text(content.replace('android:label="ROYAL 1"','android:label="ROYAL ONE VIP v1.0.42"'))
           PY
       - name: Rebuild approved second page image
         run: |
@@ -118,13 +118,13 @@ jobs:
           fi
       - name: Verify heritage UI is analyzable
         run: |
-          flutter analyze --no-pub --no-fatal-infos --no-fatal-warnings lib/src/heritage_page.dart lib/src/home_page.dart lib/src/royal_one_my_profile_page.dart lib/src/ettehad_page.dart lib/src/reservation_page.dart lib/src/reservation_store.dart lib/src/my_reservations_page.dart lib/src/rv_online_booking_service.dart lib/src/rv_online_requests_page.dart lib/src/royal_club_membership_page.dart lib/src/rv_media_page.dart lib/src/royal_village_entry_page.dart lib/src/rv_gallery_page.dart lib/src/photo_orbit.dart lib/src/royal_explore_page.dart lib/src/salon_detail_page.dart lib/src/rv_salon_interior_image.dart
+          flutter analyze --no-pub --no-fatal-infos --no-fatal-warnings lib/src/heritage_page.dart lib/src/home_page.dart lib/src/royal_one_my_profile_page.dart lib/src/imperial_luxury_booking_view.dart lib/src/ettehad_page.dart lib/src/reservation_page.dart lib/src/reservation_store.dart lib/src/my_reservations_page.dart lib/src/rv_online_booking_service.dart lib/src/rv_online_requests_page.dart lib/src/royal_club_membership_page.dart lib/src/rv_media_page.dart lib/src/royal_village_entry_page.dart lib/src/rv_gallery_page.dart lib/src/photo_orbit.dart lib/src/royal_explore_page.dart lib/src/salon_detail_page.dart lib/src/rv_salon_interior_image.dart
           test -s assets/re/index.html
           test -s assets/heritage/founder_original.jpg
           test -s assets/heritage/philosophy_book.html
           test -s assets/heritage/royal_heritage_approved_poster.png
       - name: Test 10 branches 4 languages and 5 footer actions
-        run: flutter test test/heritage_poster_interactions_test.dart test/compact_home_portals_test.dart test/ettehad_button_actions_test.dart test/re_minisite_asset_test.dart test/rv_online_flow_test.dart test/rv_room_photo_assets_test.dart test/rv_original_manifest_test.dart test/royal_navigation_test.dart test/royal_one_my_profile_test.dart
+        run: flutter test test/heritage_poster_interactions_test.dart test/compact_home_portals_test.dart test/ettehad_button_actions_test.dart test/re_minisite_asset_test.dart test/rv_online_flow_test.dart test/rv_room_photo_assets_test.dart test/rv_original_manifest_test.dart test/royal_navigation_test.dart test/royal_one_my_profile_test.dart test/imperial_luxury_booking_view_test.dart
       - name: Verify all eight VIP room images replace poster-model crops
         run: |
           set -euo pipefail
@@ -162,18 +162,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          flutter build apk --release --split-per-abi --build-name 1.0.41 --build-number 41 \
+          flutter build apk --release --split-per-abi --build-name 1.0.42 --build-number 42 \
             --dart-define=ROYAL_CLUB_BACKEND_READY=true \
             --dart-define=SUPABASE_URL=https://jwddfcsikkialxzbrhle.supabase.co \
             --dart-define=SUPABASE_ANON_KEY=sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve
-          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ROYAL_ONE_MEMBER_PROFILE_v1.0.41_ARM64.apk
-          test -s ROYAL_ONE_MEMBER_PROFILE_v1.0.41_ARM64.apk
-          sha256sum ROYAL_ONE_MEMBER_PROFILE_v1.0.41_ARM64.apk
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ROYAL_ONE_IMPERIAL_v1.0.42_ARM64.apk
+          test -s ROYAL_ONE_IMPERIAL_v1.0.42_ARM64.apk
+          sha256sum ROYAL_ONE_IMPERIAL_v1.0.42_ARM64.apk
       - name: Upload verified preview artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ROYAL_ONE_MEMBER_PROFILE_v1.0.41_ARM64
-          path: ROYAL_ONE_MEMBER_PROFILE_v1.0.41_ARM64.apk
+          name: ROYAL_ONE_IMPERIAL_v1.0.42_ARM64
+          path: ROYAL_ONE_IMPERIAL_v1.0.42_ARM64.apk
           compression-level: 0
       - name: Publish prerelease (not production)
         env:
@@ -190,6 +190,10 @@ jobs:
           uncropped in portals, cards and detail pages. The seven original birthday/cake posters
           remain separately accessible. Salon Doré has 10 cakes; only the Imperial Lounge has 20
           numbered cake models. The published consumer app remains unchanged.
+          The original PROFILE review design is retained. Separately, Imperial Lounge now has
+          an interactive emerald-black and champagne-gold booking presentation,
+          retaining date, time, original birthday and cake catalogs, music and
+          reservation flows; the seven other rooms remain unchanged.
           The Royal One PROFILE page now follows the approved original eight-screen
           black-and-gold reference: avatar placeholder, member info, QR inactive
           state until verification, real reservations/points/offers/notifications/
@@ -197,14 +201,14 @@ jobs:
           Existing Royal Village and Royal Club functions remain in preview.
           NOT FOR PUBLIC PRODUCTION RELEASE.
           NOTES
-          tag='royal-one-member-profile-v1.0.41'
-          apk='ROYAL_ONE_MEMBER_PROFILE_v1.0.41_ARM64.apk'
+          tag='royal-one-imperial-v1.0.42'
+          apk='ROYAL_ONE_IMPERIAL_v1.0.42_ARM64.apk'
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" "$apk" --clobber
           else
             gh release create "$tag" "$apk" \
               --target "$GITHUB_SHA" \
-              --title 'ROYAL ONE v1.0.41 — approved minimal black-gold PROFILE dashboard' \
+              --title 'ROYAL ONE v1.0.42 — Imperial Lounge luxury booking preview' \
               --notes-file release_notes.md \
               --prerelease
           fi
