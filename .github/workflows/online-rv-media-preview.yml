@@ -1,8 +1,8 @@
-name: Royal One My Profile v1.0.40 (isolated APK)
+name: Royal One Member Profile v1.0.41 (isolated APK)
 on:
   push:
     branches:
-      - feature/royal-one-online-rv-rc-media
+      - feature/royal-one-profile-member-dashboard
     paths:
       - '.github/workflows/online-rv-media-preview.yml'
       - 'lib/**'
@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: royal-one-my-profile-preview
+  group: royal-one-member-profile-preview
   cancel-in-progress: true
 
 permissions:
@@ -82,12 +82,12 @@ jobs:
           old='        release {\n'
           if content.count(old)!=1:
               raise SystemExit('Unexpected Android release signing configuration')
-          gradle.write_text(content.replace(old,old+'            applicationIdSuffix = ".myprofilepreview40"\n'))
+          gradle.write_text(content.replace(old,old+'            applicationIdSuffix = ".memberprofilepreview41"\n'))
           manifest=Path('android/app/src/main/AndroidManifest.xml')
           content=manifest.read_text()
           if 'android:label="ROYAL 1"' not in content:
               raise SystemExit('Unexpected launcher label')
-          manifest.write_text(content.replace('android:label="ROYAL 1"','android:label="ROYAL ONE VIP v1.0.40"'))
+          manifest.write_text(content.replace('android:label="ROYAL 1"','android:label="ROYAL ONE VIP v1.0.41"'))
           PY
       - name: Rebuild approved second page image
         run: |
@@ -162,18 +162,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          flutter build apk --release --split-per-abi --build-name 1.0.40 --build-number 40 \
+          flutter build apk --release --split-per-abi --build-name 1.0.41 --build-number 41 \
             --dart-define=ROYAL_CLUB_BACKEND_READY=true \
             --dart-define=SUPABASE_URL=https://jwddfcsikkialxzbrhle.supabase.co \
             --dart-define=SUPABASE_ANON_KEY=sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve
-          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ROYAL_ONE_MY_PROFILE_v1.0.40_ARM64.apk
-          test -s ROYAL_ONE_MY_PROFILE_v1.0.40_ARM64.apk
-          sha256sum ROYAL_ONE_MY_PROFILE_v1.0.40_ARM64.apk
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ROYAL_ONE_MEMBER_PROFILE_v1.0.41_ARM64.apk
+          test -s ROYAL_ONE_MEMBER_PROFILE_v1.0.41_ARM64.apk
+          sha256sum ROYAL_ONE_MEMBER_PROFILE_v1.0.41_ARM64.apk
       - name: Upload verified preview artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ROYAL_ONE_MY_PROFILE_v1.0.40_ARM64
-          path: ROYAL_ONE_MY_PROFILE_v1.0.40_ARM64.apk
+          name: ROYAL_ONE_MEMBER_PROFILE_v1.0.41_ARM64
+          path: ROYAL_ONE_MEMBER_PROFILE_v1.0.41_ARM64.apk
           compression-level: 0
       - name: Publish prerelease (not production)
         env:
@@ -190,18 +190,21 @@ jobs:
           uncropped in portals, cards and detail pages. The seven original birthday/cake posters
           remain separately accessible. Salon Doré has 10 cakes; only the Imperial Lounge has 20
           numbered cake models. The published consumer app remains unchanged.
-          The Royal One My Profile second page now uses emerald-and-gold styling with two
-          intentionally empty approved photo slots and internal navigation to Heritage,
-          Royal Club account and Explore. This is not a public production release.
+          The Royal One PROFILE page now follows the approved original eight-screen
+          black-and-gold reference: avatar placeholder, member info, QR inactive
+          state until verification, real reservations/points/offers/notifications/
+          settings routes. No fake person photo, awards, QR, or points are generated.
+          Existing Royal Village and Royal Club functions remain in preview.
+          NOT FOR PUBLIC PRODUCTION RELEASE.
           NOTES
-          tag='royal-one-my-profile-v1.0.40'
-          apk='ROYAL_ONE_MY_PROFILE_v1.0.40_ARM64.apk'
+          tag='royal-one-member-profile-v1.0.41'
+          apk='ROYAL_ONE_MEMBER_PROFILE_v1.0.41_ARM64.apk'
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" "$apk" --clobber
           else
             gh release create "$tag" "$apk" \
               --target "$GITHUB_SHA" \
-              --title 'ROYAL ONE v1.0.40 — My Profile preview + RV/RC features' \
+              --title 'ROYAL ONE v1.0.41 — approved minimal black-gold PROFILE dashboard' \
               --notes-file release_notes.md \
               --prerelease
           fi
