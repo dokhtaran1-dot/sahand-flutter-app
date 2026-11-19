@@ -46,7 +46,12 @@ class _RoyalOneMyProfilePageState extends State<RoyalOneMyProfilePage> {
   Future<void> _loadMember() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final balance = await RoyalScoreStore.ticketBalance();
+      int? balance;
+      try {
+        balance = await RoyalScoreStore.ticketBalance();
+      } catch (_) {
+        // Read-only preview can render even before account backend is ready.
+      }
       if (!mounted) return;
       setState(() {
         _name = prefs.getString(RoyalClubMembershipPage.fullNameKey)?.trim() ?? '';
