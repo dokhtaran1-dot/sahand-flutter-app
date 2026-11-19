@@ -1,364 +1,345 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'heritage_page.dart';
+import 'my_reservations_page.dart';
+import 'royal_club_game_page.dart';
+import 'royal_club_membership_page.dart';
+import 'royal_club_privileges_page.dart';
 import 'royal_club_profile_page.dart';
-import 'royal_explore_page.dart';
+import 'royal_score_store.dart';
+import 'reservation_store.dart';
 
-/// The second-page My Profile destination in Royal One.
-///
-/// This is intentionally separate from the Royal Club membership/account page.
-/// Its two photo slots and personal-information areas are deliberately empty
-/// until the owner supplies approved content. No stock photos, fabricated
-/// biography or copied membership information are inserted here.
-class RoyalOneMyProfilePage extends StatelessWidget {
+/// ROYAL ONE > PROFILE: the compact black-and-champagne-gold member dashboard
+/// from the owner's approved eight-screen Royal One reference poster.
+/// No invented portrait, numeric points, real offers, or fake scannable QR code.
+class RoyalOneMyProfilePage extends StatefulWidget {
   const RoyalOneMyProfilePage({super.key});
 
-  static const Color _background = Color(0xFF04150F);
-  static const Color _emerald = Color(0xFF103B2C);
-  static const Color _gold = Color(0xFFDFC18A);
-  static const Color _muted = Color(0xFFC5CDBF);
+  @override
+  State<RoyalOneMyProfilePage> createState() => _RoyalOneMyProfilePageState();
+}
 
-  void _open(BuildContext context, Widget destination) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => destination),
-    );
+class _RoyalOneMyProfilePageState extends State<RoyalOneMyProfilePage> {
+  static const _bg = Color(0xFF030907);
+  static const _panel = Color(0xFF081611);
+  static const _gold = Color(0xFFDABB80);
+  static const _muted = Color(0xFFA4A99F);
+
+  String _name = '';
+  String _phone = '';
+  int? _localTickets;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMember();
+    RoyalScoreStore.revision.addListener(_loadMember);
   }
+
+  @override
+  void dispose() {
+    RoyalScoreStore.revision.removeListener(_loadMember);
+    super.dispose();
+  }
+
+  Future<void> _loadMember() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final balance = await RoyalScoreStore.ticketBalance();
+      if (!mounted) return;
+      setState(() {
+        _name = prefs.getString(RoyalClubMembershipPage.fullNameKey)?.trim() ?? '';
+        _phone = prefs.getString(RoyalClubMembershipPage.phoneKey)?.trim() ?? '';
+        _localTickets = balance;
+        _loading = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  void _open(Widget page) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => page),
+    ).then((_) {
+      if (mounted) _loadMember();
+    });
+  }
+
+  void _openMembership() => _open(const RoyalClubMembershipPage());
+  void _openReservations() => _open(const MyReservationsPage());
+  void _openPoints() => _open(const RoyalClubPrivilegesPage());
+  void _openOffers() => _open(const RoyalClubPrivilegesPage());
+  void _openSettings() => _open(const RoyalClubProfilePage());
+  void _openNotifications() => _open(const _ProfileNotificationsPage());
+
+  void _home() {
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) navigator.pop();
+  }
+
+  String get _memberName => _name.isEmpty ? 'ROYAL ONE GUEST' : _name;
+  String get _membershipText =>
+      _phone.isEmpty ? 'Guest · مهمان' : 'ثبت محلی · تأیید عضویت لازم است';
+
+  Widget _membershipCode() => InkWell(
+    key: const ValueKey('profile-membership-code-action'),
+    borderRadius: BorderRadius.circular(10),
+    onTap: _openMembership,
+    child: Container(
+      width: 122,
+      constraints: const BoxConstraints(minHeight: 100),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _gold, width: 1),
+      ),
+      padding: const EdgeInsets.all(10),
+      child: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.qr_code_2_rounded, size: 44, color: Color(0xFF929292)),
+          SizedBox(height: 5),
+          Text('QR غیرفعال',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Color(0xFF333333), fontSize: 11)),
+          SizedBox(height: 2),
+          Text('فعالسازی عضویت',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Color(0xFF444444), fontSize: 9)),
+        ],
+      ),
+    ),
+  );
+
+  Widget _profileHeader() => Column(
+    children: [
+      const SizedBox(height: 10),
+      Container(
+        key: const ValueKey('my-profile-avatar-placeholder'),
+        width: 92,
+        height: 92,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: const Color(0xFF101B17),
+          border: Border.all(color: _gold, width: 1.5),
+        ),
+        child: const Icon(Icons.person_outline_rounded, size: 48, color: _gold),
+      ),
+      const SizedBox(height: 12),
+      Text(
+        _loading ? '...' : _memberName,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          letterSpacing: .5,
+          color: Colors.white,
+        ),
+      ),
+      const SizedBox(height: 4),
+      Text(
+        _membershipText,
+        style: const TextStyle(color: _gold, fontSize: 12),
+        textAlign: TextAlign.center,
+      ),
+      const SizedBox(height: 18),
+      _membershipCode(),
+      const SizedBox(height: 8),
+      const Text(
+        'کارت و QR معتبر پس از فعال‌سازی سامانه عضویت',
+        style: TextStyle(color: _muted, fontSize: 10),
+        textAlign: TextAlign.center,
+        textDirection: TextDirection.rtl,
+      ),
+      const SizedBox(height: 23),
+    ],
+  );
+
+  Widget _menuTile({
+    required String keyName,
+    required IconData icon,
+    required String title,
+    String? trailing,
+    required VoidCallback onTap,
+  }) => Padding(
+    padding: const EdgeInsets.only(bottom: 2),
+    child: Material(
+      color: _panel,
+      child: InkWell(
+        key: ValueKey(keyName),
+        onTap: onTap,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 66),
+          padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 10),
+          decoration: const BoxDecoration(
+            border: Border(bottom: BorderSide(color: Color(0x334A765D))),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: _gold, size: 22),
+              const SizedBox(width: 13),
+              Expanded(
+                child: Text(title, style: const TextStyle(
+                  color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500,
+                )),
+              ),
+              if (trailing != null)
+                Text(trailing, style: const TextStyle(
+                  color: _gold, fontSize: 12,
+                )),
+              const SizedBox(width: 7),
+              const Icon(Icons.chevron_right_rounded, color: _gold, size: 19),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Widget _bottomBar() => Container(
+    decoration: const BoxDecoration(
+      color: Color(0xFF050B09),
+      border: Border(top: BorderSide(color: Color(0x66DABB80), width: .6)),
+    ),
+    child: SafeArea(
+      top: false,
+      child: SizedBox(
+        height: 61,
+        child: Row(
+          children: [
+            _tab('Home', Icons.home_outlined, _home),
+            _tab('Reservations', Icons.calendar_month_outlined, _openReservations),
+            _tab('Club', Icons.star_border_rounded,
+                () => _open(const RoyalClubGamePage())),
+            _tab('Profile', Icons.person_rounded, () {}, selected: true),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  Widget _tab(String label, IconData icon, VoidCallback onTap,
+      {bool selected = false}) => Expanded(
+    child: InkWell(
+      onTap: onTap,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 21, color: selected ? _gold : _muted),
+          const SizedBox(height: 4),
+          Text(label, style: TextStyle(
+            color: selected ? _gold : _muted, fontSize: 10,
+          )),
+        ],
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: const ValueKey('royal-one-my-profile'),
-      backgroundColor: _background,
+      backgroundColor: _bg,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF09241A),
-        foregroundColor: _gold,
-        centerTitle: true,
+        backgroundColor: _bg,
         elevation: 0,
+        centerTitle: true,
+        foregroundColor: _gold,
         title: const Text(
-          'MY PROFILE',
+          'PROFILE',
           style: TextStyle(
             color: _gold,
-            letterSpacing: 2.8,
-            fontSize: 17,
-            fontWeight: FontWeight.w700,
+            letterSpacing: 2.2,
+            fontWeight: FontWeight.w500,
+            fontSize: 20,
           ),
         ),
-        actions: [
-          PopupMenuButton<String>(
-            tooltip: 'منوی پروفایل',
-            icon: const Icon(Icons.more_vert_rounded, color: _gold),
-            color: const Color(0xFF103427),
-            onSelected: (choice) {
-              if (choice == 'heritage') {
-                _open(context, const HeritagePage());
-              } else if (choice == 'club') {
-                _open(context, const RoyalClubProfilePage());
-              } else if (choice == 'explore') {
-                _open(context, const RoyalExplorePage());
-              }
-            },
-            itemBuilder: (_) => const [
-              PopupMenuItem(value: 'heritage', child: Text('میراث سهند')),
-              PopupMenuItem(value: 'club', child: Text('حساب رویال کلاب')),
-              PopupMenuItem(value: 'explore', child: Text('مجموعه‌ها')),
-            ],
-          ),
-        ],
       ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 650),
+            constraints: const BoxConstraints(maxWidth: 500),
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(18, 18, 18, 30),
+              padding: const EdgeInsets.fromLTRB(18, 2, 18, 24),
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(28),
-                    border: Border.all(color: _gold.withOpacity(.72)),
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFF164532),
-                        Color(0xFF0B271C),
-                        Color(0xFF04150F),
-                      ],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: _gold.withOpacity(.12),
-                        blurRadius: 28,
-                        spreadRadius: 1,
-                      ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.fromLTRB(17, 22, 17, 22),
-                  child: Column(
-                    children: [
-                      const Text(
-                        'ROYAL ONE',
-                        style: TextStyle(
-                          color: _gold,
-                          fontSize: 13,
-                          letterSpacing: 4,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 9),
-                      Container(height: 1, width: 92, color: _gold),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'پروفایل اختصاصی',
-                        textDirection: TextDirection.rtl,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      const Text(
-                        'PERSONAL PROFILE',
-                        style: TextStyle(
-                          color: _muted,
-                          fontSize: 11,
-                          letterSpacing: 2.2,
-                        ),
-                      ),
-                      const SizedBox(height: 22),
-                      Row(
-                        children: const [
-                          Expanded(
-                            child: _EmptyPhotoSlot(
-                              slotKey: 'my-profile-photo-1',
-                              label: 'تصویر اصلی',
-                            ),
-                          ),
-                          SizedBox(width: 12),
-                          Expanded(
-                            child: _EmptyPhotoSlot(
-                              slotKey: 'my-profile-photo-2',
-                              label: 'تصویر دوم',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                _profileHeader(),
+                _menuTile(
+                  keyName: 'my-profile-reservations-action',
+                  icon: Icons.calendar_month_outlined,
+                  title: 'My Reservations · رزروهای من',
+                  onTap: _openReservations,
                 ),
-                const SizedBox(height: 18),
-                Container(
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0A291E),
-                    border: Border.all(color: const Color(0x77DFC18A)),
-                    borderRadius: BorderRadius.circular(23),
-                  ),
-                  child: const Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'اطلاعات اختصاصی',
-                        textDirection: TextDirection.rtl,
-                        style: TextStyle(
-                          color: _gold,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      SizedBox(height: 14),
-                      _EmptyDetail(label: 'نام و عنوان'),
-                      SizedBox(height: 11),
-                      _EmptyDetail(label: 'معرفی کوتاه'),
-                      SizedBox(height: 11),
-                      _EmptyDetail(label: 'اطلاعات تکمیلی'),
-                    ],
-                  ),
+                _menuTile(
+                  keyName: 'my-profile-points-action',
+                  icon: Icons.auto_awesome_outlined,
+                  title: 'My Points · امتیازات من',
+                  trailing: _loading ? '…' : (_localTickets?.toString() ?? '—'),
+                  onTap: _openPoints,
                 ),
-                const SizedBox(height: 21),
+                _menuTile(
+                  keyName: 'my-profile-offers-action',
+                  icon: Icons.local_offer_outlined,
+                  title: 'My Offers · پیشنهادهای من',
+                  onTap: _openOffers,
+                ),
+                _menuTile(
+                  keyName: 'my-profile-notifications-action',
+                  icon: Icons.notifications_none_rounded,
+                  title: 'Notifications · اعلان‌ها',
+                  onTap: _openNotifications,
+                ),
+                _menuTile(
+                  keyName: 'my-profile-settings-action',
+                  icon: Icons.settings_outlined,
+                  title: 'Settings · تنظیمات حساب',
+                  onTap: _openSettings,
+                ),
+                const SizedBox(height: 13),
                 const Text(
-                  'دسترسی به بخش‌های اپ',
+                  'تیکت‌های نمایش‌داده‌شده ممکن است محلی باشند؛ جوایز نیازمند تأیید سرور هستند.',
                   textDirection: TextDirection.rtl,
-                  style: TextStyle(
-                    color: _gold,
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                _NavigationTile(
-                  key: const ValueKey('my-profile-club-action'),
-                  icon: Icons.workspace_premium_outlined,
-                  title: 'حساب رویال کلاب',
-                  subtitle: 'عضویت، تیکت‌ها و امتیازات',
-                  onTap: () => _open(context, const RoyalClubProfilePage()),
-                ),
-                _NavigationTile(
-                  key: const ValueKey('my-profile-heritage-action'),
-                  icon: Icons.auto_stories_outlined,
-                  title: 'میراث کنسرسیوم سهند',
-                  subtitle: 'OUR HERITAGE',
-                  onTap: () => _open(context, const HeritagePage()),
-                ),
-                _NavigationTile(
-                  key: const ValueKey('my-profile-explore-action'),
-                  icon: Icons.explore_outlined,
-                  title: 'مجموعه‌های رویال وان',
-                  subtitle: 'EXPLORE',
-                  onTap: () => _open(context, const RoyalExplorePage()),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'One Entrance. A Whole Royal World.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: _muted, fontSize: 11, letterSpacing: 1),
+                  style: TextStyle(color: _muted, fontSize: 10),
                 ),
               ],
             ),
           ),
         ),
       ),
+      bottomNavigationBar: _bottomBar(),
     );
   }
 }
 
-class _EmptyPhotoSlot extends StatelessWidget {
-  const _EmptyPhotoSlot({required this.slotKey, required this.label});
-
-  final String slotKey;
-  final String label;
+class _ProfileNotificationsPage extends StatelessWidget {
+  const _ProfileNotificationsPage();
 
   @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      label: '$label: هنوز تصویری انتخاب نشده',
-      child: Container(
-        key: ValueKey(slotKey),
-        height: 158,
-        decoration: BoxDecoration(
-          color: const Color(0xFF09251A),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xBBDFC18A), width: 1.1),
-        ),
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: const Color(0xFF030907),
+    appBar: AppBar(
+      backgroundColor: const Color(0xFF030907),
+      foregroundColor: const Color(0xFFDABB80),
+      title: const Text('NOTIFICATIONS'),
+    ),
+    body: const Center(
+      child: Padding(
+        padding: EdgeInsets.all(28),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.image_outlined, color: Color(0x80DFC18A), size: 30),
-            const SizedBox(height: 10),
-            Text(
-              label,
-              style: const TextStyle(color: Color(0xFFDFC18A), fontSize: 13),
-              textDirection: TextDirection.rtl,
-            ),
+            Icon(Icons.notifications_none_rounded,
+                color: Color(0xFFDABB80), size: 48),
+            SizedBox(height: 16),
+            Text('سامانه اعلان‌ها هنوز فعال نشده است.',
+                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white70, fontSize: 16)),
           ],
         ),
       ),
-    );
-  }
-}
-
-class _EmptyDetail extends StatelessWidget {
-  const _EmptyDetail({required this.label});
-  final String label;
-
-  @override
-  Widget build(BuildContext context) => Semantics(
-        label: '$label: هنوز تکمیل نشده',
-        child: Row(
-          textDirection: TextDirection.rtl,
-          children: [
-            SizedBox(
-              width: 95,
-              child: Text(
-                label,
-                style: const TextStyle(
-                  color: Color(0xFFC5CDBF),
-                  fontSize: 12,
-                ),
-                textDirection: TextDirection.rtl,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Container(
-                height: 35,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF061B13),
-                  borderRadius: BorderRadius.circular(9),
-                  border: Border.all(color: const Color(0x66DFC18A)),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-}
-
-class _NavigationTile extends StatelessWidget {
-  const _NavigationTile({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 9),
-        child: Material(
-          color: const Color(0xFF0B2B20),
-          borderRadius: BorderRadius.circular(16),
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 14),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0x77DFC18A)),
-              ),
-              child: Row(
-                textDirection: TextDirection.rtl,
-                children: [
-                  Icon(icon, color: const Color(0xFFDFC18A)),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          title,
-                          textDirection: TextDirection.rtl,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        Text(
-                          subtitle,
-                          textDirection: TextDirection.rtl,
-                          style: const TextStyle(
-                            color: Color(0xFFC5CDBF),
-                            fontSize: 11,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Icon(Icons.chevron_left_rounded,
-                      color: Color(0xFFDFC18A)),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
+    ),
+  );
 }
