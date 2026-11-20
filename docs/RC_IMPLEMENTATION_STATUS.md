@@ -67,3 +67,10 @@ Do not activate, promise automatic delivery, or deploy any rewards until user ap
 - Suggested base maximum for both is 3,000 RP; skill-based scoring for Find the Difference and Crown must be defined and validated server-side.
 - Ticket entry costs remain 1 (Find the Difference), 2 (Crown), 3 (Deal).
 - This is a product-design decision, not a live implementation. Avoid changing the published app or enabling redemptions until compliance review and budget controls.
+
+## Organizer and physical venue confirmation
+- User states they own Royal Mall Tabriz and Royal Village Café and can formally approve using these premises.
+- Proposed official physical location for RC competitions, award ceremonies and in-person prize handover: Royal Mall Tabriz; Royal Village Café can host winners' reception.
+- Management must verify prize recipients, obtain signed handover receipt and document inventory release.
+- Ownership/venue permission does NOT replace legal approvals or Google Play requirements for chance-based redeemable rewards.
+- Do not assert a particular legal entity is the organizer without confirmation of its registered identity and applicable obligations.
