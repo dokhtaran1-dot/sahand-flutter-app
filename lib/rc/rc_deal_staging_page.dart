@@ -18,6 +18,9 @@ class _RcDealStagingPageState extends State<RcDealStagingPage> {
   String status = 'برای شروع وارد حساب آزمایشی شوید';
   bool busy = false;
   int? finalAward;
+  int? bankerOffer;
+  final Set<int> rejectedStages = {};
+  static const offerStages = <int>{6,11,15,18,20,21,22,23,24};
   int? tickets;
   int? points;
 
@@ -49,6 +52,8 @@ class _RcDealStagingPageState extends State<RcDealStagingPage> {
       selected = null;
       opened.clear();
       finalAward = null;
+      bankerOffer = null;
+      rejectedStages.clear();
       tickets = tickets == null ? null : tickets! - 3;
       status = 'یکی از ۲۶ چمدان را برای خودت انتخاب کن';
     });
@@ -74,6 +79,35 @@ class _RcDealStagingPageState extends State<RcDealStagingPage> {
         status = 'چمدان $number: $value RP';
       });
     }
+  });
+
+  Future<void> _offer() => _call(() async {
+    if (roundId == null) return;
+    final offer = await client.rpc('rc_banker_offer', params: {
+      'p_round': roundId,
+    });
+    if (mounted) setState(() {
+      bankerOffer = (offer as num).toInt();
+      status = 'پیشنهاد بانکدار: $bankerOffer RP';
+    });
+  });
+
+  Future<void> _decision(bool accept) => _call(() async {
+    if (roundId == null || bankerOffer == null) return;
+    final result = await client.rpc('rc_banker_decision', params: {
+      'p_round': roundId, 'p_accept': accept,
+    }) as Map;
+    if (mounted) setState(() {
+      if (result['settled'] == true) {
+        finalAward = (result['royal_points'] as num).toInt();
+        points = points == null ? null : points! + finalAward!;
+        status = 'DEAL! $finalAward RP در کیف پول آزمایشی ثبت شد';
+      } else {
+        rejectedStages.add(opened.length);
+        status = 'NO DEAL! بازی ادامه دارد';
+      }
+      bankerOffer = null;
+    });
   });
 
   Future<void> _settle() => _call(() async {
@@ -125,7 +159,7 @@ class _RcDealStagingPageState extends State<RcDealStagingPage> {
             final isSelected = selected == n;
             final value = opened[n];
             return InkWell(
-              onTap: busy || roundId == null || finalAward != null || isSelected || value != null
+              onTap: busy || roundId == null || finalAward != null || bankerOffer != null || (selected != null && offerStages.contains(opened.length) && !rejectedStages.contains(opened.length)) || isSelected || value != null
                 ? null : () => _tap(n),
               borderRadius: BorderRadius.circular(14),
               child: Container(
@@ -145,11 +179,25 @@ class _RcDealStagingPageState extends State<RcDealStagingPage> {
             );
           }),
         const SizedBox(height: 16),
+        if (selected != null && bankerOffer == null && offerStages.contains(opened.length)
+            && !rejectedStages.contains(opened.length) && finalAward == null)
+          FilledButton(onPressed: busy ? null : _offer,
+            child: const Text('تماس بانکدار · دریافت پیشنهاد')),
+        if (bankerOffer != null) ...[
+          Text('BANKER OFFER: $bankerOffer RP', textAlign: TextAlign.center,
+            style: const TextStyle(color: gold, fontSize: 24)),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+            FilledButton(onPressed: busy ? null : () => _decision(true),
+              child: const Text('DEAL')),
+            OutlinedButton(onPressed: busy ? null : () => _decision(false),
+              child: const Text('NO DEAL')),
+          ]),
+        ],
         FilledButton(
-          onPressed: busy || opened.length != 25 || finalAward != null ? null : _settle,
+          onPressed: busy || bankerOffer != null || opened.length != 25 || finalAward != null ? null : _settle,
           child: const Text('بازکردن چمدان نهایی و ثبت RP')),
         const SizedBox(height: 14),
-        const Text('پیشنهاد بانکدار، چالش‌های مهارتی و سایر بازی‌ها در این صفحه آزمایشی هنوز متصل نیستند.',
+        const Text('چالش‌های مهارتی و سایر بازی‌ها در این صفحه آزمایشی هنوز متصل نیستند.',
           textAlign: TextAlign.center, style: TextStyle(color: Colors.white60)),
       ]),
     ))),
