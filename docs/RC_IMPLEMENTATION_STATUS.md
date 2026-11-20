@@ -61,3 +61,9 @@ Do not activate, promise automatic delivery, or deploy any rewards until user ap
 - Do not award both the banker offer and the final case amount. Do not allow duplicate settlement, retries to mint extra RP, or client-supplied settlement amounts.
 - Server should generate and persist the shuffled case values, player case selection, opens, banker offers, and terminal settlement; enforce entry tickets, state transitions and replay protections.
 - This is a product specification update only; NOT implemented as a secure wallet feature yet. Real-prize redemption remains disabled pending legal and platform compliance review.
+
+## User direction: other games should not have lower RP potential than Deal
+- Find the Difference and Crown should each offer a maximum base round award of at least 3,000 redeemable RP, comparable to Deal's 3,000 RP case.
+- Suggested base maximum for both is 3,000 RP; skill-based scoring for Find the Difference and Crown must be defined and validated server-side.
+- Ticket entry costs remain 1 (Find the Difference), 2 (Crown), 3 (Deal).
+- This is a product-design decision, not a live implementation. Avoid changing the published app or enabling redemptions until compliance review and budget controls.
