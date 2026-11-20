@@ -32,6 +32,10 @@ jobs:
           flutter pub get
       - name: RC rules tests
         run: flutter test test/rc_rules_test.dart
+      - name: Repair missing Android launcher foreground in staging checkout
+        run: |
+          mkdir -p android/app/src/main/res/mipmap-anydpi-v26
+          sed -i 's|@mipmap/ic_launcher_foreground|@mipmap/ic_launcher|g' android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
       - name: Build isolated offline debug APK (no secrets needed)
         run: |
           flutter build apk --debug --target lib/main_rc_offline.dart
