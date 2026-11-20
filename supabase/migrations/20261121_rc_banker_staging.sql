@@ -13,6 +13,7 @@ begin
  n:=cardinality(r.opened);
  if n not in (6,11,15,18,20,21,22,23,24) then raise exception 'Not a banker round'; end if;
  if r.offer_at_count=n then return r.banker_offer; end if;
+ if n=any(r.rejected_offer_counts) then raise exception 'Offer already rejected'; end if;
  if r.offer_at_count is not null then raise exception 'Respond to previous offer'; end if;
  select avg(r.vals[i]) into mean_value from generate_series(1,26) as i
  where not(i=any(r.opened));
