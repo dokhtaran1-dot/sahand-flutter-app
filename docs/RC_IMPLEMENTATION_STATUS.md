@@ -54,3 +54,10 @@ Remove ordinary RV rewards (espresso, drinks, desserts, breakfast, dinners and V
 Retain premium competition prizes: PlayStation 5, flagship Samsung phone, flagship iPhone.
 Previously proposed competition eligibility thresholds remain provisional: PS5 500,000 RP; Samsung 1,000,000 RP; iPhone 1,500,000 RP.
 Do not activate, promise automatic delivery, or deploy any rewards until user approves final catalog and compliance review completes.
+
+## Final explicit user confirmation — Deal winnings credit wallet
+- A Deal round's settled amount (accepted banker offer OR final retained case value) MUST be credited to the user's redeemable Royal Points wallet, once only, by a trusted authenticated server transaction.
+- For a final case worth 3,000 RP, add 3,000 RP; up to 45 additional skill RP may be earned independently, making 3,045 RP the maximum for that particular final-case outcome.
+- Do not award both the banker offer and the final case amount. Do not allow duplicate settlement, retries to mint extra RP, or client-supplied settlement amounts.
+- Server should generate and persist the shuffled case values, player case selection, opens, banker offers, and terminal settlement; enforce entry tickets, state transitions and replay protections.
+- This is a product specification update only; NOT implemented as a secure wallet feature yet. Real-prize redemption remains disabled pending legal and platform compliance review.
