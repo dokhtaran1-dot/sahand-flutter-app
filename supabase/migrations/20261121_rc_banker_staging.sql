@@ -58,6 +58,9 @@ begin
  if not found or r.status <> 'playing' or r.offer_at_count is not null
  or p_case=r.selected_case or p_case=any(r.opened) or cardinality(r.opened)>=25
  then raise exception 'Case unavailable'; end if;
+ if cardinality(r.opened) in (6,11,15,18,20,21,22,23,24)
+    and not (cardinality(r.opened)=any(r.rejected_offer_counts))
+ then raise exception 'Banker offer must be resolved first'; end if;
  update rc.deal_rounds set opened=array_append(opened,p_case) where id=p_round;
  return r.vals[p_case];
 end $$;
