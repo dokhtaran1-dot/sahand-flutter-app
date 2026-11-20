@@ -1,10 +1,11 @@
-name: RC isolated Android APK (staging)
+name: RC offline Android APK (free)
 on:
   workflow_dispatch:
   pull_request:
     paths:
       - 'lib/rc/**'
       - 'lib/main_rc_staging.dart'
+      - 'lib/main_rc_offline.dart'
       - 'supabase/**'
       - 'test/rc_rules_test.dart'
       - '.github/workflows/rc-staging-apk.yml'
@@ -24,14 +25,9 @@ jobs:
         run: flutter pub get
       - name: RC rules tests
         run: flutter test test/rc_rules_test.dart
-      - name: Build isolated debug APK
-        env:
-          RC_SUPABASE_URL: ${{ secrets.RC_SUPABASE_URL }}
-          RC_SUPABASE_ANON_KEY: ${{ secrets.RC_SUPABASE_ANON_KEY }}
+      - name: Build isolated offline debug APK (no secrets needed)
         run: |
-          flutter build apk --debug --target lib/main_rc_staging.dart \
-            --dart-define=SUPABASE_URL="$RC_SUPABASE_URL" \
-            --dart-define=SUPABASE_ANON_KEY="$RC_SUPABASE_ANON_KEY"
+          flutter build apk --debug --target lib/main_rc_offline.dart
           cp build/app/outputs/flutter-apk/app-debug.apk royal-one-rc-test.apk
       - uses: actions/upload-artifact@v4
         with:
