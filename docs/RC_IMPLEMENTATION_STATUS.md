@@ -47,3 +47,10 @@ These replace the earlier *proposed* thresholds; prices require final management
 - Flagship iPhone skill-competition eligibility: 1,500,000 RP
 
 Premium rewards are NOT automatic redemptions; they require published competition rules, capacity and management approval. No live redemption until compliance review, budget control and secure server implementation are complete.
+
+## Latest reward catalog scope — supersedes previous catalog (2026-11-20)
+User requests ONLY premium prizes such as flagship phones and the other previously listed premium prize(s).
+Remove ordinary RV rewards (espresso, drinks, desserts, breakfast, dinners and VIP/Imperial dinners) from the planned redemption catalog.
+Retain premium competition prizes: PlayStation 5, flagship Samsung phone, flagship iPhone.
+Previously proposed competition eligibility thresholds remain provisional: PS5 500,000 RP; Samsung 1,000,000 RP; iPhone 1,500,000 RP.
+Do not activate, promise automatic delivery, or deploy any rewards until user approves final catalog and compliance review completes.
