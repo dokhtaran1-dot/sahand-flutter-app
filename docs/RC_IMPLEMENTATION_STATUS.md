@@ -23,3 +23,12 @@
 
 IMPORTANT: Local Deal results must never credit redeemable points. Client-only checks
 are not security boundaries. Server-side idempotency and immutable ledger are required.
+
+## Approved change — Royal Points (RP)
+- Use the single user-facing name **Royal Points (RP)** for all game points.
+- Deal case values and accepted banker DEAL offers are intended to credit **redeemable RP**, not display-only points.
+- Correct skill challenges may additionally award up to 45 RP per round.
+- Ticket balance remains separate from RP balance; tickets remain free and non-transferable.
+- Do not enable prize redemption or publish this chance-based reward mechanic before legal and app-store compliance review.
+- Implement banker acceptance, case resolution and RP credit only through authenticated, atomic, idempotent server-side operations. Client display values must never directly mutate wallet balances.
+- The previous display-only Deal logic and documentation are superseded by this product decision, but existing code is NOT yet a compliant or complete implementation.
