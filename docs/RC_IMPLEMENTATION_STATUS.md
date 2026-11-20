@@ -32,3 +32,18 @@ are not security boundaries. Server-side idempotency and immutable ledger are re
 - Do not enable prize redemption or publish this chance-based reward mechanic before legal and app-store compliance review.
 - Implement banker acceptance, case resolution and RP credit only through authenticated, atomic, idempotent server-side operations. Client display values must never directly mutate wallet balances.
 - The previous display-only Deal logic and documentation are superseded by this product decision, but existing code is NOT yet a compliant or complete implementation.
+
+## Revised proposed RC reward thresholds (2026-11-20)
+These replace the earlier *proposed* thresholds; prices require final management approval before activation:
+- Espresso: 5,000 RP
+- RV special drink: 10,000 RP
+- Dessert: 15,000 RP
+- Breakfast for two: 30,000 RP
+- RV dinner for two: 60,000 RP
+- VIP dinner for two: 120,000 RP
+- Imperial dinner for 6+1: 300,000 RP
+- PS5 skill-competition eligibility: 500,000 RP
+- Flagship Samsung skill-competition eligibility: 1,000,000 RP
+- Flagship iPhone skill-competition eligibility: 1,500,000 RP
+
+Premium rewards are NOT automatic redemptions; they require published competition rules, capacity and management approval. No live redemption until compliance review, budget control and secure server implementation are complete.
