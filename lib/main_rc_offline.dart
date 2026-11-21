@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'rc/rc_mini_games.dart';
 
 /// Isolated, free, offline Royal Club visual preview. No prizes or server writes.
@@ -38,21 +39,57 @@ class _RcOfflineGameState extends State<RcOfflineGame> {
   final Map<int,int> opened = {};
   int? offer;
   int? awarded;
-  int tickets = 25;
+  int tickets = 20;
   int points = 0;
+  String lastDailyUtc = '';
+  bool loaded = false;
   bool active = false;
   String message = 'برای شروع بازی، دکمه طلایی را لمس کنید';
   @override
-  void initState() { super.initState(); shuffled = List.of(values)..shuffle(random); }
+  void initState() { super.initState(); shuffled = List.of(values)..shuffle(random); loadWallet(); }
+
+  String get todayUtc => DateTime.now().toUtc().toIso8601String().substring(0, 10);
+  bool get dailyAvailable => loaded && lastDailyUtc != todayUtc;
+
+  Future<void> loadWallet() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      tickets = prefs.getInt('rc_demo_tickets_v2') ?? 20;
+      points = prefs.getInt('rc_demo_points_v2') ?? 0;
+      lastDailyUtc = prefs.getString('rc_demo_daily_v2') ?? '';
+      loaded = true;
+      message = 'کیف پول آزمایشی روی همین گوشی ذخیره می‌شود';
+    });
+  }
+
+  Future<void> saveWallet() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('rc_demo_tickets_v2', tickets);
+    await prefs.setInt('rc_demo_points_v2', points);
+    await prefs.setString('rc_demo_daily_v2', lastDailyUtc);
+  }
+
+  void claimDaily() {
+    if (!dailyAvailable) return;
+    setState(() {
+      tickets += 5;
+      lastDailyUtc = todayUtc;
+      message = '۵ بلیت روزانه آزمایشی دریافت شد';
+    });
+    saveWallet();
+  }
+
 
   void start() {
-    if (active || tickets < 3) return;
+    if (!loaded || active || tickets < 3) return;
     setState(() {
       tickets -= 3;
       shuffled = List.of(values)..shuffle(random);
       chosen = null; opened.clear(); offer = null; awarded = null;
       active = true; message = 'یک چمدان برای خودتان انتخاب کنید';
     });
+    saveWallet();
   }
 
   void tapCase(int n) {
@@ -81,12 +118,14 @@ class _RcOfflineGameState extends State<RcOfflineGame> {
       awarded = amount; points += amount; active = false; offer = null;
       message = '$amount امتیاز نمایشی به حساب شما اضافه شد';
     });
+    saveWallet();
   }
 
   Future<void> playMiniGame(bool crown) async {
     final cost = crown ? 2 : 1;
-    if (active || tickets < cost) return;
+    if (!loaded || active || tickets < cost) return;
     setState(() { tickets -= cost; });
+    await saveWallet();
     final award = await Navigator.push<int>(context,
       MaterialPageRoute(builder: (_) => RcMiniGame(crown: crown)));
     if (!mounted) return;
@@ -95,12 +134,17 @@ class _RcOfflineGameState extends State<RcOfflineGame> {
       message = award == null ? 'بازی ناتمام ماند؛ بلیت مصرف شد' :
         'بازی پایان یافت: ${award} RP نمایشی';
     });
+    await saveWallet();
   }
 
-  void reset() => setState(() {
-    tickets = 25; points = 0; active = false; awarded = null; chosen = null;
-    opened.clear(); offer = null; message = 'نسخه آزمایشی از ابتدا شروع شد';
-  });
+  void reset() {
+    setState(() {
+      tickets = 20; points = 0; active = false; awarded = null; chosen = null;
+      opened.clear(); offer = null; lastDailyUtc = '';
+      message = 'کیف پول آزمایشی بازنشانی شد';
+    });
+    saveWallet();
+  }
 
   void info(String title, String body) => showDialog<void>(
     context: context, builder: (context) => AlertDialog(
@@ -198,6 +242,9 @@ class _RcOfflineGameState extends State<RcOfflineGame> {
             const SizedBox(width: 6),
             pill(Icons.emoji_events_outlined, 'DEMO'),
           ]),
+          const SizedBox(height: 10),
+          action(dailyAvailable ? 'CLAIM DAILY · +5 TICKETS' : 'DAILY TICKETS CLAIMED',
+            dailyAvailable ? claimDaily : null),
           const SizedBox(height: 20),
           const Text('DEAL / NO DEAL', textAlign: TextAlign.center, style: TextStyle(
             fontFamily: 'serif', color: gold, fontSize: 32, fontWeight: FontWeight.bold)),
@@ -241,7 +288,7 @@ class _RcOfflineGameState extends State<RcOfflineGame> {
           ],
           if (active && chosen != null && opened.length == 25 && offer == null)
             action('OPEN MY CASE', () => finish(shuffled[chosen! - 1]), primary: true),
-          if (!active) action('START DEAL  ·  3 TICKETS', tickets >= 3 ? start : null, primary: true),
+          if (!active) action('START DEAL  ·  3 TICKETS', loaded && tickets >= 3 ? start : null, primary: true),
           const SizedBox(height: 12),
           Row(children: [
             Expanded(child: action('CROWN · 2 TICKETS', !active && tickets >= 2 ? () => playMiniGame(true) : null)),
@@ -260,7 +307,7 @@ class _RcOfflineGameState extends State<RcOfflineGame> {
               icon: const Icon(Icons.card_giftcard), label: const Text('جوایز')),
           ]),
           const SizedBox(height: 12),
-          const Text('OFFLINE PREVIEW · NO REAL REWARDS', textAlign: TextAlign.center,
+          const Text('OFFLINE PREVIEW · SAVED ON DEVICE · NO REAL REWARDS', textAlign: TextAlign.center,
             style: TextStyle(fontSize: 11, color: Color(0xFFBCA879))),
           const SizedBox(height: 18),
         ]),
