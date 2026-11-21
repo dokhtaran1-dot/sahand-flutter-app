@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'rc/rc_mini_games.dart';
 
 /// Isolated, free, offline Royal Club visual preview. No prizes or server writes.
 void main() => runApp(const RcOfflineApp());
@@ -79,6 +80,20 @@ class _RcOfflineGameState extends State<RcOfflineGame> {
     setState(() {
       awarded = amount; points += amount; active = false; offer = null;
       message = '$amount امتیاز نمایشی به حساب شما اضافه شد';
+    });
+  }
+
+  Future<void> playMiniGame(bool crown) async {
+    final cost = crown ? 2 : 1;
+    if (active || tickets < cost) return;
+    setState(() { tickets -= cost; });
+    final award = await Navigator.push<int>(context,
+      MaterialPageRoute(builder: (_) => RcMiniGame(crown: crown)));
+    if (!mounted) return;
+    setState(() {
+      points += award ?? 0;
+      message = award == null ? 'بازی ناتمام ماند؛ بلیت مصرف شد' :
+        'بازی پایان یافت: ${award} RP نمایشی';
     });
   }
 
@@ -227,6 +242,12 @@ class _RcOfflineGameState extends State<RcOfflineGame> {
           if (active && chosen != null && opened.length == 25 && offer == null)
             action('OPEN MY CASE', () => finish(shuffled[chosen! - 1]), primary: true),
           if (!active) action('START DEAL  ·  3 TICKETS', tickets >= 3 ? start : null, primary: true),
+          const SizedBox(height: 12),
+          Row(children: [
+            Expanded(child: action('CROWN · 2 TICKETS', !active && tickets >= 2 ? () => playMiniGame(true) : null)),
+            const SizedBox(width: 8),
+            Expanded(child: action('FIND DIFFERENCE · 1', !active && tickets >= 1 ? () => playMiniGame(false) : null)),
+          ]),
           const SizedBox(height: 10),
           Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
             TextButton.icon(onPressed: () => info('راهنمای بازی',
