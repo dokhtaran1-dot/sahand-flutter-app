@@ -44,12 +44,24 @@ class _RcOfflineGameState extends State<RcOfflineGame> {
   String lastDailyUtc = '';
   bool loaded = false;
   bool active = false;
+  int weeklyPoints = 0;
+  String weekKey = '';
   String message = 'برای شروع بازی، دکمه طلایی را لمس کنید';
   @override
   void initState() { super.initState(); shuffled = List.of(values)..shuffle(random); loadWallet(); }
 
   String get todayUtc => DateTime.now().toUtc().toIso8601String().substring(0, 10);
   bool get dailyAvailable => loaded && lastDailyUtc != todayUtc;
+  String get currentWeekKey {
+    final now = DateTime.now().toUtc();
+    final monday = DateTime.utc(now.year, now.month, now.day).subtract(Duration(days: now.weekday - 1));
+    return monday.toIso8601String().substring(0, 10);
+  }
+  void creditPoints(int amount) {
+    points += amount;
+    if (weekKey != currentWeekKey) { weekKey = currentWeekKey; weeklyPoints = 0; }
+    weeklyPoints += amount;
+  }
 
   Future<void> loadWallet() async {
     final prefs = await SharedPreferences.getInstance();
@@ -58,6 +70,9 @@ class _RcOfflineGameState extends State<RcOfflineGame> {
       tickets = prefs.getInt('rc_demo_tickets_v2') ?? 20;
       points = prefs.getInt('rc_demo_points_v2') ?? 0;
       lastDailyUtc = prefs.getString('rc_demo_daily_v2') ?? '';
+      weekKey = prefs.getString('rc_demo_week_key_v2') ?? currentWeekKey;
+      weeklyPoints = weekKey == currentWeekKey ? (prefs.getInt('rc_demo_week_points_v2') ?? 0) : 0;
+      weekKey = currentWeekKey;
       loaded = true;
       message = 'کیف پول آزمایشی روی همین گوشی ذخیره می‌شود';
     });
@@ -68,6 +83,8 @@ class _RcOfflineGameState extends State<RcOfflineGame> {
     await prefs.setInt('rc_demo_tickets_v2', tickets);
     await prefs.setInt('rc_demo_points_v2', points);
     await prefs.setString('rc_demo_daily_v2', lastDailyUtc);
+    await prefs.setString('rc_demo_week_key_v2', weekKey);
+    await prefs.setInt('rc_demo_week_points_v2', weeklyPoints);
   }
 
   void claimDaily() {
@@ -115,7 +132,7 @@ class _RcOfflineGameState extends State<RcOfflineGame> {
 
   void finish(int amount) {
     setState(() {
-      awarded = amount; points += amount; active = false; offer = null;
+      awarded = amount; creditPoints(amount); active = false; offer = null;
       message = '$amount امتیاز نمایشی به حساب شما اضافه شد';
     });
     saveWallet();
@@ -130,7 +147,7 @@ class _RcOfflineGameState extends State<RcOfflineGame> {
       MaterialPageRoute(builder: (_) => RcMiniGame(crown: crown)));
     if (!mounted) return;
     setState(() {
-      points += award ?? 0;
+      creditPoints(award ?? 0);
       message = award == null ? 'بازی ناتمام ماند؛ بلیت مصرف شد' :
         'بازی پایان یافت: ${award} RP نمایشی';
     });
@@ -138,13 +155,17 @@ class _RcOfflineGameState extends State<RcOfflineGame> {
   }
 
   void reset() {
+    if (active) return;
     setState(() {
-      tickets = 20; points = 0; active = false; awarded = null; chosen = null;
-      opened.clear(); offer = null; lastDailyUtc = '';
-      message = 'کیف پول آزمایشی بازنشانی شد';
+      awarded = null; chosen = null; opened.clear(); offer = null;
+      message = 'صفحه بازی آماده است؛ موجودی بلیت و امتیاز حفظ شد';
     });
-    saveWallet();
   }
+
+  void showLeaderboard() => info('رتبه‌بندی هفتگی · آزمایشی',
+    'امتیاز این هفته روی دستگاه شما: $weeklyPoints RP\\n'
+    'این نسخه آفلاین است و رتبه‌بندی واقعی ۱۰ نفر برتر نیازمند سرور امن و حساب کاربری است.');
+
 
   void info(String title, String body) => showDialog<void>(
     context: context, builder: (context) => AlertDialog(
@@ -306,6 +327,8 @@ class _RcOfflineGameState extends State<RcOfflineGame> {
               'در این نسخه آفلاین هیچ جایزه واقعی، رتبه‌بندی آنلاین یا امکان خرید بلیت وجود ندارد.'),
               icon: const Icon(Icons.card_giftcard), label: const Text('جوایز')),
           ]),
+          TextButton.icon(onPressed: showLeaderboard,
+            icon: const Icon(Icons.leaderboard), label: const Text('امتیاز هفتگی · جدول رتبه‌بندی آزمایشی')),
           const SizedBox(height: 12),
           const Text('OFFLINE PREVIEW · SAVED ON DEVICE · NO REAL REWARDS', textAlign: TextAlign.center,
             style: TextStyle(fontSize: 11, color: Color(0xFFBCA879))),
