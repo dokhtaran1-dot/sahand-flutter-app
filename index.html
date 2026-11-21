@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#103628">
+<title>RV CONTROL | Royal Village</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<style>
+:root{color-scheme:dark;--bg:#071913;--panel:#102b21;--panel2:#143c2c;--gold:#d7b777;--white:#f7f3e9;--muted:#b5c7bd;--line:#355a44;--red:#ed8e86}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Tahoma,"Noto Sans Arabic",Arial,sans-serif;background:var(--bg);color:var(--white)}body{padding-bottom:35px}a{color:var(--gold)}button,input,select,textarea{font:inherit}button{border:0;border-radius:12px;padding:12px 16px;background:var(--gold);color:#17271d;font-weight:700;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}.outline{background:transparent;border:1px solid var(--line);color:var(--white)}.danger{color:var(--red)}input,select,textarea{width:100%;border-radius:11px;border:1px solid var(--line);background:#0c241a;color:var(--white);padding:13px;outline:none}label{font-size:13px;color:var(--muted);margin-bottom:5px;display:block}input:focus,textarea:focus{border-color:var(--gold)}h1,h2,h3,p{margin:0}h2{font-size:19px;margin-bottom:15px}h3{font-size:15px}p{line-height:1.9}.wrap{width:min(970px,100%);margin:0 auto;padding:16px}.head{background:linear-gradient(130deg,#153c2c,#0b2018);border-bottom:1px solid #3d5d48;padding:20px 16px}.brand{display:flex;align-items:center;gap:15px;justify-content:center}.mark{border:1px solid var(--gold);padding:12px;border-radius:13px;color:var(--gold);font-size:24px;font-family:Georgia,serif;font-weight:700}.eng{color:var(--gold);font-size:20px;font-weight:800;letter-spacing:2px}.tiny{font-size:10px;letter-spacing:.7px;color:var(--muted)}.subtitle{margin-top:12px;text-align:center;color:#d4dfd3;font-size:13px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}.muted{color:var(--muted);font-size:13px}.info{padding:11px 12px;border-radius:10px;background:#204430;color:#e4d6b3;font-size:13px;line-height:1.8;margin:12px 0}.err{color:#ffb2a7}.ok{color:#a7e8ba}.field{margin:10px 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:#153a2a}.stat b{display:block;color:var(--gold);font-size:27px;margin-top:8px}.tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:10px 0}.tabs button{font-size:11px;background:#17382b;color:#b9cebe;padding:10px 4px;min-height:44px}.tabs button.active{background:#2a5940;color:var(--gold)}.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #294837}.row:last-child{border-bottom:0}.tag{font-size:11px;border:1px solid #45624d;border-radius:20px;padding:5px 8px;color:#e6d09d;white-space:nowrap}.block{display:block;width:100%;margin:12px 0}.mini{font-size:12px}.qr-holder{display:flex;justify-content:center;align-items:center;background:#fff;border-radius:12px;padding:12px;min-height:240px;width:240px;max-width:100%;margin:12px auto}.qr-holder img,.qr-holder canvas{max-width:100%;height:auto}.hide{display:none!important}.foot{text-align:center;color:#a7bbae;font-size:10px;letter-spacing:1px;padding:18px}.action{padding:9px;font-size:12px}.input-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}@media(min-width:720px){.tabs{grid-template-columns:repeat(5,1fr)}.grid{grid-template-columns:repeat(4,1fr)}.wrap{padding:22px}.head{padding:25px}}@media(max-width:380px){.tabs button{font-size:10px}.eng{font-size:18px}}
+</style>
+<script>
+/* Built-in lightweight Supabase REST/Auth adapter: no third-party JavaScript required for login. */
+window.supabase={createClient:(base,key)=>{
+  const STORAGE="rvctl:session:v1", AUTH=base+"/auth/v1", REST=base+"/rest/v1";
+  let sess=null;try{sess=JSON.parse(localStorage.getItem(STORAGE)||"null");}catch(e){}
+  function save(s){sess=s;if(s)localStorage.setItem(STORAGE,JSON.stringify(s));else localStorage.removeItem(STORAGE);}
+  function failure(r,d){return {message:(d&&((d.error_description||d.msg||d.message||d.error)))||("HTTP "+r.status),status:r.status};}
+  async function call(url,options={},bearer=true){
+    const h={"apikey":key,"Content-Type":"application/json",...options.headers};
+    if(bearer&&sess?.access_token)h.Authorization="Bearer "+sess.access_token;
+    const r=await fetch(url,{...options,headers:h,cache:"no-store"});
+    let d=null;const content=await r.text();
+    try{d=content?JSON.parse(content):null;}catch(e){d=content;}
+    return {data:r.ok?d:null,error:r.ok?null:failure(r,d)};
+  }
+  async function refresh(){
+    if(!sess?.refresh_token)return null;
+    const r=await call(AUTH+"/token?grant_type=refresh_token",{method:"POST",body:JSON.stringify({refresh_token:sess.refresh_token})},false);
+    if(r.error||!r.data?.access_token){save(null);return null;}
+    save({...r.data,expires_at:Math.floor(Date.now()/1000)+(r.data.expires_in||3600)});
+    return sess;
+  }
+  async function valid(){
+    if(!sess)return null;
+    if(sess.expires_at&&sess.expires_at<Math.floor(Date.now()/1000)+60)return await refresh();
+    return sess;
+  }
+  function selectBuilder(table,cols){
+    const args={order:null,limit:null};
+    const builder={
+      order(col,o){args.order=col+"."+(o?.ascending===false?"desc":"asc");return builder;},
+      limit(n){args.limit=n;return builder;},
+      async then(resolve,reject){
+        try{
+          await valid();
+          const q=new URLSearchParams({select:cols});
+          if(args.order)q.set("order",args.order);
+          if(args.limit)q.set("limit",String(args.limit));
+          const r=await call(REST+"/"+encodeURIComponent(table)+"?"+q.toString(),{method:"GET"});
+          return resolve(r);
+        }catch(e){return reject(e);}
+      }
+    };
+    return builder;
+  }
+  return {
+    auth:{
+      async getSession(){await valid();return {data:{session:sess},error:null};},
+      async signInWithPassword({email,password}){
+        const r=await call(AUTH+"/token?grant_type=password",{method:"POST",body:JSON.stringify({email,password})},false);
+        if(!r.error&&r.data?.access_token)save({...r.data,expires_at:Math.floor(Date.now()/1000)+(r.data.expires_in||3600)});
+        return {data:{session:sess},error:r.error};
+      },
+      async signUp({email,password}){
+        const r=await call(AUTH+"/signup",{method:"POST",body:JSON.stringify({email,password})},false);
+        if(!r.error&&r.data?.access_token)save({...r.data,expires_at:Math.floor(Date.now()/1000)+(r.data.expires_in||3600)});
+        return {data:{session:r.data?.access_token?sess:null},error:r.error};
+      },
+      async getUser(){
+        await valid();
+        const r=await call(AUTH+"/user",{method:"GET"});
+        return {data:{user:r.data||null},error:r.error};
+      },
+      async signOut(){try{await call(AUTH+"/logout",{method:"POST"});}catch(e){}save(null);return {error:null};}
+    },
+    async rpc(fn,args={}){
+      await valid();
+      return await call(REST+"/rpc/"+encodeURIComponent(fn),{method:"POST",body:JSON.stringify(args)});
+    },
+    from(table){return {select(cols){return selectBuilder(table,cols);}}}
+  };
+}};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" async></script>
+</head>
+<body>
+<header class="head"><div class="brand"><div class="mark">RV</div><div><div class="eng">RV CONTROL</div><div class="tiny">ROYAL MALL · SAHAND CONSORTIUM</div></div></div><div class="subtitle">سامانه خصوصی مدیریت و نظارت رویال ویلیج کافه</div></header>
+<main class="wrap">
+<div id="loading" class="card muted">در حال اتصال امن به سامانه…</div>
+<section id="auth" class="hide"><div class="card" style="max-width:450px;margin:25px auto"><h2>ورود اختصاصی</h2><p class="muted">برای مشاهده اطلاعات و ثبت حضور، حساب تأییدشده لازم است.</p><div class="field"><label>ایمیل</label><input id="email" type="email" placeholder="name@example.com" autocomplete="email" dir="ltr"></div><div class="field"><label>رمز عبور</label><input id="pass" type="password" autocomplete="current-password" placeholder="حداقل ۸ کاراکتر" dir="ltr"></div><button id="loginBtn" class="block">ورود به حساب</button><button id="signupBtn" class="outline block">ساخت حساب اولیه</button><div id="authMsg" class="info hide"></div><p class="muted mini">ساخت حساب به‌معنی دریافت دسترسی نیست؛ مالک باید نقش هر شخص را تأیید کند. هیچ‌کس بدون مجوز به اطلاعات کارکنان دسترسی ندارد.</p></div></section>
+<section id="pending" class="hide"><div class="card"><h2>حساب شما هنوز مجوز ندارد</h2><p>ورود موفق بود؛ اما این ایمیل هنوز به فهرست مجاز RV CONTROL متصل نشده است.</p><div class="info">برای فعال شدن پنل مالک یا حساب کارکنان، مدیر سامانه باید نقش را در پایگاه داده تأیید کند.</div><button id="pendingLogout" class="outline block">خروج</button></div></section>
+<section id="app" class="hide">
+<div class="card" style="padding:12px 16px"><div class="row"><div><b id="userName">کاربر</b><div id="roleText" class="muted"></div></div><button class="outline action" id="logout">خروج</button></div></div>
+<div class="tabs">
+<button data-tab="dashboard" id="nav-dashboard">مالک</button>
+<button data-tab="attendance" id="nav-attendance">حضور</button>
+<button data-tab="kiosk" id="nav-kiosk">QR شیفت</button>
+<button data-tab="requests" id="nav-requests">کالا</button>
+<button data-tab="people" id="nav-people">پرسنل</button>
+</div>
+<div id="flash" class="info hide"></div>
+<section id="view-dashboard" class="hide"><div class="card"><h2>داشبورد نظارت مالک</h2><div class="grid"><div class="stat"><span class="muted">پرسنل فعال</span><b id="c-active">—</b></div><div class="stat"><span class="muted">داخل شیفت</span><b id="c-shift">—</b></div><div class="stat"><span class="muted">درخواست باز</span><b id="c-requests">—</b></div><div class="stat"><span class="muted">حساب فعال‌شده</span><b id="c-accounts">—</b></div></div><p class="muted" style="margin-top:15px">بازخوانی خودکار هر ۲۰ ثانیه؛ ثبت‌ها با ساعت سرور انجام می‌شوند.</p></div><div class="card"><h2>آخرین ورود و خروج‌ها</h2><div id="events" class="muted">هنوز موردی ثبت نشده است.</div></div></section>
+<section id="view-attendance" class="hide"><div class="card"><h2>حضور و غیاب QR</h2><p class="muted">با دوربین گوشی، QR زمان‌دار نصب‌شده در محل را اسکن کنید. کد فقط ۷۵ ثانیه اعتبار دارد.</p><div id="scanNotice" class="info">ابتدا با گوشی خود وارد حساب شوید و سپس QR دستگاه محل کار را اسکن کنید.</div><button id="scanButton" class="block" disabled>ثبت ورود یا خروج از QR</button><p id="scanResult" class="muted"></p></div></section>
+<section id="view-kiosk" class="hide"><div class="card"><h2>QR زمان‌دار حضور و غیاب</h2><p class="muted">این صفحه باید روی تبلت یا گوشی ثابتِ محل کار باز باشد. کارکنان با گوشی شخصی و حساب اختصاصی، QR را اسکن می‌کنند.</p><button id="newQR" class="block">ساخت کد جدید</button><div id="qrBox" class="qr-holder"><span style="color:#17382b">برای شروع دکمه بالا را بزنید</span></div><div id="qrExpiry" class="info"></div><p class="muted mini">QR ثابت یا عکس قدیمی پذیرفته نمی‌شود. این روش نیاز به ثبت GPS یا تصویر چهره ندارد.</p></div></section>
+<section id="view-requests" class="hide"><div class="card"><h2>درخواست کالا</h2><div class="field"><label>نام کالا</label><input id="item" maxlength="160" placeholder="مثلاً فیله مرغ"></div><div class="input-row"><div class="field"><label>مقدار</label><input id="qty" type="number" step="0.01" min="0.01" placeholder="۱۲"></div><div class="field"><label>واحد</label><select id="unit"><option>کیلوگرم</option><option>عدد</option><option>بسته</option><option>لیتر</option><option>کارتن</option></select></div></div><div class="field"><label>بخش</label><select id="department"><option>آشپزخانه</option><option>بار</option><option>VIP</option><option>سالن</option><option>خدمات</option></select></div><div class="field"><label>توضیحات</label><textarea id="note" rows="2" maxlength="600" placeholder="مشخصات و ضرورت کالا"></textarea></div><button id="makeRequest" class="block">ارسال درخواست</button></div><div class="card"><h2>گردش درخواست‌ها</h2><p class="muted mini">درخواست ← کنترل انبار ← تأیید مدیر ← خرید ← تحویل ← ثبت مالی ← حسابرسی</p><div id="requestList" style="margin-top:12px"></div></div></section>
+<section id="view-people" class="hide"><div class="card"><h2>پرسنل رویال ویلیج</h2><input id="staffSearch" placeholder="جست‌وجوی نام یا سمت"><div id="staffList" style="margin-top:12px"></div></div></section>
+</section>
+</main><footer class="foot">RV CONTROL · PRIVATE MANAGEMENT SYSTEM · SAHAND CONSORTIUM</footer>
+<script>
+(function(){
+"use strict";
+const PROJECT="https://jwddfcsikkialxzbrhle.supabase.co";
+const KEY="sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve";
+const el=id=>document.getElementById(id);
+let db=null,role=null,tab="dashboard",session=null,qrToken=null,qrTimer=null,requests=[],staff=[];
+const roles={owner:"مالک",executive:"مدیر ارشد",manager:"مدیر اجرایی",chef:"سرآشپز",stock:"انبار",procurement:"خرید",cashier:"صندوق",accountant:"حسابدار",auditor:"حسابرس",staff:"کارمند",kiosk:"دستگاه QR"};
+const statLabel={requested:"درخواست",stock_checked:"کنترل انبار",approved:"تأیید خرید",purchased:"خریداری شد",received:"تحویل انبار",accounted:"ثبت مالی",audited:"حسابرسی شد",rejected:"رد شد"};
+const stageNext={requested:"stock_checked",stock_checked:"approved",approved:"purchased",purchased:"received",received:"accounted",accounted:"audited"};
+const approver={stock_checked:["stock"],approved:["manager","executive"],purchased:["procurement"],received:["stock"],accounted:["accountant"],audited:["auditor"]};
+function safe(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function show(id){["loading","auth","pending","app"].forEach(x=>el(x).classList.toggle("hide",x!==id));}
+function msg(value,bad=false){const box=el("flash");box.textContent=value;box.classList.remove("hide");box.classList.toggle("err",bad);}
+function authMessage(value,bad=false){el("authMsg").textContent=value;el("authMsg").classList.remove("hide");el("authMsg").classList.toggle("err",bad);}
+function pretty(t){try{return new Date(t).toLocaleString("fa-IR",{timeZone:"Asia/Tehran",dateStyle:"short",timeStyle:"short"});}catch(e){return t||"";}}
+async function rpc(name,args={}){const r=await db.rpc(name,args);if(r.error)throw r.error;return r.data;}
+async function begin(){
+ if(!window.supabase){el("loading").textContent="اتصال کتابخانه امنیتی برقرار نشد. اینترنت یا فیلتر CDN را بررسی کنید.";return;}
+ db=window.supabase.createClient(PROJECT,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+ el("loginBtn").onclick=()=>auth(false);el("signupBtn").onclick=()=>auth(true);
+ el("logout").onclick=logout;el("pendingLogout").onclick=logout;
+ document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>nav(b.dataset.tab));
+ el("newQR").onclick=issueQR;el("scanButton").onclick=scanQR;el("makeRequest").onclick=createRequest;
+ el("staffSearch").oninput=renderStaff;
+ const r=await db.auth.getSession();session=r.data.session;
+ if(session)await prepare();else show("auth");
+ setInterval(async()=>{if(session&&role&&["owner","executive","manager","auditor"].includes(role)&&tab==="dashboard")await loadDashboard(false);},20000);
+ setInterval(async()=>{if(session&&role&&tab==="kiosk"&&qrToken)await issueQR();},60000);
+}
+async function auth(signup){
+ let email=el("email").value.trim(),password=el("pass").value;
+ if(!email.includes("@")||password.length<8){authMessage("ایمیل معتبر و رمز حداقل ۸ حرف لازم است.",true);return;}
+ el("loginBtn").disabled=true;el("signupBtn").disabled=true;
+ try{
+  const r=signup?await db.auth.signUp({email,password}):await db.auth.signInWithPassword({email,password});
+  if(r.error)throw r.error;
+  if(signup&&!r.data.session){authMessage("ثبت اولیه انجام شد. ایمیل تأیید را بررسی کنید؛ پس از تأیید حساب وارد شوید.");return;}
+  session=r.data.session;await prepare();
+ }catch(e){authMessage("خطا: "+e.message,true);}
+ finally{el("loginBtn").disabled=false;el("signupBtn").disabled=false;}
+}
+async function prepare(){
+ try{
+  role=await rpc("rvctl_current_role");
+  if(!role){show("pending");return;}
+  const u=await db.auth.getUser();el("userName").textContent=u.data.user?.email||"کاربر";
+  el("roleText").textContent="سطح دسترسی: "+(roles[role]||role);
+  show("app");
+  el("nav-dashboard").classList.toggle("hide",!["owner","executive","manager","auditor"].includes(role));
+  el("nav-kiosk").classList.toggle("hide",!["owner","executive","manager","kiosk"].includes(role));
+  el("nav-people").classList.toggle("hide",role==="kiosk");
+  el("nav-requests").classList.toggle("hide",role==="kiosk");
+  el("nav-attendance").classList.toggle("hide",role==="kiosk");
+  const hash=location.hash;
+  if(hash.startsWith("#scan=")){qrToken=hash.slice(6);nav("attendance");el("scanNotice").textContent="QR اسکن شد. برای ثبت رویداد از دکمه زیر استفاده کن.";el("scanButton").disabled=false;}
+  else nav(["owner","executive","manager","auditor"].includes(role)?"dashboard":role==="kiosk"?"kiosk":"attendance");
+ }catch(e){show("pending");}
+}
+async function logout(){await db.auth.signOut();session=null;role=null;qrToken=null;show("auth");}
+function nav(next){
+ tab=next;el("flash").classList.add("hide");
+ document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===next));
+ ["dashboard","attendance","kiosk","requests","people"].forEach(t=>el("view-"+t).classList.toggle("hide",t!==next));
+ if(next==="dashboard")loadDashboard(true);
+ if(next==="requests")loadRequests();
+ if(next==="people")loadStaff();
+ if(next==="kiosk"&&!qrToken)issueQR();
+}
+async function loadDashboard(noisy){
+ try{
+ const d=await rpc("rvctl_dashboard");
+ el("c-active").textContent=d.staff_active;
+ el("c-shift").textContent=d.on_shift;
+ el("c-requests").textContent=d.pending_requests;
+ el("c-accounts").textContent=d.accounts_enabled;
+ el("events").innerHTML=(d.last_events||[]).map(e=>'<div class="row"><span>'+safe(e.full_name)+'</span><span class="tag">'+(e.event_type==="in"?"ورود":"خروج")+' · '+safe(pretty(e.occurred_at))+'</span></div>').join("")||"هنوز ورود و خروج ثبت نشده است.";
+ }catch(e){if(noisy)msg("خطا در دریافت داشبورد: "+e.message,true);}
+}
+async function issueQR(){
+ if(!["owner","executive","manager","kiosk"].includes(role))return;
+ try{
+  const q=await rpc("rvctl_issue_qr");qrToken=q.token;
+  const url=location.origin+location.pathname+"#scan="+q.token;
+  el("qrBox").innerHTML="";
+  if(window.QRCode){new window.QRCode(el("qrBox"),{text:url,width:212,height:212,colorDark:"#102b21",colorLight:"#ffffff",correctLevel:window.QRCode.CorrectLevel.M});}
+  else el("qrBox").innerHTML='<span style="color:#17382b;font-size:12px;word-break:break-all">نمایش QR در این مرورگر ممکن نشد. لینک زمان‌دار: '+url.replace(/&/g,"&amp;").replace(/</g,"&lt;")+'</span>';
+  el("qrExpiry").textContent="کد جدید ساخته شد؛ معتبر تا "+pretty(q.expires_at)+". هر دقیقه خودکار تعویض می‌شود.";
+ }catch(e){msg("ساخت QR ممکن نشد: "+e.message,true);}
+}
+async function scanQR(){
+ if(!qrToken){msg("ابتدا QR زمان‌دار را اسکن کن.",true);return;}
+ el("scanButton").disabled=true;
+ try{
+  const d=await rpc("rvctl_scan_attendance",{p_token:qrToken});
+  el("scanResult").textContent=(d.event==="in"?"ورود":"خروج")+" "+d.staff+" ثبت شد: "+pretty(d.at);
+  el("scanResult").className="ok";
+  el("scanNotice").textContent="ثبت با زمان سرور انجام شد.";
+  qrToken=null;history.replaceState(null,"",location.pathname);
+ }catch(e){el("scanResult").textContent=e.message;el("scanResult").className="err";}
+ finally{el("scanButton").disabled=false;}
+}
+async function createRequest(){
+ const item=el("item").value.trim(),qty=Number(el("qty").value),unit=el("unit").value,dep=el("department").value,note=el("note").value.trim();
+ if(item.length<2||!(qty>0)){msg("نام کالا و مقدار معتبر وارد کن.",true);return;}
+ el("makeRequest").disabled=true;
+ try{await rpc("rvctl_create_request",{p_item:item,p_quantity:qty,p_unit:unit,p_department:dep,p_note:note});
+  el("item").value="";el("qty").value="";el("note").value="";
+  msg("درخواست با موفقیت در سامانه ثبت شد.");await loadRequests();
+ }catch(e){msg("خطای ثبت درخواست: "+e.message,true);}
+ finally{el("makeRequest").disabled=false;}
+}
+async function loadRequests(){
+ try{let r=await db.from("rvctl_stock_requests").select("id,item_name,quantity,unit,department,status,created_at,price_total,invoice_number").order("created_at",{ascending:false}).limit(60);
+ if(r.error)throw r.error;requests=r.data||[];renderRequests();
+ }catch(e){el("requestList").textContent="خطا در دریافت درخواست‌ها: "+e.message;}
+}
+function renderRequests(){
+ el("requestList").innerHTML=requests.map(r=>{
+ let next=stageNext[r.status],allowed=next&&(role==="owner"||(approver[next]||[]).includes(role));
+ let action=allowed?'<button class="action" data-advance="'+safe(r.id)+'">ثبت مرحله «'+safe(statLabel[next])+'»</button>':'';
+ return '<div class="row" style="align-items:flex-start"><div><b>'+safe(r.item_name)+'</b> · '+safe(r.quantity)+' '+safe(r.unit)+'<div class="muted mini">'+safe(r.department)+' · '+safe(pretty(r.created_at))+'</div><div class="tag" style="display:inline-block;margin-top:7px">'+safe(statLabel[r.status]||r.status)+'</div></div><div>'+action+'</div></div>';
+ }).join("")||'<p class="muted">درخواستی ثبت نشده است.</p>';
+ document.querySelectorAll("[data-advance]").forEach(b=>b.onclick=async()=>{const id=b.getAttribute("data-advance");const r=requests.find(x=>x.id===id);if(!r)return;const next=stageNext[r.status];const note=prompt("توضیح این مرحله (در صورت نیاز):")||"";try{await rpc("rvctl_advance_request",{p_request_id:id,p_next:next,p_note:note});msg("مرحله ثبت شد.");await loadRequests();}catch(e){msg("ثبت مرحله ناموفق: "+e.message,true);}});
+}
+async function loadStaff(){
+ try{const r=await db.from("rvctl_staff").select("full_name,department,job_title,active").order("department");
+ if(r.error)throw r.error;staff=r.data||[];renderStaff();
+ }catch(e){el("staffList").textContent="خطا در دریافت فهرست: "+e.message;}
+}
+function renderStaff(){
+ const query=el("staffSearch").value.trim();
+ el("staffList").innerHTML=staff.filter(s=>(s.full_name+s.department+s.job_title).includes(query)).map(s=>'<div class="row"><div><b>'+safe(s.full_name)+'</b><div class="muted mini">'+safe(s.job_title)+' · '+safe(s.department)+'</div></div><span class="tag">'+(s.active?"فعال":"غیرفعال")+'</span></div>').join("")||'<div class="muted">موردی پیدا نشد.</div>';
+}
+window.addEventListener("load",begin);
+})();
+</script>
+</body></html>
