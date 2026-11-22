@@ -36,9 +36,9 @@ class _RcDealStagingPageState extends State<RcDealStagingPage> {
     try {
       await action();
     } catch (error) {
-      if (mounted) setState(() => status = 'خطا: $error');
+      if (mounted) { setState(() => status = 'خطا: $error'); }
     } finally {
-      if (mounted) setState(() => busy = false);
+      if (mounted) { setState(() => busy = false); }
     }
   }
 
@@ -48,9 +48,9 @@ class _RcDealStagingPageState extends State<RcDealStagingPage> {
   Future<void> _refresh() => _call(() async {
     final wallet = await client.rpc('rc_wallet');
     final top = await client.rpc('rc_weekly_top10');
-    if (mounted) setState(() {
+    if (mounted) { setState(() {
       if (wallet is Map) {
-        tickets = (wallet['tickets'] as num).toInt();
+        tickets = (wallet['tickets'] as num).toInt(); }
         points = (wallet['royal_points'] as num).toInt();
       }
       leaderboard = top is List ? top : [];
@@ -69,8 +69,8 @@ class _RcDealStagingPageState extends State<RcDealStagingPage> {
 
   Future<void> _guessSkill(int cell) => _call(() async {
     final result = await client.rpc('rc_guess_skill',params:{'p_round':skillRound,'p_cell':cell}) as Map;
-    if (mounted) setState(() {
-      skillGuesses.add(cell);
+    if (mounted) { setState(() {
+      skillGuesses.add(cell); }
       skillFinished = result['finished']==true;
       if (skillFinished) {
         skillTarget = (result['target'] as num).toInt();
@@ -82,8 +82,8 @@ class _RcDealStagingPageState extends State<RcDealStagingPage> {
 
   Future<void> _claim() => _call(() async {
     final data = await client.rpc('rc_claim_daily') as Map;
-    if (mounted) setState(() {
-      tickets = (data['tickets'] as num).toInt();
+    if (mounted) { setState(() {
+      tickets = (data['tickets'] as num).toInt(); }
       points = (data['royal_points'] as num).toInt();
       status = 'کیف پول آزمایشی به‌روزرسانی شد';
     });
@@ -118,8 +118,8 @@ class _RcDealStagingPageState extends State<RcDealStagingPage> {
       final value = await client.rpc('rc_open_deal_case', params: {
         'p_round': id, 'p_case': number,
       });
-      if (mounted) setState(() {
-        opened[number] = (value as num).toInt();
+      if (mounted) { setState(() {
+        opened[number] = (value as num).toInt(); }
         status = 'چمدان $number: $value RP';
       });
     }
@@ -130,8 +130,8 @@ class _RcDealStagingPageState extends State<RcDealStagingPage> {
     final offer = await client.rpc('rc_banker_offer', params: {
       'p_round': roundId,
     });
-    if (mounted) setState(() {
-      bankerOffer = (offer as num).toInt();
+    if (mounted) { setState(() {
+      bankerOffer = (offer as num).toInt(); }
       status = 'پیشنهاد بانکدار: $bankerOffer RP';
     });
   });
@@ -141,9 +141,9 @@ class _RcDealStagingPageState extends State<RcDealStagingPage> {
     final result = await client.rpc('rc_banker_decision', params: {
       'p_round': roundId, 'p_accept': accept,
     }) as Map;
-    if (mounted) setState(() {
+    if (mounted) { setState(() {
       if (result['settled'] == true) {
-        finalAward = (result['royal_points'] as num).toInt();
+        finalAward = (result['royal_points'] as num).toInt(); }
         points = points == null ? null : points! + finalAward!;
         status = 'DEAL! $finalAward RP در کیف پول آزمایشی ثبت شد';
       } else {
@@ -160,8 +160,8 @@ class _RcDealStagingPageState extends State<RcDealStagingPage> {
     final award = await client.rpc('rc_settle_final_case', params: {
       'p_round': id,
     });
-    if (mounted) setState(() {
-      finalAward = (award as num).toInt();
+    if (mounted) { setState(() {
+      finalAward = (award as num).toInt(); }
       points = points == null ? null : points! + finalAward!;
       status = 'برنده شدی: $finalAward RP — ثبت‌شده در سرور آزمایشی';
     });
@@ -211,7 +211,7 @@ class _RcDealStagingPageState extends State<RcDealStagingPage> {
                   gradient: LinearGradient(colors: isSelected
                     ? [const Color(0xFF986C26), gold]
                     : [const Color(0xFF143C30), const Color(0xFF071B15)]),
-                  border: Border.all(color: gold.withOpacity(.7)),
+                  border: Border.all(color: gold.withValues(alpha: .7)),
                   borderRadius: BorderRadius.circular(14)),
                 child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                   Icon(value == null ? Icons.work_outline : Icons.lock_open, color: gold),
