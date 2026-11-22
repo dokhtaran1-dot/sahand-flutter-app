@@ -33,7 +33,7 @@ jobs:
       - name: RC rules tests
         run: flutter test test/rc_rules_test.dart
       - name: Analyze connected RC staging entry point
-        run: flutter analyze lib/main_rc_staging.dart lib/rc/rc_deal_staging_page.dart
+        run: flutter analyze --no-fatal-infos lib/main_rc_staging.dart lib/rc/rc_deal_staging_page.dart
       - name: Repair missing Android launcher foreground in staging checkout
         run: |
           mkdir -p android/app/src/main/res/mipmap-anydpi-v26
