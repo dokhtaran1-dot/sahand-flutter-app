@@ -23,6 +23,12 @@ class _RcDealStagingPageState extends State<RcDealStagingPage> {
   static const offerStages = <int>{6,11,15,18,20,21,22,23,24};
   int? tickets;
   int? points;
+  List<dynamic> leaderboard = [];
+  String? skillRound;
+  String? skillGame;
+  final Set<int> skillGuesses = {};
+  int? skillTarget;
+  bool skillFinished = false;
 
   Future<void> _call(Future<void> Function() action) async {
     if (busy) return;
@@ -35,6 +41,44 @@ class _RcDealStagingPageState extends State<RcDealStagingPage> {
       if (mounted) setState(() => busy = false);
     }
   }
+
+  @override
+  void initState() { super.initState(); Future.microtask(_refresh); }
+
+  Future<void> _refresh() => _call(() async {
+    final wallet = await client.rpc('rc_wallet');
+    final top = await client.rpc('rc_weekly_top10');
+    if (mounted) setState(() {
+      if (wallet is Map) {
+        tickets = (wallet['tickets'] as num).toInt();
+        points = (wallet['royal_points'] as num).toInt();
+      }
+      leaderboard = top is List ? top : [];
+    });
+  });
+
+  Future<void> _startSkill(String game) => _call(() async {
+    final id = await client.rpc('rc_start_skill',params:{'p_game':game});
+    if (mounted) setState(() {
+      skillRound = id as String; skillGame = game;
+      skillGuesses.clear(); skillTarget = null; skillFinished = false;
+      tickets = tickets == null ? null : tickets! - (game=='crown'?2:1);
+      status = game=='crown' ? 'تاج را در ۹ صندوق پیدا کن' : 'نماد متفاوت را پیدا کن';
+    });
+  });
+
+  Future<void> _guessSkill(int cell) => _call(() async {
+    final result = await client.rpc('rc_guess_skill',params:{'p_round':skillRound,'p_cell':cell}) as Map;
+    if (mounted) setState(() {
+      skillGuesses.add(cell);
+      skillFinished = result['finished']==true;
+      if (skillFinished) {
+        skillTarget = (result['target'] as num).toInt();
+        points = (points ?? 0)+(result['award'] as num).toInt();
+      }
+      status = skillFinished ? 'پایان بازی · ${(result['award'] as num).toInt()} RP' : 'تلاش بعدی را انتخاب کن';
+    });
+  });
 
   Future<void> _claim() => _call(() async {
     final data = await client.rpc('rc_claim_daily') as Map;
@@ -197,8 +241,31 @@ class _RcDealStagingPageState extends State<RcDealStagingPage> {
           onPressed: busy || bankerOffer != null || opened.length != 25 || finalAward != null ? null : _settle,
           child: const Text('بازکردن چمدان نهایی و ثبت RP')),
         const SizedBox(height: 14),
-        const Text('چالش‌های مهارتی و سایر بازی‌ها در این صفحه آزمایشی هنوز متصل نیستند.',
-          textAlign: TextAlign.center, style: TextStyle(color: Colors.white60)),
+        const SizedBox(height: 18),
+        const Text('ROYAL SKILL GAMES',textAlign: TextAlign.center,style: TextStyle(color:gold,fontSize:21)),
+        Wrap(alignment:WrapAlignment.center,spacing:8,children:[
+          OutlinedButton(onPressed:busy || (skillRound!=null && !skillFinished) ? null : ()=>_startSkill('crown'),child:const Text('CROWN · 2 TICKETS')),
+          OutlinedButton(onPressed:busy || (skillRound!=null && !skillFinished) ? null : ()=>_startSkill('difference'),child:const Text('FIND DIFFERENCE · 1 TICKET')),
+        ]),
+        if (skillRound!=null) ...[
+          const SizedBox(height:12),
+          Text(skillGame=='crown'?'تاج پنهان':'نماد متفاوت',textAlign:TextAlign.center,style:const TextStyle(color:gold)),
+          GridView.builder(shrinkWrap:true,physics:const NeverScrollableScrollPhysics(),itemCount:9,
+            gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:3,mainAxisSpacing:8,crossAxisSpacing:8),
+            itemBuilder:(context,i) {
+              final cell=i+1;
+              return OutlinedButton(onPressed:busy || skillFinished || skillGuesses.contains(cell)?null:()=>_guessSkill(cell),
+                child:Icon(skillFinished && skillTarget==cell?Icons.workspace_premium:
+                  skillGuesses.contains(cell)?Icons.close:Icons.inventory_2_outlined,color:gold));
+            }),
+        ],
+        const SizedBox(height:20),
+        const Text('WEEKLY TOP 10',textAlign:TextAlign.center,style:TextStyle(color:gold,fontSize:21)),
+        OutlinedButton(onPressed:busy?null:_refresh,child:const Text('به‌روزرسانی امتیاز و رتبه‌بندی')),
+        for (var i=0;i<leaderboard.length;i++)
+          ListTile(title:Text('${i+1}. ${leaderboard[i]['display_name']}'),
+            trailing:Text('${leaderboard[i]['weekly_points']} RP')),
+        const Text('نسخه آزمایشی · بدون جوایز واقعی',textAlign:TextAlign.center,style:TextStyle(color:Colors.white60)),
       ]),
     ))),
   );
