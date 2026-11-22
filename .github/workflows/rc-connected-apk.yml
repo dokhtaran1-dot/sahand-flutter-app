@@ -1,0 +1,59 @@
+name: RC connected staging APK (private test)
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'lib/rc/**'
+      - 'lib/main_rc_staging.dart'
+      - '.github/workflows/rc-connected-apk.yml'
+permissions:
+  contents: read
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      SUPABASE_URL: https://jwddfcsikkialxzbrhle.supabase.co
+      SUPABASE_ANON_KEY: ${{ secrets.RC_SUPABASE_ANON_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Confirm public client key is configured
+        run: |
+          if [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::error::Set RC_SUPABASE_ANON_KEY in GitHub Actions repository secrets. Use only the public anon/publishable key, never service_role."
+            exit 1
+          fi
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.7'
+          channel: stable
+          cache: true
+      - name: Dependencies
+        run: |
+          flutter config --jdk-dir="$JAVA_HOME"
+          flutter pub get
+      - name: Protect approved Royal One design
+        run: |
+          git fetch origin main --depth=1
+          if git diff --name-only origin/main...HEAD -- lib/main.dart assets/ | grep -q .; then
+            echo "::error::Approved Royal One design changed"
+            exit 1
+          fi
+      - name: Analyze connected entry point
+        run: flutter analyze --no-fatal-infos lib/main_rc_staging.dart lib/rc/rc_deal_staging_page.dart
+      - name: Repair Android launcher resource for staging checkout
+        run: |
+          sed -i 's|@mipmap/ic_launcher_foreground|@mipmap/ic_launcher|g' android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+      - name: Build connected debug APK
+        run: |
+          flutter build apk --debug --target lib/main_rc_staging.dart --dart-define=SUPABASE_URL="$SUPABASE_URL" --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY"
+          cp build/app/outputs/flutter-apk/app-debug.apk royal-one-rc-connected-test.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: royal-one-rc-connected-test-apk
+          path: royal-one-rc-connected-test.apk
+          retention-days: 7
