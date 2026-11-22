@@ -30,6 +30,14 @@ jobs:
         run: |
           flutter config --jdk-dir="$JAVA_HOME"
           flutter pub get
+      - name: Protect approved original design
+        run: |
+          git fetch origin main --depth=1
+          if git diff --name-only origin/main...HEAD -- lib/main.dart assets/ | grep -q .; then
+            echo "Original Royal One design or assets changed; refusing RC preview build."
+            exit 1
+          fi
+          echo "Approved main app and assets remain untouched."
       - name: RC rules tests
         run: flutter test test/rc_rules_test.dart
       - name: Analyze connected RC staging entry point
