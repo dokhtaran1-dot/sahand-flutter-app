@@ -43,6 +43,8 @@ jobs:
             echo "::error::Approved Royal One design changed"
             exit 1
           fi
+      - name: Verify Royal Club ticket rules
+        run: flutter test test/rc_rules_test.dart
       - name: Analyze connected entry point
         run: flutter analyze --no-fatal-infos lib/main_rc_staging.dart lib/rc/rc_deal_staging_page.dart
       - name: Repair Android launcher resource for staging checkout
