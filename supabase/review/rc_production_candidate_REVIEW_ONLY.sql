@@ -1,4 +1,6 @@
 -- REVIEW ONLY: production rollout requires a verified restorable backup.
+-- WARNING: Does not provide Crown / Difference server RPCs, online leaderboard, or client integration.
+-- Do not execute this candidate as a complete production rollout.
 -- Dedicated rc schema; no changes to existing royal_club_* tables.
 
 -- SOURCE: supabase/migrations/20261120_rc_staging.sql
@@ -207,7 +209,7 @@ create or replace function public.rc_claim_daily()
 returns jsonb language plpgsql security definer set search_path = ''
 as $$
 declare uid uuid := auth.uid(); day_key text := 'daily:' || (now() at time zone 'UTC')::date::text;
-declare inserted_count integer;
+inserted_count integer;
 begin
  if uid is null then raise exception 'Authentication required'; end if;
  insert into rc.wallets(user_id,tickets) values(uid,20)
