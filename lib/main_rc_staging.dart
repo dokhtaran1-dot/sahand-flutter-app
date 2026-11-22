@@ -41,7 +41,7 @@ class _AuthGate extends StatefulWidget {
 class _AuthGateState extends State<_AuthGate> {
   final email = TextEditingController();
   final otp = TextEditingController();
-  String message = 'با ایمیل حساب آزمایشی وارد شوید';
+  String message = 'ثبت‌نام یا ورود آزمایشی با کد واقعی ایمیل';
   bool busy = false;
 
   @override
@@ -57,7 +57,7 @@ class _AuthGateState extends State<_AuthGate> {
     try {
       await action();
     } catch (e) {
-      if (mounted) setState(() => message = 'خطا: $e');
+      if (mounted) setState(() => message = e is AuthException ? 'ورود انجام نشد: ${e.message}' : 'خطا در ورود: $e');
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -83,8 +83,8 @@ class _AuthGateState extends State<_AuthGate> {
             const SizedBox(height: 12),
             FilledButton(onPressed: busy ? null : () => run(() async {
               await Supabase.instance.client.auth.signInWithOtp(
-                email: email.text.trim(), shouldCreateUser: false);
-              if (mounted) setState(() => message = 'کد ورود ایمیل شد');
+                email: email.text.trim(), shouldCreateUser: true);
+              if (mounted) setState(() => message = 'اگر ارسال ایمیل فعال باشد، کد یا لینک ورود به ایمیل فرستاده می‌شود. کد واقعی و جدید را وارد کنید.');
             }), child: const Text('ارسال کد')),
             const SizedBox(height: 14),
             TextField(controller: otp, keyboardType: TextInputType.number,
