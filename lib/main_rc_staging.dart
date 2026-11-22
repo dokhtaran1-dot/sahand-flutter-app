@@ -96,7 +96,7 @@ class _AuthGateState extends State<_AuthGate> {
             }), child: const Text('ورود به نسخه آزمایشی')),
             Text(message, textAlign: TextAlign.center),
           ]),
-        )));
+        ));
       },
     ),
   );
