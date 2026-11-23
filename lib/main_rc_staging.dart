@@ -36,6 +36,7 @@ class _AuthGateState extends State<_AuthGate> {
   final phone = TextEditingController();
   final otp = TextEditingController();
   String message = 'ورود با شماره موبایل و کد پیامکی';
+  bool codeSent = false;
   bool busy = false;
 
   String get normalizedPhone {
@@ -93,15 +94,19 @@ class _AuthGateState extends State<_AuthGate> {
               if (!validPhone) throw const FormatException('شماره موبایل معتبر وارد کنید.');
               await Supabase.instance.client.auth.signInWithOtp(
                 phone: normalizedPhone, shouldCreateUser: true);
-              if (mounted) setState(() => message = 'در صورت فعال بودن سرویس پیامک، کد تأیید ارسال می‌شود.');
+              if (mounted) setState(() { codeSent = true; message = 'کد ارسال شد؛ کد دریافتی را وارد کنید.'; });
             }), child: const Text('ارسال کد پیامکی')),
             const SizedBox(height: 14),
             TextField(controller: otp, keyboardType: TextInputType.number,
               decoration: const InputDecoration(labelText: 'کد پیامکی')),
-            FilledButton(onPressed: busy ? null : () => run(() async {
+            FilledButton(onPressed: busy || !codeSent ? null : () => run(() async {
               if (!validPhone) throw const FormatException('شماره موبایل معتبر وارد کنید.');
-              await Supabase.instance.client.auth.verifyOTP(
+              final result = await Supabase.instance.client.auth.verifyOTP(
                 phone: normalizedPhone, token: otp.text.trim(), type: OtpType.sms);
+              if (result.user == null || result.session == null) {
+                throw StateError('کد تأیید شد ولی نشست ورود ایجاد نشد.');
+              }
+              if (mounted) setState(() => message = 'شماره تأیید شد؛ ورود موفق بود.');
             }), child: const Text('تأیید و ورود')),
             Text(message, textAlign: TextAlign.center),
           ]),
