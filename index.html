@@ -90,7 +90,7 @@ window.supabase={createClient:(base,key)=>{
 <header class="head"><div class="brand"><div class="mark">RV</div><div><div class="eng">RV CONTROL</div><div class="tiny">ROYAL MALL · SAHAND CONSORTIUM</div></div></div><div class="subtitle">سامانه خصوصی مدیریت و نظارت رویال ویلیج کافه</div></header>
 <main class="wrap">
 <div id="loading" class="card muted">در حال اتصال امن به سامانه…</div>
-<section id="auth" class="hide"><div class="card" style="max-width:450px;margin:25px auto"><h2>ورود اختصاصی</h2><p class="muted">برای مشاهده اطلاعات و ثبت حضور، حساب تأییدشده لازم است.</p><div class="field"><label>ایمیل</label><input id="email" type="email" placeholder="name@example.com" autocomplete="email" dir="ltr"></div><div class="field"><label>رمز عبور</label><input id="pass" type="password" autocomplete="current-password" placeholder="حداقل ۸ کاراکتر" dir="ltr"></div><button id="loginBtn" class="block">ورود به حساب</button><button id="signupBtn" class="outline block">ساخت حساب اولیه</button><div id="authMsg" class="info hide"></div><p class="muted mini">ساخت حساب به‌معنی دریافت دسترسی نیست؛ مالک باید نقش هر شخص را تأیید کند. هیچ‌کس بدون مجوز به اطلاعات کارکنان دسترسی ندارد.</p></div></section>
+<section id="auth" class="hide"><div class="card" style="max-width:450px;margin:25px auto"><h2>ورود اختصاصی</h2><p class="muted">برای مشاهده اطلاعات و ثبت حضور، حساب تأییدشده لازم است.</p><div class="field"><label>شماره موبایل یا ایمیل حساب</label><input id="email" type="text" inputmode="email" placeholder="09141159263 یا name@example.com" autocomplete="username" dir="ltr"></div><div class="field"><label>رمز عبور</label><input id="pass" type="password" autocomplete="current-password" placeholder="حداقل ۸ کاراکتر" dir="ltr"></div><button id="loginBtn" class="block">ورود به حساب</button><button id="signupBtn" class="outline block">ساخت حساب اولیه</button><div id="authMsg" class="info hide"></div><p class="muted mini">ساخت حساب به‌معنی دریافت دسترسی نیست؛ مالک باید نقش هر شخص را تأیید کند. هیچ‌کس بدون مجوز به اطلاعات کارکنان دسترسی ندارد.</p></div></section>
 <section id="pending" class="hide"><div class="card"><h2>حساب شما هنوز مجوز ندارد</h2><p>ورود موفق بود؛ اما این ایمیل هنوز به فهرست مجاز RV CONTROL متصل نشده است.</p><div class="info">برای فعال شدن پنل مالک یا حساب کارکنان، مدیر سامانه باید نقش را در پایگاه داده تأیید کند.</div><button id="pendingLogout" class="outline block">خروج</button></div></section>
 <section id="app" class="hide">
 <div class="card" style="padding:12px 16px"><div class="row"><div><b id="userName">کاربر</b><div id="roleText" class="muted"></div></div><button class="outline action" id="logout">خروج</button></div></div>
@@ -153,8 +153,12 @@ async function begin(){
  setInterval(async()=>{if(session&&role&&tab==="kiosk"&&qrToken)await issueQR();},60000);
 }
 async function auth(signup){
- let email=el("email").value.trim(),password=el("pass").value;
- if(!email.includes("@")||password.length<8){authMessage("ایمیل معتبر و رمز حداقل ۸ حرف لازم است.",true);return;}
+ let login=el("email").value.trim(),password=el("pass").value;
+ const digits=login.replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d));
+ let email=digits;
+ if(/^09\\d{9}$/.test(digits))email="rv-98"+digits.slice(1)+"@example.com";
+ else if(/^9\\d{9}$/.test(digits))email="rv-98"+digits+"@example.com";
+ if(!email.includes("@")||password.length<8){authMessage("شماره موبایل ۱۱ رقمی یا ایمیل حساب و رمز حداقل ۸ حرف وارد کن.",true);return;}
  el("loginBtn").disabled=true;el("signupBtn").disabled=true;
  try{
   const r=signup?await db.auth.signUp({email,password}):await db.auth.signInWithPassword({email,password});
@@ -168,7 +172,9 @@ async function prepare(){
  try{
   role=await rpc("rvctl_current_role");
   if(!role){show("pending");return;}
-  const u=await db.auth.getUser();el("userName").textContent=u.data.user?.email||"کاربر";
+  const u=await db.auth.getUser();const internalEmail=u.data.user?.email||"";
+  const phoneAlias=internalEmail.match(/^rv-98(\\d{10})@example\\.com$/i);
+  el("userName").textContent=phoneAlias?"0"+phoneAlias[1]:(internalEmail||"کاربر");
   el("roleText").textContent="سطح دسترسی: "+(roles[role]||role);
   show("app");
   el("nav-dashboard").classList.toggle("hide",!["owner","executive","manager","auditor"].includes(role));
@@ -225,7 +231,7 @@ async function scanQR(){
   el("scanNotice").textContent="ثبت با زمان سرور انجام شد.";
   qrToken=null;history.replaceState(null,"",location.pathname);
  }catch(e){el("scanResult").textContent=e.message;el("scanResult").className="err";}
- finally{el("scanButton").disabled=false;}
+ finally{el("scanButton").disabled=!qrToken;}
 }
 async function createRequest(){
  const item=el("item").value.trim(),qty=Number(el("qty").value),unit=el("unit").value,dep=el("department").value,note=el("note").value.trim();
