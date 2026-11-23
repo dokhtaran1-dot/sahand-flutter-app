@@ -64,36 +64,19 @@ class _HomePageState extends State<HomePage> {
     body: SafeArea(child: Center(child: FittedBox(fit: BoxFit.contain, child: SizedBox(
       width: width, height: height,
       child: ClipRect(child: Stack(children: [
-        const Positioned(left: 0, top: -topCrop, width: width, height: 1536,
-          child: Image(image: AssetImage(art), fit: BoxFit.fill, filterQuality: FilterQuality.high, excludeFromSemantics: true)),
-        // Local restoration only: keep all original portal artwork untouched.
-        Positioned(left: 0, top: 0, width: 320, height: 292,
-          child: ClipRect(child: ShaderMask(
-            blendMode: BlendMode.dstIn,
-            shaderCallback: (rect) => const LinearGradient(
-              colors: [Colors.white, Colors.white, Colors.transparent],
-              stops: [0, .96, 1],
-            ).createShader(rect),
-            child: Stack(children: [
-              Positioned(left: 0, top: -topCrop, width: width, height: 1536,
-                child: Image.asset('assets/image/sc_restored_v22.png',
-                  fit: BoxFit.fill, filterQuality: FilterQuality.high,
-                  excludeFromSemantics: true)),
-            ]),
-          ))),
+        const Positioned.fill(child: Image(image: AssetImage(art), fit: BoxFit.fill)),
+        // Seven circular portals are restored as separate animated widgets.
+        const _RoyalOrb(left: 46, top: 330, size: 285, title: 'RM', subtitle: 'ROYAL MALL', tint: Color(0xFF5DA9FF), image: 'assets/image/royal_one_approved_v21.jpg', alignment: Alignment(-.9, 0)),
+        const _RoyalOrb(left: 345, top: 310, size: 300, title: 'RC', subtitle: 'ROYAL CLUB', tint: Color(0xFFFFB75B), image: 'assets/image/royal_one_approved_v21.jpg', alignment: Alignment(0, 0)),
+        const _RoyalOrb(left: 653, top: 330, size: 285, title: 'RV', subtitle: 'ROYAL VILLAGE', tint: Color(0xFF65DB8B), image: 'assets/image/royal_one_approved_v21.jpg', alignment: Alignment(.9, 0)),
+        const _RoyalOrb(left: 324, top: 650, size: 320, title: 'SC', subtitle: 'SAHAND CONSORTIUM', tint: Color(0xFFE8C36A), image: 'assets/image/sc_restored_v22.png', alignment: Alignment(-.7, -.8)),
+        const _RoyalOrb(left: 108, top: 1050, size: 206, title: 'RE', subtitle: 'ETTEHAD', tint: Color(0xFFE8C36A), image: 'assets/image/royal_one_approved_v21.jpg', alignment: Alignment(-.8, .9)),
+        const _RoyalOrb(left: 382, top: 1050, size: 206, title: 'RS', subtitle: 'SIGNATURE', tint: Color(0xFFE8C36A), image: 'assets/image/royal_one_approved_v21.jpg', alignment: Alignment(0, .9)),
+        const _RoyalOrb(left: 656, top: 1050, size: 206, title: 'RH', subtitle: 'HARMONIA', tint: Color(0xFFE8C36A), image: 'assets/image/royal_one_approved_v21.jpg', alignment: Alignment(.8, .9)),
         const Positioned(left: 0, top: 1383, width: width, height: 45,
           child: ColoredBox(color: Color(0xFF030B08), child: Center(
             child: Text('ROYAL ONE  ·  V1.0.22  ·  POWERED BY SAHAND CONSORTIUM',
               style: TextStyle(color: Color(0xFFD7BE78), fontSize: 17, letterSpacing: 1.4))))),
-        // Non-destructive motion layer: seven approved portals retain their artwork.
-        // Highlights travel across each sphere; text and logos remain readable.
-        const _SphereGlint(left: 44, top: 395, diameter: 282, phase: 0),
-        const _SphereGlint(left: 354, top: 395, diameter: 274, phase: .16),
-        const _SphereGlint(left: 653, top: 395, diameter: 282, phase: .32),
-        const _SphereGlint(left: 47, top: 8, diameter: 246, phase: .48),
-        const _SphereGlint(left: 87, top: 1160, diameter: 198, phase: .64),
-        const _SphereGlint(left: 385, top: 1160, diameter: 198, phase: .80),
-        const _SphereGlint(left: 694, top: 1160, diameter: 198, phase: .96),
         // Entire portals including their ENTER buttons are interactive.
         zone(33, 451, 306, 718, names[language]![0], () => open(0), radius: 145),
         zone(346, 451, 288, 718, names[language]![1], () => open(1), radius: 145),
@@ -143,60 +126,46 @@ class _RoyalTouchTargetState extends State<RoyalTouchTarget> with SingleTickerPr
   );
 }
 
-// Animated light orbit around the existing sphere artwork, without replacing it.
-// This deliberately does not rotate the labels, QR codes or approved brand logos.
-class _SphereGlint extends StatefulWidget {
-  final double left, top, diameter, phase;
-  const _SphereGlint({required this.left, required this.top, required this.diameter, required this.phase});
-  @override
-  State<_SphereGlint> createState() => _SphereGlintState();
-}
 
-class _SphereGlintState extends State<_SphereGlint> with SingleTickerProviderStateMixin {
-  late final AnimationController motion = AnimationController(
-    vsync: this, duration: const Duration(seconds: 18),
-  )..repeat();
+class _RoyalOrb extends StatefulWidget {
+  final double left, top, size;
+  final String title, subtitle, image;
+  final Color tint;
+  final Alignment alignment;
+  const _RoyalOrb({required this.left, required this.top, required this.size, required this.title, required this.subtitle, required this.tint, required this.image, required this.alignment});
   @override
-  void dispose() { motion.dispose(); super.dispose(); }
+  State<_RoyalOrb> createState() => _RoyalOrbState();
+}
+class _RoyalOrbState extends State<_RoyalOrb> with SingleTickerProviderStateMixin {
+  late final AnimationController spin = AnimationController(vsync: this, duration: const Duration(seconds: 22))..repeat();
+  @override
+  void dispose() { spin.dispose(); super.dispose(); }
   @override
   Widget build(BuildContext context) => Positioned(
-    left: widget.left, top: widget.top, width: widget.diameter, height: widget.diameter,
-    child: IgnorePointer(child: AnimatedBuilder(
-      animation: motion,
-      builder: (_, __) {
-        final angle = (motion.value + widget.phase) * math.pi * 2;
-        return CustomPaint(painter: _SphereOrbitPainter(angle));
-      },
-    )),
+    left: widget.left, top: widget.top, width: widget.size, height: widget.size,
+    child: IgnorePointer(child: AnimatedBuilder(animation: spin, builder: (_, __) {
+      final a = spin.value * math.pi * 2;
+      return Container(
+        decoration: BoxDecoration(shape: BoxShape.circle,
+          boxShadow: [BoxShadow(color: widget.tint.withOpacity(.48), blurRadius: 28, spreadRadius: 2)]),
+        child: Stack(fit: StackFit.expand, children: [
+          ClipOval(child: Stack(fit: StackFit.expand, children: [
+            Image.asset(widget.image, fit: BoxFit.cover, alignment: widget.alignment,
+              color: const Color(0x9900140B), colorBlendMode: BlendMode.multiply),
+            DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(
+              begin: Alignment(math.cos(a), math.sin(a)),
+              end: Alignment(-math.cos(a), -math.sin(a)),
+              colors: [widget.tint.withOpacity(.36), Colors.transparent, const Color(0x99000000), widget.tint.withOpacity(.15)],
+            ))),
+          ])),
+          Container(decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: widget.tint, width: 7),
+            gradient: SweepGradient(transform: GradientRotation(a), colors: [Colors.transparent, const Color(0xFFFFF0B2), Colors.transparent, widget.tint.withOpacity(.35), Colors.transparent]))),
+          Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Text(widget.title, style: TextStyle(fontSize: widget.size * .24, fontWeight: FontWeight.w900, color: const Color(0xFFFFE9B2), shadows: const [Shadow(color: Colors.black, blurRadius: 12)])),
+            Text(widget.subtitle, textAlign: TextAlign.center, style: TextStyle(fontSize: widget.size * .058, fontWeight: FontWeight.bold, color: Colors.white)),
+          ])),
+        ]),
+      );
+    })),
   );
-}
-
-class _SphereOrbitPainter extends CustomPainter {
-  final double angle;
-  const _SphereOrbitPainter(this.angle);
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final r = size.width / 2 - 3;
-    final orbit = Rect.fromCircle(center: center, radius: r);
-    final base = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.2
-      ..color = const Color(0x44E7C77D);
-    canvas.drawOval(orbit, base);
-    final shine = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4
-      ..strokeCap = StrokeCap.round
-      ..shader = SweepGradient(
-        startAngle: angle,
-        endAngle: angle + math.pi * 2,
-        colors: const [Color(0x00FFE4A0), Color(0x00FFE4A0), Color(0xAAFFE4A0), Color(0x00FFE4A0)],
-        stops: const [0, .72, .83, 1],
-        transform: GradientRotation(angle),
-      ).createShader(orbit);
-    canvas.drawOval(orbit, shine);
-  }
-  @override
-  bool shouldRepaint(covariant _SphereOrbitPainter oldDelegate) => oldDelegate.angle != angle;
 }
