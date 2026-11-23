@@ -104,7 +104,7 @@ window.supabase={createClient:(base,key)=>{
 </div>
 <div id="flash" class="info hide"></div>
 <section id="view-dashboard" class="hide"><div class="card"><h2>داشبورد نظارت مالک</h2><div class="grid"><div class="stat"><span class="muted">پرسنل فعال</span><b id="c-active">—</b></div><div class="stat"><span class="muted">داخل شیفت</span><b id="c-shift">—</b></div><div class="stat"><span class="muted">درخواست باز</span><b id="c-requests">—</b></div><div class="stat"><span class="muted">حساب فعال‌شده</span><b id="c-accounts">—</b></div></div><p class="muted" style="margin-top:15px">بازخوانی خودکار هر ۲۰ ثانیه؛ ثبت‌ها با ساعت سرور انجام می‌شوند.</p></div><div class="card"><h2>آخرین ورود و خروج‌ها</h2><div id="events" class="muted">هنوز موردی ثبت نشده است.</div></div></section>
-<section id="view-attendance" class="hide"><div class="card"><h2>حضور و غیاب QR</h2><p class="muted">با دوربین گوشی، QR زمان‌دار نصب‌شده در محل را اسکن کنید. کد فقط ۷۵ ثانیه اعتبار دارد.</p><div id="scanNotice" class="info">ابتدا با گوشی خود وارد حساب شوید و سپس QR دستگاه محل کار را اسکن کنید.</div><button id="scanButton" class="block" disabled>ثبت ورود یا خروج از QR</button><p id="scanResult" class="muted"></p></div></section>
+<section id="view-attendance" class="hide"><div class="card"><h2>حضور و غیاب QR</h2><p class="muted">با دوربین گوشی، QR زمان‌دار نصب‌شده در محل را اسکن کنید. کد فقط ۷۵ ثانیه اعتبار دارد.</p><div id="scanNotice" class="info">ابتدا با گوشی خود وارد حساب شوید و سپس QR دستگاه محل کار را اسکن کنید.</div><button id="scanButton" class="block" disabled>ثبت ورود یا خروج از QR</button><p id="scanResult" class="muted"></p></div><div id="presenceReview" class="card hide"><div class="row"><h2 style="margin:0">تأیید حضور کارکنان</h2><button id="refreshPresence" class="outline action">به‌روزرسانی</button></div><p class="muted mini">ثبت حاضر/خارج‌شده فقط با اسکن معتبر انجام می‌شود. «عدم مشاهده» نیازمند دلیل کتبی است.</p><div id="presenceList" style="margin-top:12px"></div></div></section>
 <section id="view-kiosk" class="hide"><div class="card"><h2>QR زمان‌دار حضور و غیاب</h2><p class="muted">این صفحه باید روی تبلت یا گوشی ثابتِ محل کار باز باشد. کارکنان با گوشی شخصی و حساب اختصاصی، QR را اسکن می‌کنند.</p><button id="newQR" class="block">ساخت کد جدید</button><div id="qrBox" class="qr-holder"><span style="color:#17382b">برای شروع دکمه بالا را بزنید</span></div><div id="qrExpiry" class="info"></div><p class="muted mini">QR ثابت یا عکس قدیمی پذیرفته نمی‌شود. این روش نیاز به ثبت GPS یا تصویر چهره ندارد.</p></div></section>
 <section id="view-requests" class="hide"><div class="card"><h2>درخواست کالا</h2><div class="field"><label>نام کالا</label><input id="item" maxlength="160" placeholder="مثلاً فیله مرغ"></div><div class="input-row"><div class="field"><label>مقدار</label><input id="qty" type="number" step="0.01" min="0.01" placeholder="۱۲"></div><div class="field"><label>واحد</label><select id="unit"><option>کیلوگرم</option><option>عدد</option><option>بسته</option><option>لیتر</option><option>کارتن</option></select></div></div><div class="field"><label>بخش</label><select id="department"><option>آشپزخانه</option><option>بار</option><option>VIP</option><option>سالن</option><option>خدمات</option></select></div><div class="field"><label>توضیحات</label><textarea id="note" rows="2" maxlength="600" placeholder="مشخصات و ضرورت کالا"></textarea></div><button id="makeRequest" class="block">ارسال درخواست</button></div><div class="card"><h2>گردش درخواست‌ها</h2><p class="muted mini">درخواست ← کنترل انبار ← تأیید مدیر ← خرید ← تحویل ← ثبت مالی ← حسابرسی</p><div id="requestList" style="margin-top:12px"></div></div></section>
 <section id="view-people" class="hide"><div class="card"><h2>پرسنل رویال ویلیج</h2><input id="staffSearch" placeholder="جست‌وجوی نام یا سمت"><div id="staffList" style="margin-top:12px"></div></div></section>
@@ -145,7 +145,7 @@ async function begin(){
  el("loginBtn").onclick=()=>auth(false);el("signupBtn").onclick=()=>auth(true);
  el("logout").onclick=logout;el("pendingLogout").onclick=logout;
  document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>nav(b.dataset.tab));
- el("newQR").onclick=issueQR;el("scanButton").onclick=scanQR;el("makeRequest").onclick=createRequest;
+ el("newQR").onclick=issueQR;el("scanButton").onclick=scanQR;el("makeRequest").onclick=createRequest;el("refreshPresence").onclick=loadPresenceBoard;
  el("staffSearch").oninput=renderStaff;
  const r=await db.auth.getSession();session=r.data.session;
  if(session)await prepare();else show("auth");
@@ -188,6 +188,7 @@ function nav(next){
  document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===next));
  ["dashboard","attendance","kiosk","requests","people","payroll"].forEach(t=>el("view-"+t).classList.toggle("hide",t!==next));
  if(next==="dashboard")loadDashboard(true);
+ if(next==="attendance"&&["owner","executive","manager"].includes(role)){el("presenceReview").classList.remove("hide");loadPresenceBoard();}else if(next==="attendance"){el("presenceReview").classList.add("hide");}
  if(next==="requests")loadRequests();
  if(next==="people")loadStaff();
  if(next==="payroll")loadPayroll();
@@ -257,6 +258,33 @@ async function loadStaff(){
 function renderStaff(){
  const query=el("staffSearch").value.trim();
  el("staffList").innerHTML=staff.filter(s=>(s.full_name+s.department+s.job_title).includes(query)).map(s=>'<div class="row"><div><b>'+safe(s.full_name)+'</b><div class="muted mini">'+safe(s.job_title)+' · '+safe(s.department)+'</div></div><span class="tag">'+(s.active?"فعال":"غیرفعال")+'</span></div>').join("")||'<div class="muted">موردی پیدا نشد.</div>';
+}
+async function loadPresenceBoard(){
+ if(!["owner","executive","manager"].includes(role))return;
+ el("presenceList").textContent="در حال دریافت فهرست حضور...";
+ try{
+  const d=await rpc("rvctl_presence_board");
+  const records=d.records||[];
+  const verdictText={present:"حاضر تأیید شد",left:"خروج تأیید شد",not_seen:"عدم مشاهده ثبت شد",stale:"نیازمند بررسی مجدد"};
+  el("presenceList").innerHTML=records.map(s=>{
+   const event=s.last_event==="in"?"ورود ثبت‌شده":s.last_event==="out"?"خروج ثبت‌شده":"بدون اسکن";
+   const status=s.review_verdict?verdictText[s.review_verdict]||s.review_verdict:"در انتظار بررسی";
+   let actions="";
+   if(s.last_event==="in")actions='<button class="action" data-review="'+safe(s.staff_id)+'" data-verdict="present">تأیید حضور</button>';
+   else if(s.last_event==="out")actions='<button class="action" data-review="'+safe(s.staff_id)+'" data-verdict="left">تأیید خروج</button>';
+   else actions='<button class="outline action" data-review="'+safe(s.staff_id)+'" data-verdict="not_seen">ثبت عدم مشاهده</button>';
+   return '<div class="row" style="align-items:flex-start"><div><b>'+safe(s.full_name)+'</b><div class="muted mini">'+safe(s.job_title)+' · '+safe(s.department)+'</div><div class="muted mini">'+event+(s.last_scan_at?' · '+safe(pretty(s.last_scan_at)):'')+'</div><div class="tag" style="display:inline-block;margin-top:6px">'+safe(status)+'</div>'+(s.review_note?'<div class="muted mini">'+safe(s.review_note)+'</div>':'')+'</div><div>'+actions+'</div></div>';
+  }).join("")||'<p class="muted">پرسنل فعالی ثبت نشده است.</p>';
+  document.querySelectorAll("[data-review]").forEach(b=>b.onclick=async()=>{
+   const staffId=b.getAttribute("data-review"),verdict=b.getAttribute("data-verdict");
+   let note="";
+   if(verdict==="not_seen"){note=prompt("دلیل عدم مشاهده حضور را بنویسید (حداقل ۸ حرف):")||"";if(note.trim().length<8){msg("برای عدم مشاهده، دلیل حداقل ۸ حرفی لازم است.",true);return;}}
+   else note=prompt("توضیح اختیاری:")||"";
+   b.disabled=true;
+   try{await rpc("rvctl_review_presence",{p_staff_id:staffId,p_verdict:verdict,p_note:note});msg("بررسی حضور ثبت شد.");await loadPresenceBoard();}
+   catch(e){msg("ثبت بررسی ناموفق: "+e.message,true);b.disabled=false;}
+  });
+ }catch(e){el("presenceList").textContent="خطا در دریافت فهرست حضور: "+e.message;}
 }
 async function loadPayroll(){
  if(!["owner","auditor","accountant"].includes(role)){msg("این بخش محرمانه است.",true);return;}
