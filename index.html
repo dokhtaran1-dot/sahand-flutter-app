@@ -156,8 +156,8 @@ async function auth(signup){
  let login=el("email").value.trim(),password=el("pass").value;
  const digits=login.replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d));
  let email=digits;
- if(/^09\\d{9}$/.test(digits))email="rv-98"+digits.slice(1)+"@example.com";
- else if(/^9\\d{9}$/.test(digits))email="rv-98"+digits+"@example.com";
+ if(/^09\d{9}$/.test(digits))email="rv-98"+digits.slice(1)+"@example.com";
+ else if(/^9\d{9}$/.test(digits))email="rv-98"+digits+"@example.com";
  if(!email.includes("@")||password.length<8){authMessage("شماره موبایل ۱۱ رقمی یا ایمیل حساب و رمز حداقل ۸ حرف وارد کن.",true);return;}
  el("loginBtn").disabled=true;el("signupBtn").disabled=true;
  try{
@@ -173,7 +173,7 @@ async function prepare(){
   role=await rpc("rvctl_current_role");
   if(!role){show("pending");return;}
   const u=await db.auth.getUser();const internalEmail=u.data.user?.email||"";
-  const phoneAlias=internalEmail.match(/^rv-98(\\d{10})@example\\.com$/i);
+  const phoneAlias=internalEmail.match(/^rv-98(\d{10})@example\.com$/i);
   el("userName").textContent=phoneAlias?"0"+phoneAlias[1]:(internalEmail||"کاربر");
   el("roleText").textContent="سطح دسترسی: "+(roles[role]||role);
   show("app");
