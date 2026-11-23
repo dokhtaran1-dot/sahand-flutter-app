@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'royal_mall_page.dart';
 import 'royal_village_page.dart';
@@ -84,6 +85,15 @@ class _HomePageState extends State<HomePage> {
           child: ColoredBox(color: Color(0xFF030B08), child: Center(
             child: Text('ROYAL ONE  ·  V1.0.22  ·  POWERED BY SAHAND CONSORTIUM',
               style: TextStyle(color: Color(0xFFD7BE78), fontSize: 17, letterSpacing: 1.4))))),
+        // Non-destructive motion layer: seven approved portals retain their artwork.
+        // Highlights travel across each sphere; text and logos remain readable.
+        const _SphereGlint(left: 44, top: 395, diameter: 282, phase: 0),
+        const _SphereGlint(left: 354, top: 395, diameter: 274, phase: .16),
+        const _SphereGlint(left: 653, top: 395, diameter: 282, phase: .32),
+        const _SphereGlint(left: 47, top: 8, diameter: 246, phase: .48),
+        const _SphereGlint(left: 87, top: 1160, diameter: 198, phase: .64),
+        const _SphereGlint(left: 385, top: 1160, diameter: 198, phase: .80),
+        const _SphereGlint(left: 694, top: 1160, diameter: 198, phase: .96),
         // Entire portals including their ENTER buttons are interactive.
         zone(33, 451, 306, 718, names[language]![0], () => open(0), radius: 145),
         zone(346, 451, 288, 718, names[language]![1], () => open(1), radius: 145),
@@ -131,4 +141,62 @@ class _RoyalTouchTargetState extends State<RoyalTouchTarget> with SingleTickerPr
         child: InkWell(onTap: widget.onTap, splashColor: const Color(0x66E7C77D), highlightColor: const Color(0x33E7C77D))),
     )),
   );
+}
+
+// Animated light orbit around the existing sphere artwork, without replacing it.
+// This deliberately does not rotate the labels, QR codes or approved brand logos.
+class _SphereGlint extends StatefulWidget {
+  final double left, top, diameter, phase;
+  const _SphereGlint({required this.left, required this.top, required this.diameter, required this.phase});
+  @override
+  State<_SphereGlint> createState() => _SphereGlintState();
+}
+
+class _SphereGlintState extends State<_SphereGlint> with SingleTickerProviderStateMixin {
+  late final AnimationController motion = AnimationController(
+    vsync: this, duration: const Duration(seconds: 18),
+  )..repeat();
+  @override
+  void dispose() { motion.dispose(); super.dispose(); }
+  @override
+  Widget build(BuildContext context) => Positioned(
+    left: widget.left, top: widget.top, width: widget.diameter, height: widget.diameter,
+    child: IgnorePointer(child: AnimatedBuilder(
+      animation: motion,
+      builder: (_, __) {
+        final angle = (motion.value + widget.phase) * math.pi * 2;
+        return CustomPaint(painter: _SphereOrbitPainter(angle));
+      },
+    )),
+  );
+}
+
+class _SphereOrbitPainter extends CustomPainter {
+  final double angle;
+  const _SphereOrbitPainter(this.angle);
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final r = size.width / 2 - 3;
+    final orbit = Rect.fromCircle(center: center, radius: r);
+    final base = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.2
+      ..color = const Color(0x44E7C77D);
+    canvas.drawOval(orbit, base);
+    final shine = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4
+      ..strokeCap = StrokeCap.round
+      ..shader = SweepGradient(
+        startAngle: angle,
+        endAngle: angle + math.pi * 2,
+        colors: const [Color(0x00FFE4A0), Color(0x00FFE4A0), Color(0xAAFFE4A0), Color(0x00FFE4A0)],
+        stops: const [0, .72, .83, 1],
+        transform: GradientRotation(angle),
+      ).createShader(orbit);
+    canvas.drawOval(orbit, shine);
+  }
+  @override
+  bool shouldRepaint(covariant _SphereOrbitPainter oldDelegate) => oldDelegate.angle != angle;
 }
