@@ -376,3 +376,4 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
       ),
     );
   }
+}
