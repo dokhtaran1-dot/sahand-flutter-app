@@ -39,14 +39,22 @@ class _AuthGate extends StatefulWidget {
 }
 
 class _AuthGateState extends State<_AuthGate> {
-  final email = TextEditingController();
+  final phone = TextEditingController();
   final otp = TextEditingController();
-  String message = 'ثبت‌نام یا ورود آزمایشی با کد واقعی ایمیل';
+  String message = 'ثبت‌نام یا ورود آزمایشی با کد واقعی پیامک';
   bool busy = false;
 
-  @override
-  void dispose() {
-    email.dispose();
+  String get normalizedPhone {
+    var value = phone.text.trim().replaceAll(RegExp(r'[^0-9+]'), '');
+    if (value.startsWith('00')) value = '+${value.substring(2)}';
+    if (value.startsWith('09')) value = '+98${value.substring(1)}';
+    if (value.startsWith('98') && !value.startsWith('+')) value = '+$value';
+    return value;
+  }
+
+  void requireValidPhone() {
+    if (!RegExp(r'^\+[0-9]{7,15}
+    phone.dispose();
     otp.dispose();
     super.dispose();
   }
@@ -78,21 +86,85 @@ class _AuthGateState extends State<_AuthGate> {
           child: ListView(shrinkWrap: true, padding: const EdgeInsets.all(24), children: [
             const Text('نسخه آزمایشی · جوایز واقعی غیرفعال', textAlign: TextAlign.center),
             const SizedBox(height: 20),
-            TextField(controller: email, keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(labelText: 'ایمیل حساب آزمایشی')),
+            TextField(controller: phone, keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(labelText: 'شماره موبایل (۰۹... یا +کد کشور)')),
+            const SizedBox(height: 12),
+            FilledButton(onPressed: busy ? null : () => run(() async {
+              requireValidPhone();
+              await Supabase.instance.client.auth.signInWithOtp(
+                phone: normalizedPhone, shouldCreateUser: true);
+              if (mounted) setState(() => message = 'اگر ارسال پیامک فعال باشد، کد یا لینک ورود به پیامک فرستاده می‌شود. کد واقعی و جدید را وارد کنید.');
+            }), child: const Text('ارسال کد')),
+            const SizedBox(height: 14),
+            TextField(controller: otp, keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'کد ورود')),
+            FilledButton(onPressed: busy ? null : () => run(() async {
+              requireValidPhone();
+              await Supabase.instance.client.auth.verifyOTP(
+                phone: normalizedPhone, token: otp.text.trim(),
+                type: OtpType.sms);
+            }), child: const Text('ورود به نسخه آزمایشی')),
+            Text(message, textAlign: TextAlign.center),
+          ]),
+        ));
+      },
+    ),
+  );
+}
+).hasMatch(normalizedPhone)) {
+      throw const FormatException('شماره موبایل معتبر وارد کنید.');
+    }
+  }
+
+  @override
+  void dispose() {
+    phone.dispose();
+    otp.dispose();
+    super.dispose();
+  }
+
+  Future<void> run(Future<void> Function() action) async {
+    if (busy) return;
+    setState(() => busy = true);
+    try {
+      await action();
+    } catch (e) {
+      if (mounted) setState(() => message = e is AuthException ? 'ورود انجام نشد: ${e.message}' : 'خطا در ورود: $e');
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: const Color(0xFF061B15),
+    appBar: AppBar(title: const Text('ROYAL ONE · RC TEST')),
+    body: StreamBuilder<AuthState>(
+      stream: Supabase.instance.client.auth.onAuthStateChange,
+      builder: (context, snapshot) {
+        if (Supabase.instance.client.auth.currentUser != null) {
+          return const RcDealStagingPage();
+        }
+        return Center(child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: ListView(shrinkWrap: true, padding: const EdgeInsets.all(24), children: [
+            const Text('نسخه آزمایشی · جوایز واقعی غیرفعال', textAlign: TextAlign.center),
+            const SizedBox(height: 20),
+            TextField(controller: phone, keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(labelText: 'پیامک حساب آزمایشی')),
             const SizedBox(height: 12),
             FilledButton(onPressed: busy ? null : () => run(() async {
               await Supabase.instance.client.auth.signInWithOtp(
-                email: email.text.trim(), shouldCreateUser: true);
-              if (mounted) setState(() => message = 'اگر ارسال ایمیل فعال باشد، کد یا لینک ورود به ایمیل فرستاده می‌شود. کد واقعی و جدید را وارد کنید.');
+                phone: normalizedPhone, shouldCreateUser: true);
+              if (mounted) setState(() => message = 'اگر ارسال پیامک فعال باشد، کد یا لینک ورود به پیامک فرستاده می‌شود. کد واقعی و جدید را وارد کنید.');
             }), child: const Text('ارسال کد')),
             const SizedBox(height: 14),
             TextField(controller: otp, keyboardType: TextInputType.number,
               decoration: const InputDecoration(labelText: 'کد ورود')),
             FilledButton(onPressed: busy ? null : () => run(() async {
               await Supabase.instance.client.auth.verifyOTP(
-                email: email.text.trim(), token: otp.text.trim(),
-                type: OtpType.email);
+                phone: normalizedPhone, token: otp.text.trim(),
+                type: OtpType.sms);
             }), child: const Text('ورود به نسخه آزمایشی')),
             Text(message, textAlign: TextAlign.center),
           ]),
