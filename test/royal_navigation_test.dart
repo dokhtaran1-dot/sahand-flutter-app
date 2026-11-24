@@ -19,7 +19,7 @@ void main() {
   test('All seven circular portal targets map to the original sections', () {
     final source = File('lib/src/home_page.dart').readAsStringSync();
     final mapping = <String, int>{};
-    final pattern = RegExp(r"_RoyalOrb\([^\n]*?title: '([^']+)'[^\n]*onTap: \(\) => open\((\d+)\)");
+    final pattern = RegExp(r"_OrbPortal\([^\n]*?label: '([^']+)'[^\n]*onTap: \(\) => open\((\d+)\)");
     for (final match in pattern.allMatches(source)) {
       mapping[match.group(1)!] = int.parse(match.group(2)!);
     }
@@ -41,18 +41,18 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(app());
-    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/royal_one_approved_v21.jpg', 'assets/image/sc_restored_v22.png']);
+    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/ROYAL_ONE_7ORBS_APPROVED.jpg']);
     expect(tester.takeException(), isNull);
     for (final portal in ['RM', 'RC', 'RV', 'SC', 'RE', 'RS', 'RH']) {
-      expect(find.text(portal), findsOneWidget, reason: 'Missing restored orb: $portal');
+      expect(find.byKey(Key('orb:' + portal)), findsOneWidget, reason: 'Missing restored orb: $portal');
     }
     expect(find.byWidgetPredicate((w) => w is RoyalTouchTarget && w.label.startsWith('ENTER ')), findsNothing);
-    await tester.tap(find.text('RM'));
+    await tester.tap(find.byKey(const Key('orb:RM')));
     await tester.pumpAndSettle();
     expect(find.byType(RoyalMallPage), findsOneWidget);
     Navigator.of(tester.element(find.byType(RoyalMallPage))).pop();
     await tester.pumpAndSettle();
-    await tester.tap(find.byWidgetPredicate((w) => w is RoyalTouchTarget && w.label == 'میراث سهند'));
+    await tester.tap(find.byKey(const Key('orb:SC')));
     await tester.pumpAndSettle();
     expect(find.byType(HeritagePage), findsOneWidget);
     await tester.scrollUntilVisible(find.text('حامد قنبری'), 250, scrollable: find.byType(Scrollable).last);
@@ -66,8 +66,8 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(app());
-    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/royal_one_approved_v21.jpg', 'assets/image/sc_restored_v22.png']);
-    await tester.tap(find.text('RV'));
+    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/ROYAL_ONE_7ORBS_APPROVED.jpg']);
+    await tester.tap(find.byKey(const Key('orb:RV')));
     await tester.pumpAndSettle();
     expect(find.byType(RoyalVillagePage), findsOneWidget);
     await loadImages(tester, tester.element(find.byType(RoyalVillagePage)), ['Grand_Salon_Original.png', 'salon_gallery/lumiere/design_01.webp', 'salon_gallery/noir/design_01.webp', 'salon_gallery/jardin/design_01.webp', 'salon_gallery/prive/design_01.webp', 'salon_gallery/imperial/design_01.webp', 'salon_gallery/dore/design_01.webp', 'salon_gallery/ame_du_poete/design_01.webp', 'salon_gallery/royal/design_01.webp'].map((p) => 'assets/image/$p').toList());
