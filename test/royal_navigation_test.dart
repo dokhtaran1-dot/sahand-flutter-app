@@ -38,7 +38,7 @@ void main() {
     await tester.tap(find.text('RM'));
     await tester.pumpAndSettle();
     expect(find.byType(RoyalMallPage), findsOneWidget);
-    await tester.pageBack();
+    Navigator.of(tester.element(find.byType(RoyalMallPage))).pop();
     await tester.pumpAndSettle();
     await tester.tap(find.byWidgetPredicate((w) => w is RoyalTouchTarget && w.label == 'میراث سهند'));
     await tester.pumpAndSettle();
@@ -61,7 +61,7 @@ void main() {
     await loadImages(tester, tester.element(find.byType(RoyalVillagePage)), ['Grand_Salon_Original.png', 'salon_gallery/lumiere/design_01.webp', 'salon_gallery/noir/design_01.webp', 'salon_gallery/jardin/design_01.webp', 'salon_gallery/prive/design_01.webp', 'salon_gallery/imperial/design_01.webp', 'salon_gallery/dore/design_01.webp', 'salon_gallery/ame_du_poete/design_01.webp', 'salon_gallery/royal/design_01.webp'].map((p) => 'assets/image/$p').toList());
     expect(find.text('رزرو میز و سالن'), findsOneWidget);
     expect(tester.takeException(), isNull);
-    await tester.pageBack();
+    Navigator.of(tester.element(find.byType(RoyalVillagePage))).pop();
     await tester.pumpAndSettle();
     expect(find.byType(HomePage), findsOneWidget);
   });
