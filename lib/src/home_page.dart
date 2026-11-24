@@ -64,31 +64,23 @@ class _HomePageState extends State<HomePage> {
     body: SafeArea(child: Center(child: FittedBox(fit: BoxFit.contain, child: SizedBox(
       width: width, height: height,
       child: ClipRect(child: Stack(children: [
-        const Positioned.fill(child: Image(image: AssetImage(art), fit: BoxFit.fill)),
+        const Positioned(left: 0, top: -topCrop, width: width, height: 1536, child: Image(image: AssetImage(art), fit: BoxFit.fill, filterQuality: FilterQuality.high, excludeFromSemantics: true)),
         // Seven circular portals are restored as separate animated widgets.
-        const _RoyalOrb(left: 46, top: 330, size: 285, title: 'RM', subtitle: 'ROYAL MALL', tint: Color(0xFF5DA9FF), image: 'assets/image/royal_one_approved_v21.jpg', alignment: Alignment(-.9, 0)),
-        const _RoyalOrb(left: 345, top: 310, size: 300, title: 'RC', subtitle: 'ROYAL CLUB', tint: Color(0xFFFFB75B), image: 'assets/image/royal_one_approved_v21.jpg', alignment: Alignment(0, 0)),
-        const _RoyalOrb(left: 653, top: 330, size: 285, title: 'RV', subtitle: 'ROYAL VILLAGE', tint: Color(0xFF65DB8B), image: 'assets/image/royal_one_approved_v21.jpg', alignment: Alignment(.9, 0)),
+        _RoyalOrb(left: 46, top: 330, size: 285, title: 'RM', subtitle: 'ROYAL MALL', tint: const Color(0xFF5DA9FF), image: art, alignment: const Alignment(-.9, 0), onTap: () => open(0)),
+        _RoyalOrb(left: 345, top: 310, size: 300, title: 'RC', subtitle: 'ROYAL CLUB', tint: const Color(0xFFFFB75B), image: art, alignment: const Alignment(0, 0), onTap: () => open(1)),
+        _RoyalOrb(left: 653, top: 330, size: 285, title: 'RV', subtitle: 'ROYAL VILLAGE', tint: const Color(0xFF65DB8B), image: art, alignment: const Alignment(.9, 0), onTap: () => open(2)),
         const _RoyalOrb(left: 324, top: 650, size: 320, title: 'SC', subtitle: 'SAHAND CONSORTIUM', tint: Color(0xFFE8C36A), image: 'assets/image/sc_restored_v22.png', alignment: Alignment(-.7, -.8)),
-        const _RoyalOrb(left: 108, top: 1050, size: 206, title: 'RE', subtitle: 'ETTEHAD', tint: Color(0xFFE8C36A), image: 'assets/image/royal_one_approved_v21.jpg', alignment: Alignment(-.8, .9)),
-        const _RoyalOrb(left: 382, top: 1050, size: 206, title: 'RS', subtitle: 'SIGNATURE', tint: Color(0xFFE8C36A), image: 'assets/image/royal_one_approved_v21.jpg', alignment: Alignment(0, .9)),
-        const _RoyalOrb(left: 656, top: 1050, size: 206, title: 'RH', subtitle: 'HARMONIA', tint: Color(0xFFE8C36A), image: 'assets/image/royal_one_approved_v21.jpg', alignment: Alignment(.8, .9)),
+        _RoyalOrb(left: 108, top: 1050, size: 206, title: 'RE', subtitle: 'ETTEHAD', tint: const Color(0xFFE8C36A), image: art, alignment: const Alignment(-.8, .9), onTap: () => open(3)),
+        _RoyalOrb(left: 382, top: 1050, size: 206, title: 'RS', subtitle: 'SIGNATURE', tint: const Color(0xFFE8C36A), image: art, alignment: const Alignment(0, .9), onTap: () => open(4)),
+        _RoyalOrb(left: 656, top: 1050, size: 206, title: 'RH', subtitle: 'HARMONIA', tint: const Color(0xFFE8C36A), image: art, alignment: const Alignment(.8, .9), onTap: () => open(5)),
         const Positioned(left: 0, top: 1383, width: width, height: 45,
           child: ColoredBox(color: Color(0xFF030B08), child: Center(
             child: Text('ROYAL ONE  ·  V1.0.22  ·  POWERED BY SAHAND CONSORTIUM',
               style: TextStyle(color: Color(0xFFD7BE78), fontSize: 17, letterSpacing: 1.4))))),
-        // Entire portals including their ENTER buttons are interactive.
-        zone(33, 451, 306, 718, names[language]![0], () => open(0), radius: 145),
-        zone(346, 451, 288, 718, names[language]![1], () => open(1), radius: 145),
-        zone(641, 451, 301, 718, names[language]![2], () => open(2), radius: 145),
-        for (var i = 0; i < 3; i++) zone(73 + i * 296, 1097, 235, 51,
-          'ENTER ${names[language]![i]}', () => open(i), glow: true),
+        // Portals own their circular hit areas; no oversized invisible rectangles overlap them.
         zone(40, 76, 263, 207, names[language]![6], () => open(6), glow: true, radius: 70),
         zone(680, 91, 187, 64, 'FA / EN / AR', languages),
         zone(875, 86, 66, 75, 'Menu', menu),
-        zone(78, 1215, 214, 224, names[language]![3], () => open(3), glow: true, radius: 112),
-        zone(377, 1215, 214, 224, names[language]![4], () => open(4), glow: true, radius: 112),
-        zone(685, 1215, 214, 224, names[language]![5], () => open(5), glow: true, radius: 112),
       ])),
     )))),
   );
@@ -132,7 +124,8 @@ class _RoyalOrb extends StatefulWidget {
   final String title, subtitle, image;
   final Color tint;
   final Alignment alignment;
-  const _RoyalOrb({required this.left, required this.top, required this.size, required this.title, required this.subtitle, required this.tint, required this.image, required this.alignment});
+  final VoidCallback? onTap;
+  const _RoyalOrb({required this.left, required this.top, required this.size, required this.title, required this.subtitle, required this.tint, required this.image, required this.alignment, this.onTap});
   @override
   State<_RoyalOrb> createState() => _RoyalOrbState();
 }
@@ -143,7 +136,7 @@ class _RoyalOrbState extends State<_RoyalOrb> with SingleTickerProviderStateMixi
   @override
   Widget build(BuildContext context) => Positioned(
     left: widget.left, top: widget.top, width: widget.size, height: widget.size,
-    child: IgnorePointer(child: AnimatedBuilder(animation: spin, builder: (_, __) {
+    child: GestureDetector(onTap: widget.onTap, behavior: HitTestBehavior.opaque, child: AnimatedBuilder(animation: spin, builder: (_, __) {
       final a = spin.value * math.pi * 2;
       return Container(
         decoration: BoxDecoration(shape: BoxShape.circle,
@@ -166,6 +159,6 @@ class _RoyalOrbState extends State<_RoyalOrb> with SingleTickerProviderStateMixi
           ])),
         ]),
       );
-    })),
+    }))),
   );
 }
