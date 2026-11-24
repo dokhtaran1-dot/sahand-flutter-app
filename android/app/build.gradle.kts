@@ -28,6 +28,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders["appLabel"] = "ROYAL 1"
     }
 
     buildTypes {
@@ -36,6 +37,11 @@ android {
             versionNameSuffix = "-dev"
         }
         release {
+            // Preserve the original app/data: preview builds have a distinct ID.
+            if (System.getenv("ROYAL_ONE_PREVIEW") == "true") {
+                applicationIdSuffix = ".preview"
+                manifestPlaceholders["appLabel"] = "ROYAL 1 Preview"
+            }
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
