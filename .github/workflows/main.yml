@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - main
+      - feature/rc-ticket-deal-foundation
 
 permissions:
   contents: read
@@ -22,7 +23,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.event_name == 'pull_request' && 'pr-checks' || 'github-pages' }}
+      name: ${{ github.ref == 'refs/heads/main' && 'github-pages' || 'pr-checks' }}
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
@@ -151,7 +152,7 @@ jobs:
         run: flutter build web --release --base-href /sahand-flutter-app/ $ROYAL_CLUB_DART_DEFINES
 
       - name: Setup Pages
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main'
         uses: actions/configure-pages@v5
 
       - name: Upload Web
