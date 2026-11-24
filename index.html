@@ -101,6 +101,7 @@ window.supabase={createClient:(base,key)=>{
 <button data-tab="requests" id="nav-requests">کالا</button>
 <button data-tab="people" id="nav-people">پرسنل</button>
 <button data-tab="payroll" id="nav-payroll">حقوق</button>
+<button data-tab="shifts" id="nav-shifts">شیفت‌بندی</button>
 </div>
 <div id="flash" class="info hide"></div>
 <section id="view-dashboard" class="hide"><div class="card"><h2>داشبورد نظارت مالک</h2><div class="grid"><div class="stat"><span class="muted">پرسنل فعال</span><b id="c-active">—</b></div><div class="stat"><span class="muted">داخل شیفت</span><b id="c-shift">—</b></div><div class="stat"><span class="muted">درخواست باز</span><b id="c-requests">—</b></div><div class="stat"><span class="muted">حساب فعال‌شده</span><b id="c-accounts">—</b></div></div><p class="muted" style="margin-top:15px">بازخوانی خودکار هر ۲۰ ثانیه؛ ثبت‌ها با ساعت سرور انجام می‌شوند.</p></div><div class="card"><h2>آخرین ورود و خروج‌ها</h2><div id="events" class="muted">هنوز موردی ثبت نشده است.</div></div></section>
@@ -119,6 +120,23 @@ window.supabase={createClient:(base,key)=>{
    <p class="muted mini" style="margin-top:12px">واحد: تومان؛ پاداش مالک، مزایا و اضافه‌کاری جدا از حقوق ثابت هستند.</p>
   </div>
   <div class="card"><h2>فهرست تفکیکی حقوق</h2><div id="payroll-list"></div></div>
+</section>
+<section id="view-shifts" class="hide">
+ <div class="card"><h2>برنامه‌ریزی شیفت کارکنان</h2>
+  <p class="muted">ثبت شیفت برای کارکنان فعال؛ تاریخ و ساعت‌ها به‌صورت مستقل ذخیره می‌شوند.</p>
+  <div class="field"><label>کارمند</label><select id="shiftStaff"></select></div>
+  <div class="input-row">
+   <div class="field"><label>تاریخ شیفت</label><input id="shiftDate" type="date"></div>
+   <div class="field"><label>بخش</label><input id="shiftDepartment" maxlength="80" placeholder="مثلاً سالن"></div>
+  </div>
+  <div class="input-row">
+   <div class="field"><label>شروع</label><input id="shiftStart" type="time" value="16:00"></div>
+   <div class="field"><label>پایان</label><input id="shiftEnd" type="time" value="23:00"></div>
+  </div>
+  <div class="field"><label>توضیحات</label><textarea id="shiftNote" rows="2" maxlength="500" placeholder="توضیح اختیاری"></textarea></div>
+  <button id="saveShift" class="block">ثبت شیفت</button>
+ </div>
+ <div class="card"><div class="row"><h2 style="margin:0">شیفت‌های ۱۴ روز آینده</h2><button id="refreshShifts" class="outline action">به‌روزرسانی</button></div><div id="shiftList" style="margin-top:12px"></div></div>
 </section>
 </section>
 </main><footer class="foot">RV CONTROL · PRIVATE MANAGEMENT SYSTEM · SAHAND CONSORTIUM</footer>
@@ -147,6 +165,7 @@ async function begin(){
  document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>nav(b.dataset.tab));
  el("newQR").onclick=issueQR;el("scanButton").onclick=scanQR;el("makeRequest").onclick=createRequest;el("refreshPresence").onclick=loadPresenceBoard;
  el("staffSearch").oninput=renderStaff;el("staffStatus").onchange=renderStaff;
+ el("saveShift").onclick=createShift;el("refreshShifts").onclick=loadShifts;
  const r=await db.auth.getSession();session=r.data.session;
  if(session)await prepare();else show("auth");
  setInterval(async()=>{if(session&&role&&["owner","executive","manager","auditor"].includes(role)&&tab==="dashboard")await loadDashboard(false);},20000);
@@ -183,6 +202,7 @@ async function prepare(){
   el("nav-requests").classList.toggle("hide",role==="kiosk");
   el("nav-attendance").classList.toggle("hide",role==="kiosk");
   el("nav-payroll").classList.toggle("hide",!["owner","auditor","accountant"].includes(role));
+  el("nav-shifts").classList.toggle("hide",!["owner","executive","manager"].includes(role));
   const hash=location.hash;
   if(hash.startsWith("#scan=")){qrToken=hash.slice(6);nav("attendance");el("scanNotice").textContent="QR اسکن شد. برای ثبت رویداد از دکمه زیر استفاده کن.";el("scanButton").disabled=false;}
   else nav(["owner","executive","manager","auditor"].includes(role)?"dashboard":role==="kiosk"?"kiosk":"attendance");
@@ -192,12 +212,13 @@ async function logout(){await db.auth.signOut();session=null;role=null;qrToken=n
 function nav(next){
  tab=next;el("flash").classList.add("hide");
  document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===next));
- ["dashboard","attendance","kiosk","requests","people","payroll"].forEach(t=>el("view-"+t).classList.toggle("hide",t!==next));
+ ["dashboard","attendance","kiosk","requests","people","payroll","shifts"].forEach(t=>el("view-"+t).classList.toggle("hide",t!==next));
  if(next==="dashboard")loadDashboard(true);
  if(next==="attendance"&&["owner","executive","manager"].includes(role)){el("presenceReview").classList.remove("hide");loadPresenceBoard();}else if(next==="attendance"){el("presenceReview").classList.add("hide");}
  if(next==="requests")loadRequests();
  if(next==="people")loadStaff();
  if(next==="payroll")loadPayroll();
+ if(next==="shifts"){loadStaff().then(()=>loadShifts());}
  if(next==="kiosk"&&!qrToken)issueQR();
 }
 async function loadDashboard(noisy){
@@ -257,11 +278,12 @@ function renderRequests(){
  document.querySelectorAll("[data-advance]").forEach(b=>b.onclick=async()=>{const id=b.getAttribute("data-advance");const r=requests.find(x=>x.id===id);if(!r)return;const next=stageNext[r.status];const note=prompt("توضیح این مرحله (در صورت نیاز):")||"";try{await rpc("rvctl_advance_request",{p_request_id:id,p_next:next,p_note:note});msg("مرحله ثبت شد.");await loadRequests();}catch(e){msg("ثبت مرحله ناموفق: "+e.message,true);}});
 }
 async function loadStaff(){
- try{const r=await db.from("rvctl_staff").select("full_name,department,job_title,active").order("department");
+ try{const r=await db.from("rvctl_staff").select("id,full_name,department,job_title,active").order("department");
  if(r.error)throw r.error;staff=r.data||[];el("staffActiveCount").textContent=staff.filter(s=>s.active).length;el("staffInactiveCount").textContent=staff.filter(s=>!s.active).length;el("staffTotalCount").textContent=staff.length;renderStaff();
  }catch(e){el("staffList").textContent="خطا در دریافت فهرست: "+e.message;}
 }
 function renderStaff(){
+ if(el("shiftStaff"))el("shiftStaff").innerHTML=staff.filter(s=>s.active).map(s=>'<option value="'+safe(s.id)+'">'+safe(s.full_name)+' · '+safe(s.job_title)+'</option>').join("");
  const query=el("staffSearch").value.trim();
  const status=el("staffStatus").value;
  el("staffList").innerHTML=staff.filter(s=>(status==="all"||(status==="active"&&s.active)||(status==="inactive"&&!s.active))&&(s.full_name+s.department+s.job_title).includes(query)).map(s=>'<div class="row"><div><b>'+safe(s.full_name)+'</b><div class="muted mini">'+safe(s.job_title)+' · '+safe(s.department)+'</div></div><span class="tag">'+(s.active?"فعال":"غیرفعال")+'</span></div>').join("")||'<div class="muted">موردی پیدا نشد.</div>';
@@ -292,6 +314,26 @@ async function loadPresenceBoard(){
    catch(e){msg("ثبت بررسی ناموفق: "+e.message,true);b.disabled=false;}
   });
  }catch(e){el("presenceList").textContent="خطا در دریافت فهرست حضور: "+e.message;}
+}
+async function loadShifts(){
+ if(!["owner","executive","manager"].includes(role))return;
+ const start=new Date();const end=new Date(start);end.setDate(end.getDate()+14);
+ const fmt=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+ try{
+  const d=await rpc("rvctl_shift_list",{p_from:fmt(start),p_to:fmt(end)});
+  const rows=d.records||[];
+  el("shiftList").innerHTML=rows.map(s=>'<div class="row"><div><b>'+safe(s.full_name)+'</b><div class="muted mini">'+safe(s.department)+' · '+safe(s.job_title)+'</div><div class="muted mini">'+safe(s.shift_date)+' · '+safe(String(s.starts_at).slice(0,5))+' تا '+safe(String(s.ends_at).slice(0,5))+'</div>'+(s.shift_note?'<div class="muted mini">'+safe(s.shift_note)+'</div>':'')+'</div><span class="tag">'+(s.status==="scheduled"?"برنامه‌ریزی‌شده":safe(s.status))+'</span></div>').join("")||'<p class="muted">برای این بازه هنوز شیفتی ثبت نشده است.</p>';
+ }catch(e){el("shiftList").textContent="دریافت برنامه شیفت ناموفق بود: "+e.message;}
+}
+async function createShift(){
+ const staffId=el("shiftStaff").value,date=el("shiftDate").value,start=el("shiftStart").value,end=el("shiftEnd").value,department=el("shiftDepartment").value.trim(),note=el("shiftNote").value.trim();
+ if(!staffId||!date||!start||!end||!department){msg("کارمند، تاریخ، ساعت و بخش را کامل کن.",true);return;}
+ el("saveShift").disabled=true;
+ try{
+  await rpc("rvctl_shift_create",{p_staff_id:staffId,p_shift_date:date,p_starts_at:start,p_ends_at:end,p_department:department,p_note:note});
+  msg("شیفت با موفقیت ثبت شد.");el("shiftNote").value="";await loadShifts();
+ }catch(e){msg("ثبت شیفت ناموفق بود: "+e.message,true);}
+ finally{el("saveShift").disabled=false;}
 }
 async function loadPayroll(){
  if(!["owner","auditor","accountant"].includes(role)){msg("این بخش محرمانه است.",true);return;}
