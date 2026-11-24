@@ -140,6 +140,8 @@ jobs:
           printf 'ROYAL_CLUB_DART_DEFINES=--dart-define=SUPABASE_URL=https://jwddfcsikkialxzbrhle.supabase.co --dart-define=SUPABASE_ANON_KEY=sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve --dart-define=ROYAL_CLUB_BACKEND_READY=true\\n' >> "$GITHUB_ENV"
 
       - name: Build APK
+        env:
+          ROYAL_ONE_PREVIEW: ${{ github.ref != 'refs/heads/main' }}
         run: flutter build apk --release --target-platform android-arm64 --build-name 1.0.23 --build-number 25 $ROYAL_CLUB_DART_DEFINES
 
       - name: Upload APK
