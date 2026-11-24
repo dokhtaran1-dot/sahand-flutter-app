@@ -30,6 +30,9 @@ void main() {
     await tester.pumpWidget(app());
     await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/royal_one_approved_v21.jpg', 'assets/image/sc_restored_v22.png']);
     expect(tester.takeException(), isNull);
+    for (final portal in ['RM', 'RC', 'RV', 'SC', 'RE', 'RS', 'RH']) {
+      expect(find.text(portal), findsOneWidget, reason: 'Missing restored orb: $portal');
+    }
     expect(find.byWidgetPredicate((w) => w is RoyalTouchTarget && w.label.startsWith('ENTER ')), findsNWidgets(3));
     await expectLater(find.byType(HomePage), matchesGoldenFile('goldens/royal_one_home_390.png'));
     await tester.tap(find.byWidgetPredicate((w) => w is RoyalTouchTarget && w.label == 'میراث سهند'));
