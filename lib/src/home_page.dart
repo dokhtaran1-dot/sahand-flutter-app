@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> {
         _RoyalOrb(left: 46, top: 330, size: 285, title: 'RM', subtitle: 'ROYAL MALL', tint: const Color(0xFF5DA9FF), image: art, alignment: const Alignment(-.9, 0), onTap: () => open(0)),
         _RoyalOrb(left: 345, top: 310, size: 300, title: 'RC', subtitle: 'ROYAL CLUB', tint: const Color(0xFFFFB75B), image: art, alignment: const Alignment(0, 0), onTap: () => open(1)),
         _RoyalOrb(left: 653, top: 330, size: 285, title: 'RV', subtitle: 'ROYAL VILLAGE', tint: const Color(0xFF65DB8B), image: art, alignment: const Alignment(.9, 0), onTap: () => open(2)),
-        const _RoyalOrb(left: 324, top: 650, size: 320, title: 'SC', subtitle: 'SAHAND CONSORTIUM', tint: Color(0xFFE8C36A), image: 'assets/image/sc_restored_v22.png', alignment: Alignment(-.7, -.8)),
+        _RoyalOrb(left: 324, top: 650, size: 320, title: 'SC', subtitle: 'SAHAND CONSORTIUM', tint: const Color(0xFFE8C36A), image: 'assets/image/sc_restored_v22.png', alignment: const Alignment(-.7, -.8), onTap: () => open(6)),
         _RoyalOrb(left: 108, top: 1050, size: 206, title: 'RE', subtitle: 'ETTEHAD', tint: const Color(0xFFE8C36A), image: art, alignment: const Alignment(-.8, .9), onTap: () => open(3)),
         _RoyalOrb(left: 382, top: 1050, size: 206, title: 'RS', subtitle: 'SIGNATURE', tint: const Color(0xFFE8C36A), image: art, alignment: const Alignment(0, .9), onTap: () => open(4)),
         _RoyalOrb(left: 656, top: 1050, size: 206, title: 'RH', subtitle: 'HARMONIA', tint: const Color(0xFFE8C36A), image: art, alignment: const Alignment(.8, .9), onTap: () => open(5)),
@@ -130,7 +130,17 @@ class _RoyalOrb extends StatefulWidget {
   State<_RoyalOrb> createState() => _RoyalOrbState();
 }
 class _RoyalOrbState extends State<_RoyalOrb> with SingleTickerProviderStateMixin {
-  late final AnimationController spin = AnimationController(vsync: this, duration: const Duration(seconds: 22))..repeat();
+  late final AnimationController spin = AnimationController(vsync: this, duration: const Duration(seconds: 22));
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.of(context).disableAnimations) {
+      spin.stop();
+      spin.value = 0;
+    } else if (!spin.isAnimating) {
+      spin.repeat();
+    }
+  }
   @override
   void dispose() { spin.dispose(); super.dispose(); }
   @override
