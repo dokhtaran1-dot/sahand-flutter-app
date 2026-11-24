@@ -19,7 +19,7 @@ void main() {
   test('All seven circular portal targets map to the original sections', () {
     final source = File('lib/src/home_page.dart').readAsStringSync();
     final mapping = <String, int>{};
-    final pattern = RegExp(r"_RoyalOrb\([^\n]*title: '([^']+)'[^\n]*onTap: \(\) => open\((\d+)\)");
+    final pattern = RegExp(r"_RoyalOrb\([^\n]*?title: '([^']+)'[^\n]*onTap: \(\) => open\((\d+)\)");
     for (final match in pattern.allMatches(source)) {
       mapping[match.group(1)!] = int.parse(match.group(2)!);
     }
