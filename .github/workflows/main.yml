@@ -124,6 +124,9 @@ jobs:
       - name: Get packages
         run: flutter pub get
 
+      - name: Verify all seven Royal One portals and navigation
+        run: flutter test test/royal_navigation_test.dart
+
       - name: Work around app_links 6.4.1 Android compile SDK bug
         run: |
           plugin_gradle="$HOME/.pub-cache/hosted/pub.dev/app_links-6.4.1/android/build.gradle"
@@ -136,12 +139,12 @@ jobs:
           printf 'ROYAL_CLUB_DART_DEFINES=--dart-define=SUPABASE_URL=https://jwddfcsikkialxzbrhle.supabase.co --dart-define=SUPABASE_ANON_KEY=sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve --dart-define=ROYAL_CLUB_BACKEND_READY=true\\n' >> "$GITHUB_ENV"
 
       - name: Build APK
-        run: flutter build apk --debug --build-name 1.0.18 --build-number 20 $ROYAL_CLUB_DART_DEFINES
+        run: flutter build apk --debug --build-name 1.0.23 --build-number 25 $ROYAL_CLUB_DART_DEFINES
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ROYAL1-v1.0.18-UPDATED-APK
+          name: ROYAL1-v1.0.23-SEVEN-ORB-APK
           path: build/app/outputs/flutter-apk/app-debug.apk
 
       - name: Build Web
