@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
         _RoyalOrb(left: 656, top: 1050, size: 206, title: 'RH', subtitle: 'HARMONIA', tint: const Color(0xFFE8C36A), image: art, alignment: const Alignment(.8, .9), onTap: () => open(5)),
         const Positioned(left: 0, top: 1383, width: width, height: 45,
           child: ColoredBox(color: Color(0xFF030B08), child: Center(
-            child: Text('ROYAL ONE  ·  V1.0.22  ·  POWERED BY SAHAND CONSORTIUM',
+            child: Text('ROYAL ONE  ·  V1.0.23  ·  POWERED BY SAHAND CONSORTIUM',
               style: TextStyle(color: Color(0xFFD7BE78), fontSize: 17, letterSpacing: 1.4))))),
         // Portals own their circular hit areas; no oversized invisible rectangles overlap them.
         zone(40, 76, 263, 207, names[language]![6], () => open(6), glow: true, radius: 70),
