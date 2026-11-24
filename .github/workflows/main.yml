@@ -165,3 +165,5 @@ jobs:
         if: github.event_name != 'pull_request'
         id: deployment
         uses: actions/deploy-pages@v4
+
+# Preview build trigger: restore and verify the seven Royal One portals.
