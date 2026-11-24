@@ -169,6 +169,6 @@ class _RoyalOrbState extends State<_RoyalOrb> with SingleTickerProviderStateMixi
           ])),
         ]),
       );
-    }))),
+    })),
   );
 }
