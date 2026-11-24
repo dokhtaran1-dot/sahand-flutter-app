@@ -7,6 +7,7 @@ import 'royal_signature_page.dart';
 import 'ettehad_page.dart';
 import 'royal_harmonia_page.dart';
 import 'heritage_page.dart';
+import 'royal_club_profile_page.dart';
 
 /// Approved artwork is retained verbatim. The viewport excludes only the
 /// captured phone system bars; all controls share the artwork coordinate space.
@@ -17,8 +18,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  static const art = 'assets/image/royal_one_approved_v21.jpg';
-  static const width = 972.0, topCrop = 72.0, height = 1428.0;
+  static const art = 'assets/image/ROYAL_ONE_7ORBS_APPROVED.jpg';
+  static const width = 972.0, height = 1428.0;
   String language = 'FA';
   final pages = const <Widget>[
     RoyalMallPage(), RoyalClubGamePage(), RoyalVillagePage(),
@@ -54,7 +55,7 @@ class _HomePageState extends State<HomePage> {
   );
 
   Widget zone(double x, double y, double w, double h, String label, VoidCallback tap, {bool glow = false, double radius = 24}) => Positioned(
-    left: x, top: y - topCrop, width: w, height: h,
+    left: x, top: y, width: w, height: h,
     child: RoyalTouchTarget(label: label, onTap: tap, glow: glow, radius: radius),
   );
 
@@ -64,23 +65,25 @@ class _HomePageState extends State<HomePage> {
     body: SafeArea(child: Center(child: FittedBox(fit: BoxFit.contain, child: SizedBox(
       width: width, height: height,
       child: ClipRect(child: Stack(children: [
-        const Positioned(left: 0, top: -topCrop, width: width, height: 1536, child: Image(image: AssetImage(art), fit: BoxFit.fill, filterQuality: FilterQuality.high, excludeFromSemantics: true)),
-        // Seven circular portals are restored as separate animated widgets.
-        _RoyalOrb(left: 46, top: 330, size: 285, title: 'RM', subtitle: 'ROYAL MALL', tint: const Color(0xFF5DA9FF), image: art, alignment: const Alignment(-.9, 0), onTap: () => open(0)),
-        _RoyalOrb(left: 345, top: 310, size: 300, title: 'RC', subtitle: 'ROYAL CLUB', tint: const Color(0xFFFFB75B), image: art, alignment: const Alignment(0, 0), onTap: () => open(1)),
-        _RoyalOrb(left: 653, top: 330, size: 285, title: 'RV', subtitle: 'ROYAL VILLAGE', tint: const Color(0xFF65DB8B), image: art, alignment: const Alignment(.9, 0), onTap: () => open(2)),
-        _RoyalOrb(left: 324, top: 650, size: 320, title: 'SC', subtitle: 'SAHAND CONSORTIUM', tint: const Color(0xFFE8C36A), image: 'assets/image/sc_restored_v22.png', alignment: const Alignment(-.7, -.8), onTap: () => open(6)),
-        _RoyalOrb(left: 108, top: 1050, size: 206, title: 'RE', subtitle: 'ETTEHAD', tint: const Color(0xFFE8C36A), image: art, alignment: const Alignment(-.8, .9), onTap: () => open(3)),
-        _RoyalOrb(left: 382, top: 1050, size: 206, title: 'RS', subtitle: 'SIGNATURE', tint: const Color(0xFFE8C36A), image: art, alignment: const Alignment(0, .9), onTap: () => open(4)),
-        _RoyalOrb(left: 656, top: 1050, size: 206, title: 'RH', subtitle: 'HARMONIA', tint: const Color(0xFFE8C36A), image: art, alignment: const Alignment(.8, .9), onTap: () => open(5)),
-        const Positioned(left: 0, top: 1383, width: width, height: 45,
-          child: ColoredBox(color: Color(0xFF030B08), child: Center(
-            child: Text('ROYAL ONE  ·  V1.0.23  ·  POWERED BY SAHAND CONSORTIUM',
-              style: TextStyle(color: Color(0xFFD7BE78), fontSize: 17, letterSpacing: 1.4))))),
-        // Portals own their circular hit areas; no oversized invisible rectangles overlap them.
-        zone(40, 76, 263, 207, names[language]![6], () => open(6), glow: true, radius: 70),
-        zone(680, 91, 187, 64, 'FA / EN / AR', languages),
-        zone(875, 86, 66, 75, 'Menu', menu),
+        // Original seven-orb photograph; never layer new drawn spheres on it.
+        const Positioned.fill(child: Image(image: AssetImage(art),
+          fit: BoxFit.fill, filterQuality: FilterQuality.high, excludeFromSemantics: true)),
+        _OrbPortal(label: 'RM', left: 79, top: 330, size: 249, phase: 0.0, onTap: () => open(0)),
+        _OrbPortal(label: 'RC', left: 347, top: 274, size: 283, phase: 0.14, onTap: () => open(1)),
+        _OrbPortal(label: 'RV', left: 659, top: 333, size: 250, phase: 0.28, onTap: () => open(2)),
+        _OrbPortal(label: 'SC', left: 372, top: 597, size: 226, phase: 0.42, onTap: () => open(6)),
+        _OrbPortal(label: 'RE', left: 152, top: 912, size: 188, phase: 0.56, onTap: () => open(3)),
+        _OrbPortal(label: 'RS', left: 398, top: 912, size: 188, phase: 0.70, onTap: () => open(4)),
+        _OrbPortal(label: 'RH', left: 648, top: 912, size: 188, phase: 0.84, onTap: () => open(5)),
+        // Transparent controls only: preserve all existing typography in photo.
+        zone(693, 0, 172, 75, 'FA / EN / AR', languages),
+        zone(867, 0, 86, 81, 'Menu', menu),
+        zone(68, 1228, 174, 155, 'Home', () {}),
+        zone(246, 1228, 166, 155, 'Explore', () => open(6)),
+        zone(413, 1228, 165, 155, 'Royal Club', () => open(1)),
+        zone(581, 1228, 162, 155, 'Reservations', () => open(2)),
+        zone(745, 1228, 165, 155, 'Profile', () => Navigator.of(context).push(
+          MaterialPageRoute<void>(builder: (_) => const RoyalClubProfilePage()))),
       ])),
     )))),
   );
@@ -119,148 +122,88 @@ class _RoyalTouchTargetState extends State<RoyalTouchTarget> with SingleTickerPr
 }
 
 
-class _RoyalOrb extends StatefulWidget {
-  final double left, top, size;
-  final String title, subtitle, image;
-  final Color tint;
-  final Alignment alignment;
-  final VoidCallback? onTap;
-  const _RoyalOrb({required this.left, required this.top, required this.size, required this.title, required this.subtitle, required this.tint, required this.image, required this.alignment, this.onTap});
+ 
+/// Only an invisible circular tap region and a tiny 22-second moving rim glint.
+/// The seven spheres and their text are preserved in the approved image.
+class _OrbPortal extends StatefulWidget {
+  final String label;
+  final double left, top, size, phase;
+  final VoidCallback onTap;
+  const _OrbPortal({
+    required this.label, required this.left, required this.top,
+    required this.size, required this.phase, required this.onTap,
+  });
   @override
-  State<_RoyalOrb> createState() => _RoyalOrbState();
+  State<_OrbPortal> createState() => _OrbPortalState();
 }
-class _RoyalOrbState extends State<_RoyalOrb> with SingleTickerProviderStateMixin {
-  late final AnimationController spin = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 22),
-  );
+
+class _OrbPortalState extends State<_OrbPortal> with SingleTickerProviderStateMixin {
+  late final AnimationController orbit = AnimationController(
+    vsync: this, duration: const Duration(seconds: 22));
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (MediaQuery.of(context).disableAnimations) {
-      spin.stop();
-      spin.value = 0;
-    } else if (!spin.isAnimating) {
-      spin.repeat();
+      orbit.stop();
+      orbit.value = 0;
+    } else if (!orbit.isAnimating) {
+      orbit.repeat();
     }
   }
 
   @override
   void dispose() {
-    spin.dispose();
+    orbit.dispose();
     super.dispose();
   }
 
-  Widget sphere(double angle) {
-    final light = Alignment(math.cos(angle), math.sin(angle));
-    final shadow = Alignment(-math.cos(angle), -math.sin(angle));
-    final art = ClipOval(
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            widget.image,
-            fit: BoxFit.cover,
-            alignment: widget.alignment,
-            color: const Color(0x9900140B),
-            colorBlendMode: BlendMode.multiply,
-          ),
-          DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: light,
-                end: shadow,
-                colors: [
-                  widget.tint.withOpacity(.36),
-                  Colors.transparent,
-                  const Color(0x99000000),
-                  widget.tint.withOpacity(.15),
-                ],
+  @override
+  Widget build(BuildContext context) => Positioned(
+    key: Key('orb:' + widget.label),
+    left: widget.left, top: widget.top,
+    width: widget.size, height: widget.size,
+    child: Semantics(
+      button: true,
+      label: widget.label,
+      child: Material(
+        color: Colors.transparent,
+        shape: const CircleBorder(),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: widget.onTap,
+          customBorder: const CircleBorder(),
+          splashColor: const Color(0x20FFE9B0),
+          child: AnimatedBuilder(
+            animation: orbit,
+            builder: (_, __) => IgnorePointer(
+              child: CustomPaint(
+                painter: _OrbRimGlint((orbit.value + widget.phase) * math.pi * 2),
+                child: const SizedBox.expand(),
               ),
             ),
           ),
-        ],
-      ),
-    );
-    final rim = Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: widget.tint, width: 7),
-        gradient: SweepGradient(
-          transform: GradientRotation(angle),
-          colors: [
-            Colors.transparent,
-            const Color(0xFFFFF0B2),
-            Colors.transparent,
-            widget.tint.withOpacity(.35),
-            Colors.transparent,
-          ],
         ),
       ),
-    );
-    final label = Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            widget.title,
-            style: TextStyle(
-              fontSize: widget.size * .24,
-              fontWeight: FontWeight.w900,
-              color: const Color(0xFFFFE9B2),
-              shadows: const [Shadow(color: Colors.black, blurRadius: 12)],
-            ),
-          ),
-          Text(
-            widget.subtitle,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: widget.size * .058,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ],
-      ),
-    );
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: widget.tint.withOpacity(.48),
-            blurRadius: 28,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [art, rim, label],
-      ),
-    );
-  }
+    ),
+  );
+}
 
+class _OrbRimGlint extends CustomPainter {
+  final double angle;
+  const _OrbRimGlint(this.angle);
   @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      left: widget.left,
-      top: widget.top,
-      width: widget.size,
-      height: widget.size,
-      child: Semantics(
-        button: true,
-        label: widget.subtitle,
-        child: GestureDetector(
-          onTap: widget.onTap,
-          behavior: HitTestBehavior.opaque,
-          child: AnimatedBuilder(
-            animation: spin,
-            builder: (context, child) => sphere(spin.value * math.pi * 2),
-          ),
-        ),
-      ),
-    );
+  void paint(Canvas canvas, Size size) {
+    final r = size.shortestSide / 2 - 3;
+    final oval = Rect.fromCircle(
+      center: Offset(size.width / 2, size.height / 2), radius: r);
+    final glow = Paint()
+      ..color = const Color(0x55FFF3BD)
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    canvas.drawArc(oval, angle, .22, false, glow);
   }
+  @override
+  bool shouldRepaint(covariant _OrbRimGlint old) => old.angle != angle;
 }
