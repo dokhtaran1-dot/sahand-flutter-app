@@ -130,7 +130,11 @@ class _RoyalOrb extends StatefulWidget {
   State<_RoyalOrb> createState() => _RoyalOrbState();
 }
 class _RoyalOrbState extends State<_RoyalOrb> with SingleTickerProviderStateMixin {
-  late final AnimationController spin = AnimationController(vsync: this, duration: const Duration(seconds: 22));
+  late final AnimationController spin = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 22),
+  );
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -141,34 +145,122 @@ class _RoyalOrbState extends State<_RoyalOrb> with SingleTickerProviderStateMixi
       spin.repeat();
     }
   }
+
   @override
-  void dispose() { spin.dispose(); super.dispose(); }
+  void dispose() {
+    spin.dispose();
+    super.dispose();
+  }
+
+  Widget sphere(double angle) {
+    final light = Alignment(math.cos(angle), math.sin(angle));
+    final shadow = Alignment(-math.cos(angle), -math.sin(angle));
+    final art = ClipOval(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            widget.image,
+            fit: BoxFit.cover,
+            alignment: widget.alignment,
+            color: const Color(0x9900140B),
+            colorBlendMode: BlendMode.multiply,
+          ),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: light,
+                end: shadow,
+                colors: [
+                  widget.tint.withOpacity(.36),
+                  Colors.transparent,
+                  const Color(0x99000000),
+                  widget.tint.withOpacity(.15),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    final rim = Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: widget.tint, width: 7),
+        gradient: SweepGradient(
+          transform: GradientRotation(angle),
+          colors: [
+            Colors.transparent,
+            const Color(0xFFFFF0B2),
+            Colors.transparent,
+            widget.tint.withOpacity(.35),
+            Colors.transparent,
+          ],
+        ),
+      ),
+    );
+    final label = Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            widget.title,
+            style: TextStyle(
+              fontSize: widget.size * .24,
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFFFFE9B2),
+              shadows: const [Shadow(color: Colors.black, blurRadius: 12)],
+            ),
+          ),
+          Text(
+            widget.subtitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: widget.size * .058,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: widget.tint.withOpacity(.48),
+            blurRadius: 28,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [art, rim, label],
+      ),
+    );
+  }
+
   @override
-  Widget build(BuildContext context) => Positioned(
-    left: widget.left, top: widget.top, width: widget.size, height: widget.size,
-    child: GestureDetector(onTap: widget.onTap, behavior: HitTestBehavior.opaque, child: AnimatedBuilder(animation: spin, builder: (_, __) {
-      final a = spin.value * math.pi * 2;
-      return Container(
-        decoration: BoxDecoration(shape: BoxShape.circle,
-          boxShadow: [BoxShadow(color: widget.tint.withOpacity(.48), blurRadius: 28, spreadRadius: 2)]),
-        child: Stack(fit: StackFit.expand, children: [
-          ClipOval(child: Stack(fit: StackFit.expand, children: [
-            Image.asset(widget.image, fit: BoxFit.cover, alignment: widget.alignment,
-              color: const Color(0x9900140B), colorBlendMode: BlendMode.multiply),
-            DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(
-              begin: Alignment(math.cos(a), math.sin(a)),
-              end: Alignment(-math.cos(a), -math.sin(a)),
-              colors: [widget.tint.withOpacity(.36), Colors.transparent, const Color(0x99000000), widget.tint.withOpacity(.15)],
-            ))),
-          ])),
-          Container(decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: widget.tint, width: 7),
-            gradient: SweepGradient(transform: GradientRotation(a), colors: [Colors.transparent, const Color(0xFFFFF0B2), Colors.transparent, widget.tint.withOpacity(.35), Colors.transparent]))),
-          Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text(widget.title, style: TextStyle(fontSize: widget.size * .24, fontWeight: FontWeight.w900, color: const Color(0xFFFFE9B2), shadows: const [Shadow(color: Colors.black, blurRadius: 12)])),
-            Text(widget.subtitle, textAlign: TextAlign.center, style: TextStyle(fontSize: widget.size * .058, fontWeight: FontWeight.bold, color: Colors.white)),
-          ])),
-        ]),
-      );
-    })),
-  );
+  Widget build(BuildContext context) {
+    return Positioned(
+      left: widget.left,
+      top: widget.top,
+      width: widget.size,
+      height: widget.size,
+      child: Semantics(
+        button: true,
+        label: widget.subtitle,
+        child: GestureDetector(
+          onTap: widget.onTap,
+          behavior: HitTestBehavior.opaque,
+          child: AnimatedBuilder(
+            animation: spin,
+            builder: (context, child) => sphere(spin.value * math.pi * 2),
+          ),
+        ),
+      ),
+    );
+  }
 }
