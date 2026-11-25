@@ -16,6 +16,13 @@ Future<void> loadImages(WidgetTester tester, BuildContext context, List<String> 
   await tester.pumpAndSettle();
 }
 void main() {
+  test('Approved SC rotates around its vertical axis without overlays', () {
+    final source = File('lib/src/home_page.dart').readAsStringSync();
+    expect(source.contains("class _VerticalSpinningSc"), isTrue);
+    expect(source.contains("const Duration(seconds: 22)"), isTrue);
+    expect(source.contains("longitude + math.pi / 2 - turn"), isTrue);
+    expect(source.contains("ROYAL_ONE_HOME_APPROVED_FINAL.png"), isTrue);
+  });
   test('All seven circular portal targets map to the original sections', () {
     final source = File('lib/src/home_page.dart').readAsStringSync();
     final mapping = <String, int>{};
@@ -41,8 +48,10 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(app());
-    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/ROYAL_ONE_7ORBS_APPROVED.jpg']);
+    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/ROYAL_ONE_HOME_APPROVED_FINAL.png', 'assets/image/ROYAL_ONE_SC_GLOBE_TEXTURE.png']);
     expect(tester.takeException(), isNull);
+    // Visual anchor: the separate SC texture must exist for vertical-axis spin.
+    expect(find.byKey(const Key('orb:SC')), findsOneWidget);
     for (final portal in ['RM', 'RC', 'RV', 'SC', 'RE', 'RS', 'RH']) {
       expect(find.byKey(Key('orb:' + portal)), findsOneWidget, reason: 'Missing restored orb: $portal');
     }
@@ -66,7 +75,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(app());
-    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/ROYAL_ONE_7ORBS_APPROVED.jpg']);
+    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/ROYAL_ONE_HOME_APPROVED_FINAL.png', 'assets/image/ROYAL_ONE_SC_GLOBE_TEXTURE.png']);
     await tester.tap(find.byKey(const Key('orb:RV')));
     await tester.pumpAndSettle();
     expect(find.byType(RoyalVillagePage), findsOneWidget);
