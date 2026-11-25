@@ -20,7 +20,7 @@ void main() {
     final source = File('lib/src/home_page.dart').readAsStringSync();
     expect(source.contains("class _VerticalSpinningSc"), isTrue);
     expect(source.contains("const Duration(seconds: 22)"), isTrue);
-    expect(source.contains("longitude + math.pi / 2 - turn"), isTrue);
+    expect(source.contains("longitude - turn + math.pi"), isTrue);
     expect(source.contains("ROYAL_ONE_HOME_APPROVED_FINAL.png"), isTrue);
   });
   test('All seven circular portal targets map to the original sections', () {
@@ -48,7 +48,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(app());
-    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/ROYAL_ONE_HOME_APPROVED_FINAL.png', 'assets/image/ROYAL_ONE_SC_GLOBE_TEXTURE.png']);
+    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/ROYAL_ONE_HOME_APPROVED_FINAL.png', 'assets/image/ROYAL_ONE_SC_360_TEXTURE.png']);
     expect(tester.takeException(), isNull);
     // Visual anchor: the separate SC texture must exist for vertical-axis spin.
     expect(find.byKey(const Key('orb:SC')), findsOneWidget);
@@ -75,7 +75,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(app());
-    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/ROYAL_ONE_HOME_APPROVED_FINAL.png', 'assets/image/ROYAL_ONE_SC_GLOBE_TEXTURE.png']);
+    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/ROYAL_ONE_HOME_APPROVED_FINAL.png', 'assets/image/ROYAL_ONE_SC_360_TEXTURE.png']);
     await tester.tap(find.byKey(const Key('orb:RV')));
     await tester.pumpAndSettle();
     expect(find.byType(RoyalVillagePage), findsOneWidget);
