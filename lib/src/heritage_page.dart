@@ -16,15 +16,7 @@ class HeritagePage extends StatelessWidget {
     backgroundColor: _jade,
     appBar: AppBar(backgroundColor: _jade, foregroundColor: _gold, title: const Text('SAHAND / HERITAGE')),
     body: Directionality(textDirection: TextDirection.rtl, child: ListView(padding: const EdgeInsets.all(28), children: [
-      ClipRRect(
-        borderRadius: BorderRadius.circular(18),
-        child: Image.asset(
-          'assets/image/royal_heritage_father_son.jpg',
-          fit: BoxFit.contain,
-          width: double.infinity,
-          errorBuilder: (context, error, stackTrace) => const Text('SC', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'serif', fontSize: 100, color: _gold)),
-        ),
-      ),
+      const _HeritageCover(),
       const Text('SAHAND CONSORTIUM\nSINCE 1351', textAlign: TextAlign.center, textDirection: TextDirection.ltr, style: TextStyle(letterSpacing: 3, height: 1.8, color: _gold)),
       const SizedBox(height: 32),
       const Text('ROYAL HERITAGE', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'serif', fontSize: 25, letterSpacing: 2, color: _gold)),
@@ -45,6 +37,85 @@ class HeritagePage extends StatelessWidget {
       const Text('MBA · UOWD Dubai\nDALF C2 · Français', textDirection: TextDirection.ltr, style: TextStyle(height: 2, letterSpacing: 1, color: _gold)),
     ])),
   );
+}
+
+class _HeritageCover extends StatelessWidget {
+  const _HeritageCover();
+
+  @override
+  Widget build(BuildContext context) => Center(
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 560),
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Image.asset(
+          'assets/image/royal_heritage_sahand_consortium_legacy.png',
+          width: double.infinity,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.high,
+          errorBuilder: (context, error, stackTrace) => const Text(
+            'SC', textAlign: TextAlign.center,
+            style: TextStyle(fontFamily: 'serif', fontSize: 100, color: _gold),
+          ),
+          frameBuilder: (context, image, frame, wasSynchronouslyLoaded) {
+            if (frame == null && !wasSynchronouslyLoaded) return image;
+            return Stack(children: [
+              image,
+              Positioned.fill(child: LayoutBuilder(builder: (context, bounds) {
+                Widget target(String label, double x, double y, double w, double h, VoidCallback action) =>
+                  Positioned(
+                    left: bounds.maxWidth * x, top: bounds.maxHeight * y,
+                    width: bounds.maxWidth * w, height: bounds.maxHeight * h,
+                    child: Semantics(
+                      button: true, label: label,
+                      child: GestureDetector(behavior: HitTestBehavior.opaque, onTap: action),
+                    ),
+                  );
+                void openHeritage() => _open(context, const _ArchivePage(title: 'OUR HERITAGE', children: [
+                  Text('از پدر به پسر', style: TextStyle(color: _gold, fontSize: 28)),
+                  SizedBox(height: 16),
+                  Text('سهند از سال ۱۳۵۱ با تأسیس کارخانه توسط پدر آغاز شد؛ نامی که میراث آن در مسیر توسعه کنسرسیوم سهند ادامه یافت.', style: TextStyle(color: Colors.white70, height: 2, fontSize: 18)),
+                  SizedBox(height: 24),
+                  Text('ریشه من، پدرم است؛ و ستون من، همان ریشه.', style: TextStyle(color: _gold, height: 2)),
+                ]));
+                void openBranches() => _open(context, const _HeritageBranchesPage());
+                return Stack(children: [
+                  target('Founder · Our Heritage', 0, .065, .30, .245, openHeritage),
+                  target('President portrait', .66, .065, .34, .245, () => _open(context, const PresidentPage())),
+                  target('President', .015, .885, .205, .075, () => _open(context, const PresidentPage())),
+                  target('Our Heritage', .22, .885, .19, .075, openHeritage),
+                  target('Branches', .41, .885, .18, .075, openBranches),
+                  target('Media', .59, .885, .19, .075, () => _open(context, const _ArchivePage(title: 'MEDIA', children: [_EmptyArchive()]))),
+                  target('Contact Us', .78, .885, .205, .075, () => _open(context, const _ArchivePage(title: 'CONTACT US', children: [
+                    Text('SAHAND CONSORTIUM', textAlign: TextAlign.center, style: TextStyle(color: _gold, fontSize: 22)),
+                    SizedBox(height: 20),
+                    SelectableText('sahand-consortium.com', textDirection: TextDirection.ltr, textAlign: TextAlign.center, style: TextStyle(color: Colors.white70)),
+                  ]))),
+                  target('Business branches', .05, .33, .9, .36, openBranches),
+                ]);
+              })),
+            ]);
+          },
+        ),
+      ),
+    ),
+  );
+}
+
+class _HeritageBranchesPage extends StatelessWidget {
+  const _HeritageBranchesPage();
+  static const names = [
+    'Royal Mall · Tabriz', 'Royal Village Café', 'UAE Construction & Development',
+    'Shirin Sahand Azerbaijan', 'Agriculture · Stone Fruits', 'Iberchem Representation',
+    'Lova Coffee', 'Export & Import', 'Media Advertising Studio HQ', '1800 m² Project · Floor 3',
+  ];
+  @override
+  Widget build(BuildContext context) => _ArchivePage(title: 'BRANCHES', children: [
+    for (final name in names) Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Text(name, textDirection: TextDirection.ltr, style: const TextStyle(color: _gold, fontSize: 17)),
+    ),
+  ]);
 }
 
 class _ArchiveTile extends StatelessWidget {
