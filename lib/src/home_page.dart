@@ -230,7 +230,7 @@ class _VerticalSpinningSc extends StatefulWidget {
 
 class _VerticalSpinningScState extends State<_VerticalSpinningSc>
     with SingleTickerProviderStateMixin {
-  static const texturePath = 'assets/image/ROYAL_ONE_SC_GLOBE_TEXTURE.png';
+  static const texturePath = 'assets/image/ROYAL_ONE_SC_360_TEXTURE.png';
   late final AnimationController _turn = AnimationController(
     vsync: this, duration: const Duration(seconds: 22));
   ui.Image? _texture;
@@ -316,26 +316,58 @@ class _VerticalScSpherePainter extends CustomPainter {
     canvas.save();
     canvas.clipPath(clip, doAntiAlias: true);
 
-    // Each thin slice shows a different globe longitude. The edge slices
-    // compress towards the rim, creating a round, revolving sphere instead of
-    // a flat photo flipping like a card. Negative phase moves the surface
-    // visually left-to-right, around the sphere's vertical axis.
-    const strips = 180;
-    final sw = texture.width.toDouble();
-    final sh = texture.height.toDouble();
-    final dw = globe.width / strips;
-    final paint = Paint()..filterQuality = FilterQuality.medium;
-    for (var i = 0; i < strips; i++) {
-      final x = (i + .5) / strips * 2 - 1;
-      final longitude = math.asin(x.clamp(-1.0, 1.0));
-      final globeLongitude = longitude + math.pi / 2 - turn;
-      final sample = (1 - math.cos(globeLongitude)) / 2;
-      final sourceX = (sample * (sw - 1)).clamp(0.0, sw - 2).toDouble();
-      final source = Rect.fromLTWH(sourceX, 0, 2, sh);
-      final destination = Rect.fromLTWH(
-        globe.left + i * dw, globe.top, dw + .8, globe.height);
-      canvas.drawImageRect(texture, source, destination, paint);
+    // The screenshot supplies the *front* of the sphere. Its equirectangular
+    // green-and-gold SC panorama supplies the back. A textured spherical mesh
+    // advances around the vertical Y axis, so the sphere stays round while its
+    // surface actually moves from left to right.
+    const segments = 42;
+    final positions = <Offset>[];
+    final texCoords = <Offset>[];
+    final faces = <int>[];
+    final panoWidth = texture.width.toDouble();
+    final panoHeight = texture.height.toDouble();
+
+    for (var row = 0; row <= segments; row++) {
+      final yn = -1.0 + 2.0 * row / segments;
+      for (var col = 0; col <= segments; col++) {
+        final xn = -1.0 + 2.0 * col / segments;
+        final z = math.sqrt(math.max(0.0, 1.0 - xn * xn - yn * yn));
+        final longitude = math.atan2(xn, z);
+        final latitude = math.asin(yn.clamp(-1.0, 1.0));
+
+        // Subtract turn: landmass and SC emblem travel LEFT -> RIGHT.
+        // Unwrapped U + repeated ImageShader avoids a discontinuous seam.
+        final u = (longitude - turn + math.pi) / (2 * math.pi);
+        final v = (latitude + math.pi / 2) / math.pi;
+
+        positions.add(Offset(
+          globe.left + (xn + 1) * globe.width / 2,
+          globe.top + (yn + 1) * globe.height / 2,
+        ));
+        texCoords.add(Offset(u * panoWidth, v * panoHeight));
+
+        if (row < segments && col < segments) {
+          final n = row * (segments + 1) + col;
+          faces.addAll([n, n + 1, n + segments + 1]);
+          faces.addAll([n + 1, n + segments + 2, n + segments + 1]);
+        }
+      }
     }
+
+    final vertices = ui.Vertices(
+      ui.VertexMode.triangles,
+      positions,
+      textureCoordinates: texCoords,
+      indices: faces,
+    );
+    final surface = Paint()
+      ..isAntiAlias = true
+      ..filterQuality = FilterQuality.high
+      ..shader = ui.ImageShader(
+        texture, ui.TileMode.repeated, ui.TileMode.clamp,
+        Matrix4.identity().storage,
+      );
+    canvas.drawVertices(vertices, ui.BlendMode.srcOver, surface);
 
     final lighting = Paint()
       ..shader = ui.Gradient.linear(
