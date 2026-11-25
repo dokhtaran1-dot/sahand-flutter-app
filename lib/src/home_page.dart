@@ -330,7 +330,7 @@ class _VerticalScSpherePainter extends CustomPainter {
       final longitude = math.asin(x.clamp(-1.0, 1.0));
       final globeLongitude = longitude + math.pi / 2 - turn;
       final sample = (1 - math.cos(globeLongitude)) / 2;
-      final sourceX = (sample * (sw - 1)).clamp(0.0, sw - 2);
+      final sourceX = (sample * (sw - 1)).clamp(0.0, sw - 2).toDouble();
       final source = Rect.fromLTWH(sourceX, 0, 2, sh);
       final destination = Rect.fromLTWH(
         globe.left + i * dw, globe.top, dw + .8, globe.height);
