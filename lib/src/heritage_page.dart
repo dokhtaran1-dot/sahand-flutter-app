@@ -16,7 +16,15 @@ class HeritagePage extends StatelessWidget {
     backgroundColor: _jade,
     appBar: AppBar(backgroundColor: _jade, foregroundColor: _gold, title: const Text('SAHAND / HERITAGE')),
     body: Directionality(textDirection: TextDirection.rtl, child: ListView(padding: const EdgeInsets.all(28), children: [
-      const Text('SC', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'serif', fontSize: 100, color: _gold)),
+      ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: Image.asset(
+          'assets/image/royal_heritage_father_son.jpg',
+          fit: BoxFit.contain,
+          width: double.infinity,
+          errorBuilder: (context, error, stackTrace) => const Text('SC', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'serif', fontSize: 100, color: _gold)),
+        ),
+      ),
       const Text('SAHAND CONSORTIUM\nSINCE 1351', textAlign: TextAlign.center, textDirection: TextDirection.ltr, style: TextStyle(letterSpacing: 3, height: 1.8, color: _gold)),
       const SizedBox(height: 32),
       const Text('ROYAL HERITAGE', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'serif', fontSize: 25, letterSpacing: 2, color: _gold)),
