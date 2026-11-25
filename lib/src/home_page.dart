@@ -1,4 +1,6 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'royal_mall_page.dart';
 import 'royal_village_page.dart';
@@ -18,7 +20,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  static const art = 'assets/image/ROYAL_ONE_7ORBS_APPROVED.jpg';
+  static const art = 'assets/image/ROYAL_ONE_HOME_APPROVED_FINAL.png';
   static const width = 972.0, height = 1428.0;
   String language = 'FA';
   final pages = const <Widget>[
@@ -68,6 +70,9 @@ class _HomePageState extends State<HomePage> {
         // Original seven-orb photograph; never layer new drawn spheres on it.
         const Positioned.fill(child: Image(image: AssetImage(art),
           fit: BoxFit.fill, filterQuality: FilterQuality.high, excludeFromSemantics: true)),
+        // Move SC globe artwork across its OWN VERTICAL AXIS (22 seconds).
+        // All other spheres remain the owner's approved high-quality artwork.
+        const _VerticalSpinningSc(left: 375, top: 599, size: 222),
         _OrbPortal(label: 'RM', left: 79, top: 330, size: 249, phase: 0.0, onTap: () => open(0)),
         _OrbPortal(label: 'RC', left: 347, top: 274, size: 283, phase: 0.14, onTap: () => open(1)),
         _OrbPortal(label: 'RV', left: 659, top: 333, size: 250, phase: 0.28, onTap: () => open(2)),
@@ -206,4 +211,160 @@ class _OrbRimGlint extends CustomPainter {
   }
   @override
   bool shouldRepaint(covariant _OrbRimGlint old) => old.angle != angle;
+}
+
+
+/// Real vertical-axis rotation of the SC sphere surface, not a moving border,
+/// not a tilt of the entire Home image, and not an extra opaque logo disc.
+/// One frame from the owner's approved photo is remapped along globe meridians.
+/// Back-facing longitudes mirror the reference where a back texture is absent.
+class _VerticalSpinningSc extends StatefulWidget {
+  final double left, top, size;
+  const _VerticalSpinningSc({
+    required this.left, required this.top, required this.size,
+  });
+
+  @override
+  State<_VerticalSpinningSc> createState() => _VerticalSpinningScState();
+}
+
+class _VerticalSpinningScState extends State<_VerticalSpinningSc>
+    with SingleTickerProviderStateMixin {
+  static const texturePath = 'assets/image/ROYAL_ONE_SC_GLOBE_TEXTURE.png';
+  late final AnimationController _turn = AnimationController(
+    vsync: this, duration: const Duration(seconds: 22));
+  ui.Image? _texture;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTexture();
+  }
+
+  Future<void> _loadTexture() async {
+    try {
+      final data = await rootBundle.load(texturePath);
+      final codec = await ui.instantiateImageCodec(
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+      final frame = await codec.getNextFrame();
+      codec.dispose();
+      if (!mounted) {
+        frame.image.dispose();
+        return;
+      }
+      setState(() => _texture = frame.image);
+    } catch (error) {
+      debugPrint('SC globe texture unavailable: $error');
+      // Original sphere stays visible beneath the overlay.
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.of(context).disableAnimations) {
+      _turn.stop();
+      _turn.value = 0;
+    } else if (!_turn.isAnimating) {
+      _turn.repeat();
+    }
+  }
+
+  @override
+  void dispose() {
+    _turn.dispose();
+    _texture?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Positioned(
+    left: widget.left,
+    top: widget.top,
+    width: widget.size,
+    height: widget.size,
+    child: IgnorePointer(
+      child: AnimatedBuilder(
+        animation: _turn,
+        builder: (_, __) {
+          if (_texture == null) return const SizedBox.expand();
+          return CustomPaint(
+            painter: _VerticalScSpherePainter(
+              texture: _texture!,
+              turn: _turn.value * math.pi * 2,
+            ),
+            child: const SizedBox.expand(),
+          );
+        },
+      ),
+    ),
+  );
+}
+
+class _VerticalScSpherePainter extends CustomPainter {
+  final ui.Image texture;
+  final double turn;
+
+  const _VerticalScSpherePainter({required this.texture, required this.turn});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final diameter = size.shortestSide;
+    final center = Offset(size.width / 2, size.height / 2);
+    final globe = Rect.fromCircle(center: center, radius: diameter / 2 - 1);
+    final clip = Path()..addOval(globe);
+    canvas.save();
+    canvas.clipPath(clip, doAntiAlias: true);
+
+    // Each thin slice shows a different globe longitude. The edge slices
+    // compress towards the rim, creating a round, revolving sphere instead of
+    // a flat photo flipping like a card. Negative phase moves the surface
+    // visually left-to-right, around the sphere's vertical axis.
+    const strips = 180;
+    final sw = texture.width.toDouble();
+    final sh = texture.height.toDouble();
+    final dw = globe.width / strips;
+    final paint = Paint()..filterQuality = FilterQuality.medium;
+    for (var i = 0; i < strips; i++) {
+      final x = (i + .5) / strips * 2 - 1;
+      final longitude = math.asin(x.clamp(-1.0, 1.0));
+      final globeLongitude = longitude + math.pi / 2 - turn;
+      final sample = (1 - math.cos(globeLongitude)) / 2;
+      final sourceX = (sample * (sw - 1)).clamp(0.0, sw - 2);
+      final source = Rect.fromLTWH(sourceX, 0, 2, sh);
+      final destination = Rect.fromLTWH(
+        globe.left + i * dw, globe.top, dw + .8, globe.height);
+      canvas.drawImageRect(texture, source, destination, paint);
+    }
+
+    final lighting = Paint()
+      ..shader = ui.Gradient.linear(
+        Offset(globe.left, globe.center.dy),
+        Offset(globe.right, globe.center.dy),
+        const [
+          Color(0x77000705),
+          Color(0x00000000),
+          Color(0x00000000),
+          Color(0x68000803),
+        ],
+        const [0, .28, .64, 1],
+      );
+    canvas.drawRect(globe, lighting);
+    canvas.restore();
+
+    // The reference's orbital rings remain part of the untouched backdrop.
+    // Only a subtle boundary blends the animated globe into those rings.
+    canvas.drawCircle(
+      center,
+      diameter / 2 - 1,
+      Paint()
+        ..color = const Color(0x77F0C46A)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.2,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _VerticalScSpherePainter old) =>
+      old.turn != turn || old.texture != texture;
 }
