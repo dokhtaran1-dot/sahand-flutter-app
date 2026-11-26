@@ -76,7 +76,7 @@ class _PhotoOrbitState extends State<PhotoOrbit> with SingleTickerProviderStateM
             Positioned(
               left: w / 2 + math.cos(orbit.value * 2 * math.pi + dragOffset + i * 2 * math.pi / widget.images.length - math.pi / 2) * rx - d / 2,
               top: h / 2 + math.sin(orbit.value * 2 * math.pi + dragOffset + i * 2 * math.pi / widget.images.length - math.pi / 2) * ry - d / 2,
-              width: d, height: d + 30,
+              width: d, height: d + 40,
               child: Semantics(button: true, label: widget.labels[i], child: Tooltip(message: widget.labels[i],
                 child: GestureDetector(onTap: () => widget.onSelected(i), child: Column(children: [
                   disc(d, Stack(fit: StackFit.expand, children: [
@@ -84,9 +84,10 @@ class _PhotoOrbitState extends State<PhotoOrbit> with SingleTickerProviderStateM
                     if (widget.labels[i] == 'RV Lounge Impérial Classique') const Align(alignment: Alignment.center, child: CircleAvatar(backgroundColor: Color(0xDD031C15), radius: 15, child: Icon(Icons.lock_outline, color: gold, size: 19))),
                   ])),
                   const SizedBox(height: 3),
-                  Text(widget.labels[i].replaceFirst('Salon ', '').replaceFirst('RV Lounge Impérial Classique', 'BLACK DIAMOND'),
-                    maxLines: 2, textAlign: TextAlign.center,
-                    style: TextStyle(fontFamily: 'serif', fontSize: w * .030, color: gold)),
+                  Expanded(child: FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.topCenter,
+                    child: SizedBox(width: d, child: Text(widget.labels[i].replaceFirst('Salon ', '').replaceFirst('RV Lounge Impérial Classique', 'BLACK DIAMOND'),
+                      maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
+                      style: TextStyle(fontFamily: 'serif', fontSize: w * .030, color: gold))))),
                 ])))),
             ),
         ])),
