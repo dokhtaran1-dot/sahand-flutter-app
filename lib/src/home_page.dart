@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
     EttehadPage(), RoyalSignaturePage(), RoyalHarmoniaPage(), HeritagePage(),
   ];
   static const names = {
-    'FA': ['رویال مال', 'رویال کلاب', 'رویال ویلاژ کافه', 'اتحاد', 'سیگنچر', 'هارمونیا', 'میراث سهند'],
+    'FA': ['رویال مال', 'رویال کلاب', 'رویال ویلیج کافه', 'اتحاد', 'سیگنچر', 'هارمونیا', 'میراث سهند'],
     'EN': ['Royal Mall', 'Royal Club', 'Royal Village Café', 'Ettehad', 'Signature', 'Harmonia', 'Sahand Heritage'],
     'AR': ['رويال مول', 'رويال كلوب', 'رويال فيلاج كافيه', 'اتحاد', 'سيغنتشر', 'هارمونيا', 'إرث سهند'],
   };
@@ -130,89 +130,21 @@ class _RoyalTouchTargetState extends State<RoyalTouchTarget> with SingleTickerPr
  
 /// Only an invisible circular tap region and a tiny 22-second moving rim glint.
 /// The seven spheres and their text are preserved in the approved image.
-class _OrbPortal extends StatefulWidget {
+class _OrbPortal extends StatelessWidget {
   final String label;
   final double left, top, size, phase;
   final VoidCallback onTap;
-  const _OrbPortal({
-    required this.label, required this.left, required this.top,
-    required this.size, required this.phase, required this.onTap,
-  });
-  @override
-  State<_OrbPortal> createState() => _OrbPortalState();
-}
-
-class _OrbPortalState extends State<_OrbPortal> with SingleTickerProviderStateMixin {
-  late final AnimationController orbit = AnimationController(
-    vsync: this, duration: const Duration(seconds: 22));
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (MediaQuery.of(context).disableAnimations) {
-      orbit.stop();
-      orbit.value = 0;
-    } else if (!orbit.isAnimating) {
-      orbit.repeat();
-    }
-  }
-
-  @override
-  void dispose() {
-    orbit.dispose();
-    super.dispose();
-  }
-
+  const _OrbPortal({required this.label, required this.left, required this.top,
+    required this.size, required this.phase, required this.onTap});
   @override
   Widget build(BuildContext context) => Positioned(
-    key: Key('orb:' + widget.label),
-    left: widget.left, top: widget.top,
-    width: widget.size, height: widget.size,
-    child: Semantics(
-      button: true,
-      label: widget.label,
-      child: Material(
-        color: Colors.transparent,
-        shape: const CircleBorder(),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: widget.onTap,
-          customBorder: const CircleBorder(),
-          splashColor: const Color(0x20FFE9B0),
-          child: AnimatedBuilder(
-            animation: orbit,
-            builder: (_, __) => IgnorePointer(
-              child: CustomPaint(
-                painter: _OrbRimGlint((orbit.value + widget.phase) * math.pi * 2),
-                child: const SizedBox.expand(),
-              ),
-            ),
-          ),
-        ),
-      ),
-    ),
+    key: Key('orb:' + label), left: left, top: top, width: size, height: size,
+    child: Semantics(button: true, label: label, child: GestureDetector(
+      behavior: HitTestBehavior.opaque, onTap: onTap,
+      child: const SizedBox.expand(),
+    )),
   );
 }
-
-class _OrbRimGlint extends CustomPainter {
-  final double angle;
-  const _OrbRimGlint(this.angle);
-  @override
-  void paint(Canvas canvas, Size size) {
-    final r = size.shortestSide / 2 - 3;
-    final oval = Rect.fromCircle(
-      center: Offset(size.width / 2, size.height / 2), radius: r);
-    final glow = Paint()
-      ..color = const Color(0x55FFF3BD)
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-    canvas.drawArc(oval, angle, .22, false, glow);
-  }
-  @override
-  bool shouldRepaint(covariant _OrbRimGlint old) => old.angle != angle;
-}
-
 
 /// Real vertical-axis rotation of the SC sphere surface, not a moving border,
 /// not a tilt of the entire Home image, and not an extra opaque logo disc.
