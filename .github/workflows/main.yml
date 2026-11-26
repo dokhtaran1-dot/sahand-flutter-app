@@ -142,7 +142,8 @@ jobs:
       - name: Build APK
         env:
           ROYAL_ONE_PREVIEW: ${{ github.ref != 'refs/heads/main' }}
-        run: flutter build apk --release --target-platform android-arm64 --build-name 1.0.23 --build-number 25 $ROYAL_CLUB_DART_DEFINES
+          RV_IMPERIAL_WHATSAPP: ${{ secrets.RV_IMPERIAL_WHATSAPP }}
+        run: flutter build apk --release --target-platform android-arm64 --build-name 1.0.23 --build-number 25 $ROYAL_CLUB_DART_DEFINES --dart-define=RV_IMPERIAL_WHATSAPP="$RV_IMPERIAL_WHATSAPP"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

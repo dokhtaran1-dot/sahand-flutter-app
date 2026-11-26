@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'salon_detail_page.dart';
+import 'imperial_black_diamond_page.dart';
 
 class RvGalleryPage extends StatelessWidget {
   const RvGalleryPage({super.key});
@@ -22,7 +23,7 @@ class RvGalleryPage extends StatelessWidget {
 
   void _open(BuildContext context, String name) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => SalonDetailPage(salonName: name)),
+      MaterialPageRoute(builder: (_) => name == imperialSalonName ? const ImperialBlackDiamondPage() : SalonDetailPage(salonName: name)),
     );
   }
 
@@ -83,12 +84,13 @@ class RvGalleryPage extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if (item.name == imperialSalonName) const Positioned(top: 10, right: 10, child: CircleAvatar(backgroundColor: Color(0xDD031C15), child: Icon(Icons.lock_outline, color: _gold))),
                   Positioned(
                     left: 10,
                     right: 10,
                     bottom: 10,
                     child: Text(
-                      item.name,
+                      item.name == imperialSalonName ? 'BLACK DIAMOND • RV IMPÉRIAL' : item.name,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Colors.white,

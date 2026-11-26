@@ -79,9 +79,12 @@ class _PhotoOrbitState extends State<PhotoOrbit> with SingleTickerProviderStateM
               width: d, height: d + 30,
               child: Semantics(button: true, label: widget.labels[i], child: Tooltip(message: widget.labels[i],
                 child: GestureDetector(onTap: () => widget.onSelected(i), child: Column(children: [
-                  disc(d, photo(widget.images[i], widget.fallbackImages?[i])),
+                  disc(d, Stack(fit: StackFit.expand, children: [
+                    photo(widget.images[i], widget.fallbackImages?[i]),
+                    if (widget.labels[i] == 'RV Lounge Impérial Classique') const Align(alignment: Alignment.center, child: CircleAvatar(backgroundColor: Color(0xDD031C15), radius: 15, child: Icon(Icons.lock_outline, color: gold, size: 19))),
+                  ])),
                   const SizedBox(height: 3),
-                  Text(widget.labels[i].replaceFirst('Salon ', '').replaceFirst('RV Lounge Impérial Classique', 'RV Lounge'),
+                  Text(widget.labels[i].replaceFirst('Salon ', '').replaceFirst('RV Lounge Impérial Classique', 'BLACK DIAMOND'),
                     maxLines: 2, textAlign: TextAlign.center,
                     style: TextStyle(fontFamily: 'serif', fontSize: w * .030, color: gold)),
                 ])))),

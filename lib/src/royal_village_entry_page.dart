@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'photo_orbit.dart';
+import 'imperial_black_diamond_page.dart';
 import 'reservation_page.dart';
 import 'royal_club_game_page.dart';
 import 'rv_gallery_page.dart';
@@ -17,6 +18,10 @@ class RoyalVillageEntryPage extends StatelessWidget {
   static const Color _gold = Color(0xFFD6B15E);
 
   void _openSalon(BuildContext context, String name) {
+    if (name == imperialSalonName) {
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ImperialBlackDiamondPage()));
+      return;
+    }
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const {
         'Salon Doré', 'Salon Jardin', 'Salon Noir', 'Salon Âme du Poète',
@@ -214,6 +219,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
   }
 
   void _showFullPhoto(BuildContext context, String title, String asset) {
+    if (title == imperialSalonName) { _openSalon(context, title); return; }
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => Scaffold(
       backgroundColor: const Color(0xFF03120E),
       appBar: AppBar(backgroundColor: const Color(0xFF03120E), foregroundColor: _gold, title: Text(title)),
@@ -280,6 +286,7 @@ class _SalonCard extends StatelessWidget {
     color: const Color(0xFF10291D), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: const BorderSide(color: Color(0xFF806B40))), clipBehavior: Clip.antiAlias,
     child: InkWell(onTap: onTap, child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       AspectRatio(aspectRatio: 1.6, child: Image.asset(image, fit: BoxFit.cover, filterQuality: FilterQuality.high, alignment: Alignment.center, errorBuilder: (_, __, ___) => fallbackImage == null ? const ColoredBox(color: Color(0xFF10291D)) : Image.asset(fallbackImage!, fit: BoxFit.cover, filterQuality: FilterQuality.high))),
+      if (name == imperialSalonName) const Padding(padding: EdgeInsets.fromLTRB(10, 10, 10, 0), child: Row(children: [Icon(Icons.lock_outline, color: Color(0xFFE7C77D), size: 16), SizedBox(width: 5), Expanded(child: Text('BLACK DIAMOND', style: TextStyle(color: Color(0xFFE7C77D), fontSize: 12)))])),
       Padding(padding: const EdgeInsets.all(12), child: Text(name, style: const TextStyle(color: Color(0xFFE7C77D), fontFamily: 'serif', fontSize: 16))),
       const Padding(padding: EdgeInsets.fromLTRB(12, 0, 12, 14), child: Row(children: [Expanded(child: Text('بزرگ‌نمایی تصویر', textDirection: TextDirection.rtl, style: TextStyle(fontSize: 12))), Icon(Icons.arrow_forward, size: 18, color: Color(0xFFE7C77D))])),
     ])),
