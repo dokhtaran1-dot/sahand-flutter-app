@@ -162,7 +162,7 @@ class _VerticalSpinningSc extends StatefulWidget {
 
 class _VerticalSpinningScState extends State<_VerticalSpinningSc>
     with SingleTickerProviderStateMixin {
-  static const texturePath = 'assets/image/ROYAL_ONE_SC_360_TEXTURE.png';
+  static const texturePath = 'assets/image/SC_upright_feathered.png';
   late final AnimationController _turn = AnimationController(
     vsync: this, duration: const Duration(seconds: 22));
   ui.Image? _texture;
@@ -252,7 +252,7 @@ class _VerticalScSpherePainter extends CustomPainter {
     // green-and-gold SC panorama supplies the back. A textured spherical mesh
     // advances around the vertical Y axis, so the sphere stays round while its
     // surface actually moves from left to right.
-    const segments = 42;
+    const segments = 80;
     final positions = <Offset>[];
     final texCoords = <Offset>[];
     final faces = <int>[];

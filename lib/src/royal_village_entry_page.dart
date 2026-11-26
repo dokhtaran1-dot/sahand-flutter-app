@@ -210,12 +210,12 @@ class RoyalVillageEntryPage extends StatelessWidget {
   static const _salons = ['Salon Lumière', 'Salon Noir', 'Salon Jardin', 'Salon Privé', 'RV Lounge Impérial Classique', 'Salon Doré', 'Salon Âme du Poète', 'Salon Royal'];
   static const _photos = ['Salon_lumiere.png', 'Salon_noir.png', 'salon_jardin.png', 'Salon_prive.png', 'rv_lounge_imperial_classique.png', 'salon_dore.png', 'salon_ame_du_poete.png', 'Salon_royal.png'];
 
-  static const _realPhotos = ['rv_real_lumiere.jpg', 'rv_real_noir.jpg', 'rv_real_jardin.jpg', 'rv_real_prive.jpg', 'rv_real_imperial.jpg', 'rv_real_dore.jpg', 'rv_real_poete.png', 'rv_real_royal.jpg'];
-  static const _grand = 'assets/image/Grand_Salon_Original.png';
+  static const _realPhotos = ['rv_real_lumiere.jpg', 'rv_real_noir.jpg', 'rv_real_jardin.jpg', 'rv_real_prive.png', 'rv_real_imperial.jpg', 'rv_real_dore.jpg', 'rv_real_poete.jpg', 'rv_real_royal.jpg'];
+  static const _grand = 'assets/image/rv_real_grand.png';
 
   static String _fallback(String name) {
     final i = _salons.indexOf(name);
-    return i < 0 ? _grand : 'assets/image/${_photos[i]}';
+    return i < 0 ? _grand : 'assets/image/${_realPhotos[i]}';
   }
 
   void _showFullPhoto(BuildContext context, String title, String asset) {
@@ -225,7 +225,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
       appBar: AppBar(backgroundColor: const Color(0xFF03120E), foregroundColor: _gold, title: Text(title)),
       body: Center(child: InteractiveViewer(
         minScale: 1, maxScale: 5,
-        child: Image.asset(asset, fit: BoxFit.contain, filterQuality: FilterQuality.high, errorBuilder: (_, __, ___) => Image.asset(_fallback(title), fit: BoxFit.contain, filterQuality: FilterQuality.high)),
+        child: Image.asset(asset, fit: BoxFit.contain, filterQuality: FilterQuality.high, errorBuilder: (_, __, ___) => const Center(child: Icon(Icons.photo_outlined, color: _gold))),
       )),
       bottomNavigationBar: SafeArea(child: Padding(
         padding: const EdgeInsets.all(14),
@@ -246,7 +246,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
       actions: [IconButton(tooltip: 'گالری', icon: const Icon(Icons.photo_library_outlined), onPressed: () => _openGallery(context))]),
     body: ListView(children: [
       AspectRatio(aspectRatio: 1.65, child: Stack(fit: StackFit.expand, children: [
-        Image.asset('assets/image/Grand_Salon_Original.png', fit: BoxFit.cover, alignment: Alignment.topCenter),
+        Image.asset('assets/image/rv_real_grand.png', fit: BoxFit.cover, alignment: Alignment.topCenter),
         const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Color(0xFF061710)]))),
         const Positioned(left: 20, right: 20, bottom: 16, child: Column(children: [
           Text('RV', style: TextStyle(fontFamily: 'serif', fontSize: 50, color: _gold)),
@@ -261,14 +261,13 @@ class RoyalVillageEntryPage extends StatelessWidget {
       ])),
       const Padding(padding: EdgeInsets.only(top: 26), child: Text('OUR PRIVATE SALONS', textAlign: TextAlign.center, style: TextStyle(color: _gold, letterSpacing: 3, fontSize: 17))),
       PhotoOrbit(images: _realPhotos.map((p) => 'assets/image/$p').toList(),
-        fallbackImages: _photos.map((p) => 'assets/image/$p').toList(),
         labels: _salons, center: 'Grand Salon', centerImage: _grand,
         onCenterSelected: () => _showFullPhoto(context, 'Grand Salon', _grand),
         onSelected: (i) => _showFullPhoto(context, _salons[i], 'assets/image/${_realPhotos[i]}')),
       const Padding(padding: EdgeInsets.only(top: 18), child: Text('THE ROYAL SALON COLLECTION', textAlign: TextAlign.center, style: TextStyle(color: _gold, letterSpacing: 2, fontSize: 15))),
       Padding(padding: const EdgeInsets.all(20), child: LayoutBuilder(builder: (context, constraints) => Wrap(spacing: 12, runSpacing: 16, children: [
-        for (var i = 0; i < _salons.length; i++) SizedBox(width: (constraints.maxWidth - 12) / 2, child: _SalonCard(name: _salons[i], image: 'assets/image/${_realPhotos[i]}', fallbackImage: _fallback(_salons[i]), onTap: () => _showFullPhoto(context, _salons[i], 'assets/image/${_realPhotos[i]}'))),
-        SizedBox(width: constraints.maxWidth, child: _SalonCard(name: 'Grand Salon', image: 'assets/image/Grand_Salon_Original.png', onTap: () => _showFullPhoto(context, 'Grand Salon', 'assets/image/Grand_Salon_Original.png'))),
+        for (var i = 0; i < _salons.length; i++) SizedBox(width: (constraints.maxWidth - 12) / 2, child: _SalonCard(name: _salons[i], image: 'assets/image/${_realPhotos[i]}', onTap: () => _showFullPhoto(context, _salons[i], 'assets/image/${_realPhotos[i]}'))),
+        SizedBox(width: constraints.maxWidth, child: _SalonCard(name: 'Grand Salon', image: 'assets/image/rv_real_grand.png', onTap: () => _showFullPhoto(context, 'Grand Salon', 'assets/image/rv_real_grand.png'))),
       ]))),
       Padding(padding: const EdgeInsets.all(20), child: OutlinedButton.icon(onPressed: () => _openGallery(context), icon: const Icon(Icons.photo_library_outlined), label: const Text('مشاهدهٔ گالری'))),
       const Padding(padding: EdgeInsets.only(bottom: 32), child: Text('POWERED BY SAHAND CONSORTIUM', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, letterSpacing: 2, color: _gold))),

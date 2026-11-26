@@ -14,11 +14,11 @@ class RvGalleryPage extends StatelessWidget {
     _SalonItem('Salon Jardin', 'assets/image/rv_real_jardin.jpg', 'assets/image/salon_jardin.png'),
     _SalonItem('Salon Lumière', 'assets/image/rv_real_lumiere.jpg', 'assets/image/Salon_lumiere.png'),
     _SalonItem('Salon Doré', 'assets/image/rv_real_dore.jpg', 'assets/image/salon_dore.png'),
-    _SalonItem('Grand Salon', 'assets/image/Grand_Salon_Original.png', 'assets/image/Rv_page2.png'),
+    _SalonItem('Grand Salon', 'assets/image/rv_real_grand.png', 'assets/image/Rv_page2.png'),
     _SalonItem('Salon Royal', 'assets/image/rv_real_royal.jpg', 'assets/image/Salon_royal.png'),
-    _SalonItem('Salon Privé', 'assets/image/rv_real_prive.jpg', 'assets/image/Salon_prive.png'),
+    _SalonItem('Salon Privé', 'assets/image/rv_real_prive.png', 'assets/image/Salon_prive.png'),
     _SalonItem('Salon Noir', 'assets/image/rv_real_noir.jpg', 'assets/image/Salon_noir.png'),
-    _SalonItem('Salon Âme du Poète', 'assets/image/rv_real_poete.png', 'assets/image/salon_ame_du_poete.png'),
+    _SalonItem('Salon Âme du Poète', 'assets/image/rv_real_poete.jpg', 'assets/image/salon_ame_du_poete.png'),
   ];
 
   void _open(BuildContext context, String name) {
@@ -68,12 +68,12 @@ class RvGalleryPage extends StatelessWidget {
                     item.image,
                     fit: BoxFit.cover,
                     filterQuality: FilterQuality.high,
-                    errorBuilder: (_, __, ___) => Image.asset(item.fallback, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const ColoredBox(
+                    errorBuilder: (_, __, ___) => const ColoredBox(
                       color: Color(0xFF08100D),
                       child: Center(
                         child: Icon(Icons.meeting_room_outlined, color: _gold, size: 46),
                       ),
-                    )),
+                    ),
                   ),
                   const DecoratedBox(
                     decoration: BoxDecoration(
