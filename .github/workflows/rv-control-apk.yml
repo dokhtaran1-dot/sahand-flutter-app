@@ -11,6 +11,7 @@ on:
       - 'android/app/build.gradle.kts'
       - 'pubspec.yaml'
       - 'pubspec.lock'
+      - 'index.html'
   workflow_dispatch:
 
 permissions:
