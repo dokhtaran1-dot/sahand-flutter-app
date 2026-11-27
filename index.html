@@ -487,20 +487,21 @@ async function loadPayroll(){
  if(!["owner","auditor","accountant"].includes(role)){msg("این بخش محرمانه است.",true);return;}
  el("payroll-list").textContent="در حال بارگذاری...";
  const d=await loadControlBoard(true);if(!d)return;
- const records=(d.records||[]).filter(x=>x.active);
- const known=records.filter(x=>x.salary_toman!==null&&x.salary_toman!==undefined);
+ const records=(d.records||[]).filter(x=>x.active||Number(x.advance_toman||0)>0);
+ const activeRecords=records.filter(x=>x.active);
+ const known=activeRecords.filter(x=>x.salary_toman!==null&&x.salary_toman!==undefined);
  const total=known.reduce((sum,x)=>sum+Number(x.salary_toman||0),0);
  const advanceTotal=records.reduce((sum,x)=>sum+Number(x.advance_toman||0),0);
  el("payroll-total").textContent=total.toLocaleString("fa-IR")+" تومان";
  el("payroll-advance-total").textContent=advanceTotal.toLocaleString("fa-IR")+" تومان";
- el("payroll-count").textContent=records.length.toLocaleString("fa-IR");
- el("payroll-missing").textContent=(records.length-known.length).toLocaleString("fa-IR");
+ el("payroll-count").textContent=activeRecords.length.toLocaleString("fa-IR");
+ el("payroll-missing").textContent=(activeRecords.length-known.length).toLocaleString("fa-IR");
  el("payroll-list").innerHTML=records.map(x=>{
    const salary=x.salary_toman===null||x.salary_toman===undefined?null:Number(x.salary_toman);
    const adv=Number(x.advance_toman||0);
    const net=salary===null?null:Math.max(0,salary-adv);
    const edit=role==="owner"?'<button class="outline action" data-salary="'+safe(x.id)+'">ثبت/اصلاح حقوق</button>':'';
-   return '<div class="row" style="align-items:flex-start"><div><b>'+safe(x.name)+'</b><div class="muted mini">'+safe(x.job_title)+' · '+safe(x.department)+'</div><div class="muted mini">شروع همکاری: '+safe(x.start_date||"ثبت نشده")+'</div>'+(adv?'<div class="muted mini">مساعده '+safe(d.month)+': '+adv.toLocaleString("fa-IR")+' تومان</div>':'')+'</div><div style="text-align:left"><div style="color:var(--gold);font-size:13px;font-weight:bold">'+(salary===null?'حقوق: تعیین نشده':'حقوق پایه: '+salary.toLocaleString("fa-IR")+' تومان')+'</div>'+(net!==null&&adv?'<div class="mini ok">پایه پس از مساعده: '+net.toLocaleString("fa-IR")+' تومان</div>':'')+'<div style="margin-top:7px">'+edit+'</div></div></div>';
+   return '<div class="row" style="align-items:flex-start"><div><b>'+safe(x.name)+(x.active?'':' <span class="danger mini">· غیرفعال / نیازمند تسویه</span>')+'</b><div class="muted mini">'+safe(x.job_title)+' · '+safe(x.department)+'</div><div class="muted mini">شروع همکاری: '+safe(x.start_date||"ثبت نشده")+'</div>'+(adv?'<div class="muted mini">مساعده '+safe(d.month)+': '+adv.toLocaleString("fa-IR")+' تومان</div>':'')+'</div><div style="text-align:left"><div style="color:var(--gold);font-size:13px;font-weight:bold">'+(salary===null?'حقوق: تعیین نشده':'حقوق پایه: '+salary.toLocaleString("fa-IR")+' تومان')+'</div>'+(net!==null&&adv?'<div class="mini ok">پایه پس از مساعده: '+net.toLocaleString("fa-IR")+' تومان</div>':'')+'<div style="margin-top:7px">'+edit+'</div></div></div>';
  }).join("")||'<p class="muted">اطلاعاتی وجود ندارد.</p>';
  document.querySelectorAll("[data-salary]").forEach(b=>b.onclick=async()=>{
    const id=b.getAttribute("data-salary"),rec=records.find(x=>x.id===id);if(!rec)return;
