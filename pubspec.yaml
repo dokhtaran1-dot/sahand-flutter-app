@@ -1,7 +1,7 @@
-name: sahand_consortium
-description: "A new Flutter project."
+name: rv_control
+description: "RV CONTROL - Royal Village Restaurant"
 publish_to: 'none'
-version: 1.0.22+24
+version: 1.0.0+1
 
 environment:
   sdk: ">=3.5.0 <4.0.0"
@@ -9,14 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ^2.5.3
-  supabase_flutter: ^2.9.1
-  flutter_localizations:
-    sdk: flutter
-  url_launcher: ^6.3.0
-  cupertino_icons: ^1.0.8
-  audioplayers: ^6.1.0
-  video_player: ^2.9.2
   webview_flutter: 4.10.0
 
 dev_dependencies:
@@ -26,30 +18,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  assets:
-    - assets/heritage/philosophy_book.html
-    - assets/rh/index.html
-    - assets/rh/assets/
-    - assets/image/
-    - assets/images/1.png
-    - assets/image/jd_signature/
-    - assets/image/rv_upload/
-    - assets/image/booking_posters/
-    - assets/image/salon_gallery/dore/
-    - assets/image/salon_gallery/prive/
-    - assets/image/salon_gallery/noir/
-    - assets/image/salon_gallery/royal/
-    - assets/image/salon_gallery/lumiere/
-    - assets/image/salon_gallery/jardin/
-    - assets/image/salon_gallery/ame_du_poete/
-    - assets/image/salon_gallery/imperial/
-    - assets/image/rv_upload/Royal_Village_App_Upload/01_Cakes/
-    - assets/image/rv_upload/Royal_Village_App_Upload/02_Fruit/
-    - assets/image/rv_upload/Royal_Village_App_Upload/03_Drinks/
-    - assets/image/rv_upload/Royal_Village_App_Upload/04_Desserts/
-    - assets/image/rv_upload/Royal_Village_App_Upload/05_Food/
-    - assets/image/rv_upload/Royal_Village_App_Upload/06_Hookah_VIP/
-    - assets/image/rv_upload/Royal_Village_App_Upload/07_Menu_Posters/
-    - assets/images/ads/
-    - assets/images/light_box/
-    - assets/videos/
