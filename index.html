@@ -112,62 +112,18 @@ window.supabase={createClient:(base,key)=>{
 <section id="view-people" class="hide"><div class="card"><h2>پرسنل رویال ویلیج</h2><div class="grid" style="margin:12px 0"><div class="stat"><span class="muted">فعال</span><b id="staffActiveCount">—</b></div><div class="stat"><span class="muted">غیرفعال</span><b id="staffInactiveCount">—</b></div><div class="stat"><span class="muted">کل پرونده‌ها</span><b id="staffTotalCount">—</b></div></div><div class="field"><label>وضعیت نمایش</label><select id="staffStatus"><option value="active">فقط فعال‌ها</option><option value="inactive">فقط غیرفعال‌ها</option><option value="all">همه</option></select></div><input id="staffSearch" placeholder="جست‌وجوی نام، بخش یا سمت"><div id="staffList" style="margin-top:12px"></div></div></section>
 <section id="view-finance" class="hide">
  <div class="card">
-  <h2>حساب‌های بانکی و مانده‌ها</h2>
-  <p class="muted">محرمانه؛ ویژه مالک، مدیرعامل، حسابدار و حسابرس. مانده هر حساب مستقل است و هرگز با حساب دیگر جمع نمی‌شود.</p>
-  <div class="bank-grid" style="margin-top:12px">
-   <div class="bank-card" style="--bank:#00a0c6"><h3>بانک سامان — حق اربابی تحریر ۹</h3>
-    <div class="bank-line"><span>صاحب حساب</span><span>حبیبه محمدیان</span></div>
-    <div class="bank-line"><span>شماره حساب</span><span class="bank-value">9602-800-5205584-1</span></div>
-    <div class="bank-line"><span>شبا</span><span class="bank-value">IR870560960280005205584001</span></div>
-    <div class="bank-line"><span>مانده ثبت‌شده</span><span class="balance">۳٬۵۹۲٬۷۰۳ ریال</span></div>
-   </div>
-   <div class="bank-card" style="--bank:#00a0c6"><h3>بانک سامان — حق شارژ رویال مال</h3>
-    <div class="bank-line"><span>صاحب حساب</span><span>حبیبه محمدیان</span></div>
-    <div class="bank-line"><span>شماره حساب</span><span class="bank-value">9602-888-5205584-1</span></div>
-    <div class="bank-line"><span>شبا</span><span class="bank-value">IR410560960288805205584001</span></div>
-    <div class="bank-line"><span>مانده ثبت‌شده</span><span class="balance">۱٬۷۹۲٬۴۰۱ ریال</span></div>
-   </div>
-   <div class="bank-card" style="--bank:#355caa"><h3>بانک صادرات — حساب عملیاتی رویال مال</h3>
-    <div class="bank-line"><span>صاحب حساب</span><span>جهانگیر دلجو</span></div>
-    <div class="bank-line"><span>کارت</span><span class="bank-value">6037 6977 0170 0970</span></div>
-    <div class="bank-line"><span>شبا</span><span class="bank-value">IR180190000000218761219003</span></div>
-    <div class="bank-line"><span>کاربری</span><span>حقوق و هزینه‌های جاری رویال مال</span></div>
-    <div class="bank-line"><span>مانده</span><span class="balance">ثبت روزانه</span></div>
-   </div>
-   <div class="bank-card" style="--bank:#a51d27"><h3>بانک گردشگری — Le Royal Village Café</h3>
-    <div class="bank-line"><span>صاحب حساب</span><span>حبیبه محمدیان</span></div>
-    <div class="bank-line"><span>سپرده</span><span class="bank-value">1411.9966.22773415.1</span></div>
-    <div class="bank-line"><span>شبا</span><span class="bank-value">IR3506401411996622773415001</span></div>
-    <div class="bank-line"><span>مانده ثبت‌شده</span><span class="balance">۱٬۴۲۷٬۴۵۴٬۴۴۶ ریال</span></div>
-   </div>
-   <div class="bank-card" style="--bank:#2b66b1"><h3>بانک تجارت — تنخواه رستوران</h3>
-    <div class="bank-line"><span>صاحب حساب</span><span>جهانگیر دلجو</span></div>
-    <div class="bank-line"><span>کارت</span><span class="bank-value">5859 8312 3005 8181</span></div>
-    <div class="bank-line"><span>شبا</span><span class="bank-value">IR120180000000143299067741</span></div>
-    <div class="bank-line"><span>مانده</span><span class="balance">ثبت روزانه</span></div>
-   </div>
-   <div class="bank-card" style="--bank:#d77d21"><h3>بانک سپه — پارکینگ</h3>
-    <div class="bank-line"><span>صاحب حساب</span><span>حبیبه محمدیان</span></div>
-    <div class="bank-line"><span>کارت</span><span class="bank-value">5892 1015 5025 3708</span></div>
-    <div class="bank-line"><span>سپرده</span><span class="bank-value">3130097003112</span></div>
-    <div class="bank-line"><span>شبا</span><span class="bank-value">IR230150000003130097003112</span></div>
-    <div class="bank-line"><span>مانده ثبت‌شده</span><span class="balance">۱۹۶٬۷۰۷٬۰۲۰ ریال</span></div>
-   </div>
-  </div>
+  <h2>مالی و پرداخت‌های RV</h2>
+  <p class="muted">این بخش فقط مربوط به رویال ویلیج رستوران است. اطلاعات رویال مال، پارکینگ و حراست در RV CONTROL نگهداری یا نمایش داده نمی‌شود.</p>
+  <div class="finance-rule"><b>حقوق:</b> پرداخت حقوق پرسنل فقط پس از تأیید مالک و در بازه روز دوم تا پنجم هر ماه انجام می‌شود.</div>
+  <div class="finance-rule"><b>مساعده:</b> هر مساعده فقط یک بار در همان ماه محاسبه می‌شود و ثبت آن به‌تنهایی به معنای پرداخت یا تسویه نیست.</div>
+  <div class="finance-rule"><b>پرداخت:</b> هیچ پرداخت خودکار یا انتقال بانکی بدون تأیید مالک انجام نمی‌شود.</div>
+  <div class="finance-rule"><b>کنترل:</b> حسابداری مسئول محاسبه و ثبت؛ حسابرس مسئول بررسی مغایرت‌ها و گزارش مستقل است.</div>
+  <div class="finance-rule"><b>اطلاعات بانکی کارکنان:</b> فقط اطلاعاتی که مستقیم تأیید شده باشد ثبت می‌شود. حساب‌های مربوط به رویال مال، پارکینگ و حراست ممنوع است.</div>
  </div>
- <div class="card"><h2>دستور مالی لازم‌الاجرا</h2>
-  <div class="finance-rule"><b>اصل:</b> صفر ریال بدون منشأ؛ صفر ریال بدون سند؛ صفر جابه‌جایی بدون ثبت.</div>
-  <div class="finance-rule"><b>تفکیک:</b> شارژ، حق اربابی، پارکینگ، رویال ویلیج، تنخواه رویال مال و تنخواه رستوران کاملاً مستقل‌اند.</div>
-  <div class="finance-rule"><b>فرم‌ها:</b> فرم تنخواه و شارژ رویال مال فقط و صرفاً توسط خانم الهه عبادی تنظیم و گردش داده می‌شود.</div>
-  <div class="finance-rule"><b>تأیید:</b> امضای مهندس جهانگیر دلجو در حدود اختیارات تفویض‌شده برای تأیید داخلی معتبر و کافی است؛ مگر دستور کتبی مؤخر مالک.</div>
-  <div class="finance-rule"><b>شارژ:</b> روز ۲۷ اعلام؛ مهلت پرداخت تا پایان روز ۳۰. شارژهای قبلی، چک‌ها و هر نوع دریافت باید بررسی، تطبیق و ثبت شوند.</div>
-  <div class="finance-rule"><b>تهاتر ممنوع:</b> هیچ شخصی حق ندارد رأساً طلب خود را از شارژ کسر یا تسویه‌شده تلقی کند؛ تهاتر فقط با تأیید کتبی مجاز و ثبت حسابداری معتبر است.</div>
-  <div class="finance-rule"><b>تأسیسات:</b> تمام قراردادهای قبلی و جدید، بدهی، دریافت، پرداخت و چک‌های سررسیدشده یا آتی باید تحویل حسابداری و ثبت شوند. هزینه‌های مجاز تأسیسات از حق شارژ پرداخت می‌شود؛ مبالغ بالا با تصمیم مالک و جهانگیر دلجو.</div>
-  <div class="finance-rule"><b>حقوق:</b> پرداخت حقوق پرسنل از روز دوم تا پنجم هر ماه انجام می‌شود.</div>
-  <div class="finance-rule"><b>کنترل مشترک:</b> دکتر پیمان هیاتی ثبت و تطبیق حسابداری را انجام می‌دهد؛ افسانه سعید چوبدار حسابرسی مستقل و گزارش مغایرت را انجام می‌دهد.</div>
+ <div class="card"><h2>وضعیت تکمیل اطلاعات بانکی</h2>
+  <p class="muted">برای امیرمهدی، خانم ولی‌زاده و پروین قدیری شماره کارت و شبا فعلاً خالی می‌ماند. سایر اطلاعات نیز فقط پس از تأیید معتبر ثبت خواهد شد.</p>
  </div>
 </section>
-
 <section id="view-payroll" class="hide">
   <div class="card"><h2>حقوق ماهانه رستوران</h2>
    <p class="muted">نمایش محرمانه ویژه مالک و واحدهای مالی مجاز. حقوق‌های تعیین‌نشده در محاسبه جمع لحاظ نشده‌اند.</p>
