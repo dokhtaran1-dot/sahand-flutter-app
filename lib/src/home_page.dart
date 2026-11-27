@@ -147,9 +147,8 @@ class _OrbPortal extends StatelessWidget {
 }
 
 /// Real vertical-axis rotation of the SC sphere surface, not a moving border,
-/// not a tilt of the entire Home image, and not an extra opaque logo disc.
-/// One frame from the owner's approved photo is remapped along globe meridians.
-/// Back-facing longitudes mirror the reference where a back texture is absent.
+/// not a tilt of the entire Home image.
+/// Both hemispheres use the connected SC monogram; the original name plaque stays readable.
 class _VerticalSpinningSc extends StatefulWidget {
   final double left, top, size;
   const _VerticalSpinningSc({
@@ -166,6 +165,7 @@ class _VerticalSpinningScState extends State<_VerticalSpinningSc>
   late final AnimationController _turn = AnimationController(
     vsync: this, duration: const Duration(seconds: 22));
   ui.Image? _texture;
+  ui.Image? _front;
 
   @override
   void initState() {
@@ -175,16 +175,19 @@ class _VerticalSpinningScState extends State<_VerticalSpinningSc>
 
   Future<void> _loadTexture() async {
     try {
-      final data = await rootBundle.load(texturePath);
-      final codec = await ui.instantiateImageCodec(
-        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
-      final frame = await codec.getNextFrame();
-      codec.dispose();
-      if (!mounted) {
-        frame.image.dispose();
-        return;
+      Future<ui.Image> load(String path) async {
+        final data = await rootBundle.load(path);
+        final codec = await ui.instantiateImageCodec(
+          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+        try { return (await codec.getNextFrame()).image; }
+        finally { codec.dispose(); }
       }
-      setState(() => _texture = frame.image);
+      final texture = await load(texturePath);
+      ui.Image front;
+      try { front = await load('assets/image/SC_owner_approved_front.png'); }
+      catch (_) { texture.dispose(); rethrow; }
+      if (!mounted) { texture.dispose(); front.dispose(); return; }
+      setState(() { _texture = texture; _front = front; });
     } catch (error) {
       debugPrint('SC globe texture unavailable: $error');
       // Original sphere stays visible beneath the overlay.
@@ -206,6 +209,7 @@ class _VerticalSpinningScState extends State<_VerticalSpinningSc>
   void dispose() {
     _turn.dispose();
     _texture?.dispose();
+    _front?.dispose();
     super.dispose();
   }
 
@@ -219,14 +223,15 @@ class _VerticalSpinningScState extends State<_VerticalSpinningSc>
       child: AnimatedBuilder(
         animation: _turn,
         builder: (_, __) {
-          if (_texture == null) return const SizedBox.expand();
-          return CustomPaint(
+          if (_texture == null || _front == null) return const SizedBox.expand();
+          return RepaintBoundary(child: CustomPaint(
             painter: _VerticalScSpherePainter(
               texture: _texture!,
+              front: _front!,
               turn: _turn.value * math.pi * 2,
             ),
             child: const SizedBox.expand(),
-          );
+          ));
         },
       ),
     ),
@@ -235,9 +240,10 @@ class _VerticalSpinningScState extends State<_VerticalSpinningSc>
 
 class _VerticalScSpherePainter extends CustomPainter {
   final ui.Image texture;
+  final ui.Image front;
   final double turn;
 
-  const _VerticalScSpherePainter({required this.texture, required this.turn});
+  const _VerticalScSpherePainter({required this.texture, required this.front, required this.turn});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -247,12 +253,16 @@ class _VerticalScSpherePainter extends CustomPainter {
     final clip = Path()..addOval(globe);
     canvas.save();
     canvas.clipPath(clip, doAntiAlias: true);
+    // Keep the approved front plaque level and readable throughout the spin.
+    canvas.drawImageRect(front, Rect.fromLTWH(0, 0, front.width.toDouble(), front.height.toDouble()), globe,
+      Paint()..filterQuality = FilterQuality.high);
+    canvas.saveLayer(globe, Paint());
 
     // The screenshot supplies the *front* of the sphere. Its equirectangular
     // green-and-gold SC panorama supplies the back. A textured spherical mesh
     // advances around the vertical Y axis, so the sphere stays round while its
     // surface actually moves from left to right.
-    const segments = 80;
+    const segments = 64;
     final positions = <Offset>[];
     final texCoords = <Offset>[];
     final faces = <int>[];
@@ -314,6 +324,14 @@ class _VerticalScSpherePainter extends CustomPainter {
         const [0, .28, .64, 1],
       );
     canvas.drawRect(globe, lighting);
+    // The upper globe and connected SC rotate, while the original name plaque
+    // remains fixed; feather the transition before the English text begins.
+    canvas.drawRect(globe, Paint()
+      ..blendMode = BlendMode.dstIn
+      ..shader = ui.Gradient.linear(globe.topCenter, globe.bottomCenter,
+        const [Colors.white, Colors.white, Colors.transparent, Colors.transparent],
+        const [0, .53, .625, 1]));
+    canvas.restore();
     canvas.restore();
 
     // The reference's orbital rings remain part of the untouched backdrop.
@@ -330,5 +348,5 @@ class _VerticalScSpherePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _VerticalScSpherePainter old) =>
-      old.turn != turn || old.texture != texture;
+      old.turn != turn || old.texture != texture || old.front != front;
 }

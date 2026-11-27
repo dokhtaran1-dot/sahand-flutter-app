@@ -122,11 +122,31 @@ jobs:
           test -s assets/image/booking_posters/prive.png
           test -s assets/image/booking_posters/lumiere.png
 
+      - name: Prepare 4K runtime home and 8K artwork exports
+        run: |
+          python -m pip install Pillow
+          python tooling/prepare_royal_artwork.py
+
+      - name: Upload 8K artwork exports (upscaled, originals preserved)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ROYAL1-8K-UPSCALED-ARTWORK
+          path: build/royal_artwork_8k/
+
       - name: Get packages
         run: flutter pub get
 
       - name: Verify all seven Royal One portals and navigation
         run: flutter test test/royal_navigation_test.dart
+
+      - name: Capture actual Flutter SC animation frames
+        run: flutter test test/royal_sc_visual_review_test.dart
+
+      - name: Upload animation review
+        uses: actions/upload-artifact@v4
+        with:
+          name: ROYAL1-SC-VISUAL-REVIEW
+          path: build/royal_visual_review/
 
       - name: Work around app_links 6.4.1 Android compile SDK bug
         run: |
@@ -143,12 +163,12 @@ jobs:
         env:
           ROYAL_ONE_PREVIEW: ${{ github.ref != 'refs/heads/main' }}
           RV_IMPERIAL_WHATSAPP: ${{ secrets.RV_IMPERIAL_WHATSAPP }}
-        run: flutter build apk --release --target-platform android-arm64 --build-name 1.0.23 --build-number 25 $ROYAL_CLUB_DART_DEFINES --dart-define=RV_IMPERIAL_WHATSAPP="$RV_IMPERIAL_WHATSAPP"
+        run: flutter build apk --release --target-platform android-arm64 --build-name 1.0.24 --build-number 26 $ROYAL_CLUB_DART_DEFINES --dart-define=RV_IMPERIAL_WHATSAPP="$RV_IMPERIAL_WHATSAPP"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ROYAL1-v1.0.23-ARM64-RELEASE-APK
+          name: ROYAL1-v1.0.24-ARM64-RELEASE-APK
           path: build/app/outputs/flutter-apk/app-release.apk
 
       - name: Build Web

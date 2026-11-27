@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,6 +23,25 @@ void main() {
     expect(source.contains("const Duration(seconds: 22)"), isTrue);
     expect(source.contains("longitude - turn + math.pi"), isTrue);
     expect(source.contains("ROYAL_ONE_HOME_APPROVED_FINAL.png"), isTrue);
+  });
+  test('Original RV room files and correct French labels are present', () {
+    final entry = File('lib/src/royal_village_entry_page.dart').readAsStringSync();
+    final gallery = File('lib/src/rv_gallery_page.dart').readAsStringSync();
+    for (final item in {
+      'Salon Âme du Poète': 'rv_real_poete.jpg',
+      'Salon Jardin': 'rv_real_jardin.jpg',
+      'Salon Lumière': 'rv_real_lumiere.jpg',
+      'Salon Doré': 'rv_real_dore.jpg',
+      'Salon Royal': 'rv_real_royal.jpg',
+      'RV Lounge Impérial Classique': 'rv_real_imperial.jpg',
+      'Salon Noir': 'rv_real_noir.jpg',
+      'Salon Privé': 'rv_real_prive.png',
+      'Grand Salon': 'rv_real_grand.png',
+    }.entries) {
+      expect(File('assets/image/${item.value}').lengthSync(), greaterThan(100000));
+      expect(entry, contains(item.value));
+      expect(gallery, contains("'${item.key}', 'assets/image/${item.value}'"));
+    }
   });
   test('All seven circular portal targets map to the original sections', () {
     final source = File('lib/src/home_page.dart').readAsStringSync();
@@ -48,7 +68,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(app());
-    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/ROYAL_ONE_HOME_APPROVED_FINAL.png', 'assets/image/ROYAL_ONE_SC_360_TEXTURE.png']);
+    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/ROYAL_ONE_HOME_APPROVED_FINAL.png', 'assets/image/SC_upright_feathered.png', 'assets/image/SC_owner_approved_front.png']);
     expect(tester.takeException(), isNull);
     // Visual anchor: the separate SC texture must exist for vertical-axis spin.
     expect(find.byKey(const Key('orb:SC')), findsOneWidget);
@@ -75,7 +95,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(app());
-    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/ROYAL_ONE_HOME_APPROVED_FINAL.png', 'assets/image/ROYAL_ONE_SC_360_TEXTURE.png']);
+    await loadImages(tester, tester.element(find.byType(HomePage)), ['assets/image/ROYAL_ONE_HOME_APPROVED_FINAL.png', 'assets/image/SC_upright_feathered.png', 'assets/image/SC_owner_approved_front.png']);
     await tester.tap(find.byKey(const Key('orb:RV')));
     await tester.pumpAndSettle();
     expect(find.byType(RoyalVillagePage), findsOneWidget);
