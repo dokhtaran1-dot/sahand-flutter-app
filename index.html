@@ -87,7 +87,7 @@ window.supabase={createClient:(base,key)=>{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" async></script>
 </head>
 <body>
-<header class="head"><div class="brand"><div class="mark">RV</div><div><div class="eng">RV CONTROL</div><div class="tiny">ROYAL MALL · SAHAND CONSORTIUM</div></div></div><div class="subtitle">سامانه خصوصی مدیریت و نظارت رویال ویلیج کافه</div></header>
+<header class="head"><div class="brand"><div class="mark">RV</div><div><div class="eng">RV CONTROL</div><div class="tiny">ROYAL MALL · SAHAND CONSORTIUM</div></div></div><div class="subtitle">سامانه خصوصی مدیریت و نظارت رویال ویلیج رستوران</div></header>
 <main class="wrap">
 <div id="loading" class="card muted">در حال اتصال امن به سامانه…</div>
 <section id="auth" class="hide"><div class="card" style="max-width:450px;margin:25px auto"><h2>ورود اختصاصی</h2><p class="muted">برای مشاهده اطلاعات و ثبت حضور، حساب تأییدشده لازم است.</p><div class="field"><label>شماره موبایل یا ایمیل حساب</label><input id="email" type="text" inputmode="email" placeholder="09141159263 یا name@example.com" autocomplete="username" dir="ltr"></div><div class="field"><label>رمز عبور</label><input id="pass" type="password" autocomplete="current-password" placeholder="حداقل ۸ کاراکتر" dir="ltr"></div><button id="loginBtn" class="block">ورود به حساب</button><button id="signupBtn" class="outline block">ساخت حساب اولیه</button><div id="authMsg" class="info hide"></div><p class="muted mini">ساخت حساب به‌معنی دریافت دسترسی نیست؛ مالک باید نقش هر شخص را تأیید کند. هیچ‌کس بدون مجوز به اطلاعات کارکنان دسترسی ندارد.</p></div></section>
@@ -131,6 +131,7 @@ window.supabase={createClient:(base,key)=>{
     <div class="stat"><span class="muted">حقوق ثبت‌شده</span><b id="payroll-total" style="font-size:20px">—</b></div>
     <div class="stat"><span class="muted">مبالغ نامشخص</span><b id="payroll-missing">—</b></div>
     <div class="stat"><span class="muted">تعداد نفرات</span><b id="payroll-count">—</b></div>
+    <div class="stat"><span class="muted">مساعده آبان ۱۴۰۵</span><b id="payroll-advance-total" style="font-size:20px">—</b></div>
    </div>
    <p class="muted mini" style="margin-top:12px">واحد: تومان؛ پاداش مالک، مزایا و اضافه‌کاری جدا از حقوق ثابت هستند.</p>
   </div>
@@ -356,17 +357,31 @@ async function loadPayroll(){
  if(!["owner","auditor","accountant"].includes(role)){msg("این بخش محرمانه است.",true);return;}
  el("payroll-list").textContent="در حال بارگذاری...";
  try{
-  const r=await db.from("rvctl_payroll").select("staff_id,monthly_toman,bonus_owner_note,rvctl_staff(full_name,department,job_title,active)").order("monthly_toman",{ascending:false});
-  if(r.error)throw r.error;
+  const [r,a]=await Promise.all([
+   db.from("rvctl_payroll").select("staff_id,monthly_toman,bonus_owner_note,rvctl_staff(full_name,department,job_title,active)").order("monthly_toman",{ascending:false}),
+   db.from("rvctl_staff_advances").select("staff_id,jalali_month,amount_toman,source_note").order("recorded_at",{ascending:false})
+  ]);
+  if(r.error)throw r.error;if(a.error)throw a.error;
   const records=(r.data||[]).filter(x=>x.rvctl_staff?.active===true);
-  const total=records.reduce((a,x)=>a+(x.monthly_toman===null?0:Number(x.monthly_toman)),0);
+  const advances=(a.data||[]).filter(x=>x.jalali_month==="1405/08");
+  const advanceByStaff={};
+  advances.forEach(x=>advanceByStaff[x.staff_id]=(advanceByStaff[x.staff_id]||0)+Number(x.amount_toman||0));
+  const total=records.reduce((sum,x)=>sum+(x.monthly_toman===null?0:Number(x.monthly_toman)),0);
+  const advanceTotal=advances.reduce((sum,x)=>sum+Number(x.amount_toman||0),0);
   const missing=records.filter(x=>x.monthly_toman===null).length;
   el("payroll-total").textContent=total.toLocaleString("fa-IR")+" تومان";
+  el("payroll-advance-total").textContent=advanceTotal.toLocaleString("fa-IR")+" تومان";
   el("payroll-count").textContent=String(records.length).replace(/[0-9]/g,n=>"۰۱۲۳۴۵۶۷۸۹"[Number(n)]);
   el("payroll-missing").textContent=String(missing).replace(/[0-9]/g,n=>"۰۱۲۳۴۵۶۷۸۹"[Number(n)]);
-  el("payroll-list").innerHTML=records.map(x=>'<div class="row"><div><b>'+safe(x.rvctl_staff.full_name)+'</b><div class="muted mini">'+safe(x.rvctl_staff.job_title)+'</div></div><div style="text-align:left;color:var(--gold);font-size:13px;font-weight:bold">'+(x.monthly_toman===null?'تعیین نشده':Number(x.monthly_toman).toLocaleString("fa-IR"))+'</div></div>').join("")||'<p class="muted">اطلاعاتی وجود ندارد.</p>';
- }catch(e){el("payroll-list").textContent="دریافت حقوق‌ها ناموفق بود: "+e.message;}
+  el("payroll-list").innerHTML=records.map(x=>{
+    const salary=x.monthly_toman===null?null:Number(x.monthly_toman);
+    const adv=advanceByStaff[x.staff_id]||0;
+    const net=salary===null?null:Math.max(0,salary-adv);
+    return '<div class="row"><div><b>'+safe(x.rvctl_staff.full_name)+'</b><div class="muted mini">'+safe(x.rvctl_staff.job_title)+'</div>'+(adv?'<div class="muted mini">مساعده آبان: '+adv.toLocaleString("fa-IR")+' تومان</div>':'')+'</div><div style="text-align:left"><div style="color:var(--gold);font-size:13px;font-weight:bold">'+(salary===null?'حقوق: تعیین نشده':'حقوق پایه: '+salary.toLocaleString("fa-IR")+' تومان')+'</div>'+(net!==null&&adv?'<div class="mini ok">مانده پایه پس از مساعده: '+net.toLocaleString("fa-IR")+' تومان</div>':'')+'</div></div>';
+  }).join("")||'<p class="muted">اطلاعاتی وجود ندارد.</p>';
+ }catch(e){el("payroll-list").textContent="دریافت حقوق و مساعده‌ها ناموفق بود: "+e.message;}
 }
+
 window.addEventListener("load",begin);
 })();
 </script>
