@@ -45,18 +45,18 @@ jobs:
         run: |
           flutter build apk --release \
             -t lib/rv_control_main.dart \
-            --build-name 1.0.8 \
-            --build-number 8
-          cp build/app/outputs/flutter-apk/app-release.apk RV_CONTROL_v1.0.8.apk
-          test -s RV_CONTROL_v1.0.8.apk
-          unzip -tq RV_CONTROL_v1.0.8.apk
-          sha256sum RV_CONTROL_v1.0.8.apk
+            --build-name 1.0.9 \
+            --build-number 9
+          cp build/app/outputs/flutter-apk/app-release.apk RV_CONTROL_v1.0.9.apk
+          test -s RV_CONTROL_v1.0.9.apk
+          unzip -tq RV_CONTROL_v1.0.9.apk
+          sha256sum RV_CONTROL_v1.0.9.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: RV-CONTROL-v1.0.8
-          path: RV_CONTROL_v1.0.8.apk
+          name: RV-CONTROL-v1.0.9
+          path: RV_CONTROL_v1.0.9.apk
           compression-level: 0
 
       - name: Publish direct-download release
@@ -64,14 +64,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
         run: |
-          tag='rv-control-v1.0.8'
-          apk='RV_CONTROL_v1.0.8.apk'
+          tag='rv-control-v1.0.9'
+          apk='RV_CONTROL_v1.0.9.apk'
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" "$apk" --clobber
           else
             gh release create "$tag" "$apk" \
               --target "$GITHUB_SHA" \
-              --title 'RV CONTROL v1.0.8 — Royal Village Restaurant' \
+              --title 'RV CONTROL v1.0.9 — Royal Village Restaurant' \
               --notes 'Standalone Android installer for authorized Royal Village Restaurant staff and management. Separate from ROYAL ONE.'
           fi
           gh release view "$tag" --json url,assets
