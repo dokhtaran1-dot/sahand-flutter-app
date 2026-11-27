@@ -1,0 +1,75 @@
+name: Build RV CONTROL Android APK
+
+on:
+  push:
+    branches:
+      - rv-control-apk
+    paths:
+      - '.github/workflows/rv-control-apk.yml'
+      - 'lib/rv_control_main.dart'
+      - 'android/app/src/main/AndroidManifest.xml'
+      - 'android/app/build.gradle.kts'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout RV CONTROL branch
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+          cache: true
+
+      - name: Get packages
+        run: flutter pub get
+
+      - name: Build universal Android APK
+        run: |
+          flutter build apk --release \
+            -t lib/rv_control_main.dart \
+            --build-name 1.0.0 \
+            --build-number 1
+          cp build/app/outputs/flutter-apk/app-release.apk RV_CONTROL_v1.0.0.apk
+          test -s RV_CONTROL_v1.0.0.apk
+          unzip -tq RV_CONTROL_v1.0.0.apk
+          sha256sum RV_CONTROL_v1.0.0.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RV-CONTROL-v1.0.0
+          path: RV_CONTROL_v1.0.0.apk
+          compression-level: 0
+
+      - name: Publish direct-download release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          tag='rv-control-v1.0.0'
+          apk='RV_CONTROL_v1.0.0.apk'
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" "$apk" --clobber
+          else
+            gh release create "$tag" "$apk" \
+              --target "$GITHUB_SHA" \
+              --title 'RV CONTROL v1.0.0 — Royal Village Restaurant' \
+              --notes 'Standalone Android installer for authorized Royal Village Restaurant staff and management. Separate from ROYAL ONE.'
+          fi
+          gh release view "$tag" --json url,assets
