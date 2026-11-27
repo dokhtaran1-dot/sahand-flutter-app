@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-const _rvControlUrl = 'https://dokhtaran1-dot.github.io/sahand-flutter-app/';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -71,7 +70,16 @@ class _RvControlHomeState extends State<RvControlHome> {
           },
         ),
       )
-      ..loadRequest(Uri.parse(_rvControlUrl));
+      ;
+    _loadBundledApp();
+  }
+
+  Future<void> _loadBundledApp() async {
+    final html = await rootBundle.loadString('index.html');
+    await _controller.loadHtmlString(
+      html,
+      baseUrl: 'https://dokhtaran1-dot.github.io',
+    );
   }
 
   Future<bool> _handleBack() async {
@@ -126,7 +134,7 @@ class _RvControlHomeState extends State<RvControlHome> {
                           FilledButton(
                             onPressed: () {
                               setState(() => _hasError = false);
-                              _controller.loadRequest(Uri.parse(_rvControlUrl));
+                              _loadBundledApp();
                             },
                             child: const Text('تلاش دوباره'),
                           ),
