@@ -159,10 +159,12 @@ window.supabase={createClient:(base,key)=>{
    <div class="field"><label>ماه محاسبه</label><input id="payrollMonth" value="1405/08" dir="ltr" placeholder="1405/08"></div>
    <p class="muted">همه پرسنل فعال نمایش داده می‌شوند؛ مبلغ خالی به‌معنی «تعیین نشده» است و در جمع لحاظ نمی‌شود.</p>
    <div class="grid" style="margin-top:12px">
-    <div class="stat"><span class="muted">حقوق پایه ثبت‌شده</span><b id="payroll-total" style="font-size:20px">—</b></div>
+    <div class="stat"><span class="muted">حقوق پایه ثبت‌شده</span><b id="payroll-base-total" style="font-size:19px">—</b></div>
+    <div class="stat"><span class="muted">کسر بابت تاریخ ورود</span><b id="payroll-start-deduction-total" style="font-size:19px">—</b></div>
+    <div class="stat"><span class="muted">مساعده ماه</span><b id="payroll-advance-total" style="font-size:19px">—</b></div>
+    <div class="stat"><span class="muted">خالص قابل پرداخت</span><b id="payroll-total" style="font-size:20px">—</b></div>
     <div class="stat"><span class="muted">حقوق نامشخص</span><b id="payroll-missing">—</b></div>
     <div class="stat"><span class="muted">پرسنل فعال</span><b id="payroll-count">—</b></div>
-    <div class="stat"><span class="muted">مساعده ماه</span><b id="payroll-advance-total" style="font-size:20px">—</b></div>
    </div>
    <button id="abanPreview" class="outline block">پیش‌نمایش فیش آبان ۱۴۰۵</button>
    <div id="abanPreviewBox" class="hide"></div>
@@ -240,6 +242,19 @@ const statLabel={requested:"درخواست",stock_checked:"کنترل انبار
 const stageNext={requested:"stock_checked",stock_checked:"approved",approved:"purchased",purchased:"received",received:"accounted",accounted:"audited"};
 const approver={stock_checked:["stock"],approved:["manager","executive"],purchased:["procurement"],received:["stock"],accounted:["accountant"],audited:["auditor"]};
 function safe(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+async function copyText(value){
+ const text=String(value||"").trim();if(!text)return;
+ try{
+   if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);}
+   else{
+     const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.focus();ta.select();document.execCommand("copy");ta.remove();
+   }
+   msg("کپی شد: "+text);
+ }catch(e){prompt("شماره شبا را کپی کن:",text);}
+}
+function wireCopyButtons(root=document){
+ root.querySelectorAll("[data-copy-sheba]").forEach(b=>b.onclick=()=>copyText(b.getAttribute("data-copy-sheba")));
+}
 function show(id){["loading","auth","pending","app"].forEach(x=>el(x).classList.toggle("hide",x!==id));}
 function msg(value,bad=false){const box=el("flash");box.textContent=value;box.classList.remove("hide");box.classList.toggle("err",bad);}
 function authMessage(value,bad=false){el("authMsg").textContent=value;el("authMsg").classList.remove("hide");el("authMsg").classList.toggle("err",bad);}
@@ -401,11 +416,14 @@ function renderStaff(){
    const d=detailMap.get(s.id);
    let extra="";
    if(d){
+     const sheba=d.sheba?'<span dir="ltr">'+safe(d.sheba)+'</span> <button class="outline action" data-copy-sheba="'+safe(d.sheba)+'">کپی</button>':'ثبت نشده';
      extra='<div class="muted mini">شروع: '+safe(d.start_date||"ثبت نشده")+' · حقوق: '+(d.salary_toman===null||d.salary_toman===undefined?"تعیین نشده":Number(d.salary_toman).toLocaleString("fa-IR")+" تومان")+'</div>'+
-       '<div class="muted mini">حساب کاربری: '+(d.account_linked?"متصل":"متصل نشده")+' · شبا: '+safe(d.sheba_status==="verified"?"تأییدشده":d.sheba_status==="pending"?"در انتظار":"ثبت نشده")+' · قرارداد: '+safe(d.contract_status==="active"?"فعال":d.contract_status==="draft"?"پیش‌نویس":d.contract_status==="ended"?"پایان‌یافته":"ثبت نشده")+'</div>';
+       '<div class="muted mini">شبا: '+sheba+'</div>'+
+       '<div class="muted mini">حساب کاربری: '+(d.account_linked?"متصل":"متصل نشده")+' · وضعیت شبا: '+safe(d.sheba_status==="verified"?"تأییدشده":d.sheba_status==="pending"?"در انتظار":"ثبت نشده")+' · قرارداد: '+safe(d.contract_status==="active"?"فعال":d.contract_status==="draft"?"پیش‌نویس":d.contract_status==="ended"?"پایان‌یافته":"ثبت نشده")+'</div>';
    }
    return '<div class="row"><div><b>'+safe(s.full_name)+'</b><div class="muted mini">'+safe(s.job_title)+' · '+safe(s.department)+'</div>'+extra+'</div><span class="tag">'+(s.active?"فعال":"غیرفعال")+'</span></div>';
  }).join("")||'<div class="muted">موردی پیدا نشد.</div>';
+ wireCopyButtons(el("staffList"));
 }
 async function loadPresenceBoard(){
  if(!["owner","executive","manager"].includes(role))return;
@@ -491,19 +509,41 @@ async function loadPayroll(){
  const records=(d.records||[]).filter(x=>x.active||Number(x.advance_toman||0)>0);
  const activeRecords=records.filter(x=>x.active);
  const known=activeRecords.filter(x=>x.salary_toman!==null&&x.salary_toman!==undefined);
- const total=known.reduce((sum,x)=>sum+Number(x.salary_toman||0),0);
+ const baseTotal=known.reduce((sum,x)=>sum+Number(x.salary_toman||0),0);
+ const startDeductionTotal=known.reduce((sum,x)=>sum+Number(x.start_deduction_toman||0),0);
  const advanceTotal=records.reduce((sum,x)=>sum+Number(x.advance_toman||0),0);
- el("payroll-total").textContent=total.toLocaleString("fa-IR")+" تومان";
+ const netTotal=records.reduce((sum,x)=>sum+Number(x.net_payable_toman||0),0);
+ el("payroll-base-total").textContent=baseTotal.toLocaleString("fa-IR")+" تومان";
+ el("payroll-start-deduction-total").textContent=startDeductionTotal.toLocaleString("fa-IR")+" تومان";
+ el("payroll-total").textContent=netTotal.toLocaleString("fa-IR")+" تومان";
  el("payroll-advance-total").textContent=advanceTotal.toLocaleString("fa-IR")+" تومان";
  el("payroll-count").textContent=activeRecords.length.toLocaleString("fa-IR");
  el("payroll-missing").textContent=(activeRecords.length-known.length).toLocaleString("fa-IR");
+
  el("payroll-list").innerHTML=records.map(x=>{
    const salary=x.salary_toman===null||x.salary_toman===undefined?null:Number(x.salary_toman);
+   const prorated=x.prorated_base_toman===null||x.prorated_base_toman===undefined?null:Number(x.prorated_base_toman);
+   const startCut=Number(x.start_deduction_toman||0);
    const adv=Number(x.advance_toman||0);
-   const net=salary===null?null:Math.max(0,salary-adv);
+   const net=x.net_payable_toman===null||x.net_payable_toman===undefined?null:Number(x.net_payable_toman);
+   const uncovered=Number(x.uncovered_advance_toman||0);
+   const sheba=x.sheba?'<span dir="ltr" style="font-family:monospace">'+safe(x.sheba)+'</span> <button class="outline action" data-copy-sheba="'+safe(x.sheba)+'">کپی</button>':'<span class="danger">ثبت نشده</span>';
    const edit=role==="owner"?'<button class="outline action" data-salary="'+safe(x.id)+'">ثبت/اصلاح حقوق</button>':'';
-   return '<div class="row" style="align-items:flex-start"><div><b>'+safe(x.name)+(x.active?'':' <span class="danger mini">· غیرفعال / نیازمند تسویه</span>')+'</b><div class="muted mini">'+safe(x.job_title)+' · '+safe(x.department)+'</div><div class="muted mini">شروع همکاری: '+safe(x.start_date||"ثبت نشده")+'</div>'+(adv?'<div class="muted mini">مساعده '+safe(d.month)+': '+adv.toLocaleString("fa-IR")+' تومان</div>':'')+'</div><div style="text-align:left"><div style="color:var(--gold);font-size:13px;font-weight:bold">'+(salary===null?'حقوق: تعیین نشده':'حقوق پایه: '+salary.toLocaleString("fa-IR")+' تومان')+'</div>'+(net!==null&&adv?'<div class="mini ok">پایه پس از مساعده: '+net.toLocaleString("fa-IR")+' تومان</div>':'')+'<div style="margin-top:7px">'+edit+'</div></div></div>';
+   let calc='';
+   if(salary!==null){
+     calc+='<div class="mini">حقوق پایه: <b>'+salary.toLocaleString("fa-IR")+'</b> تومان</div>';
+     if(startCut>0)calc+='<div class="mini danger">کسر بابت تاریخ ورود: −'+startCut.toLocaleString("fa-IR")+' تومان</div>';
+     if(prorated!==null&&startCut>0)calc+='<div class="mini">حقوق بر مبنای '+Number(x.worked_days||0).toLocaleString("fa-IR")+' روز کارکرد: '+prorated.toLocaleString("fa-IR")+' تومان</div>';
+     if(adv>0)calc+='<div class="mini danger">کسر مساعده: −'+adv.toLocaleString("fa-IR")+' تومان</div>';
+     calc+='<div class="ok" style="font-weight:800;margin-top:4px">خالص قابل پرداخت: '+Number(net||0).toLocaleString("fa-IR")+' تومان</div>';
+     if(uncovered>0)calc+='<div class="mini danger">مانده مساعده قابل تسویه بعدی: '+uncovered.toLocaleString("fa-IR")+' تومان</div>';
+   }else{
+     calc='<div class="danger">حقوق پایه تعیین نشده؛ خالص محاسبه نمی‌شود.</div>';
+     if(adv>0)calc+='<div class="mini">مساعده ثبت‌شده: '+adv.toLocaleString("fa-IR")+' تومان</div>';
+   }
+   return '<div class="card" style="margin:9px 0;padding:13px"><div class="row" style="align-items:flex-start"><div><b>'+safe(x.name)+(x.active?'':' <span class="danger mini">· غیرفعال / نیازمند تسویه</span>')+'</b><div class="muted mini">'+safe(x.job_title)+' · '+safe(x.department)+'</div><div class="muted mini">تاریخ ورود: '+safe(x.start_date||"ثبت نشده")+'</div><div class="muted mini">شبا: '+sheba+'</div></div><div style="text-align:left">'+calc+'<div style="margin-top:7px">'+edit+'</div></div></div></div>';
  }).join("")||'<p class="muted">اطلاعاتی وجود ندارد.</p>';
+ wireCopyButtons(el("payroll-list"));
  document.querySelectorAll("[data-salary]").forEach(b=>b.onclick=async()=>{
    const id=b.getAttribute("data-salary"),rec=records.find(x=>x.id===id);if(!rec)return;
    const amount=prompt("حقوق پایه ماهانه "+rec.name+" به تومان:",rec.salary_toman??"");
@@ -514,17 +554,22 @@ async function loadPayroll(){
    try{await rpc("rvctl_owner_salary_set",{p_staff_id:id,p_monthly_toman:n,p_reason:reason.trim()});msg("حقوق "+rec.name+" ثبت شد.");await loadPayroll();}catch(e){msg("ثبت حقوق ناموفق: "+e.message,true);}
  });
 }
-
 async function loadAbanPreview(){
  if(role!=="owner"){msg("پیش‌نمایش آبان فقط برای مالک است.",true);return;}
  try{
    const d=await rpc("rvctl_rv_aban1405_payroll_preview");
    const rows=d.records||[];
    const box=el("abanPreviewBox");box.classList.remove("hide");
-   box.innerHTML='<div class="card"><h3>پیش‌نمایش آبان ۱۴۰۵ — بدون صدور پرداخت</h3>'+rows.map(x=>'<div class="row"><div><b>'+safe(x.staff)+'</b><div class="muted mini">شروع: '+safe(x.start_date||"—")+' · کارکرد آزمایشی: '+safe(x.worked_days)+'</div></div><div style="text-align:left">'+(x.net_after_advance_toman===null?'<span class="danger">حقوق نامشخص</span>':'<b>'+Number(x.net_after_advance_toman).toLocaleString("fa-IR")+' تومان</b>')+'</div></div>').join("")+'</div>';
+   box.innerHTML='<div class="card"><h3>پیش‌نمایش آبان ۱۴۰۵ — بدون صدور پرداخت</h3>'+rows.map(x=>{
+     const sheba=x.sheba?'<span dir="ltr" style="font-family:monospace">'+safe(x.sheba)+'</span> <button class="outline action" data-copy-sheba="'+safe(x.sheba)+'">کپی</button>':'ثبت نشده';
+     const base=x.monthly_base_toman===null?null:Number(x.monthly_base_toman);
+     const pr=x.prorated_base_toman===null?null:Number(x.prorated_base_toman);
+     const cut=Number(x.start_deduction_toman||0),adv=Number(x.advance_toman||0),net=x.net_after_advance_toman===null?null:Number(x.net_after_advance_toman),uncovered=Number(x.uncovered_advance_toman||0);
+     return '<div class="card" style="margin:8px 0;padding:12px"><div class="row" style="align-items:flex-start"><div><b>'+safe(x.staff)+'</b><div class="muted mini">ورود: '+safe(x.start_date||"—")+' · کارکرد: '+Number(x.worked_days||0).toLocaleString("fa-IR")+' روز</div><div class="muted mini">شبا: '+sheba+'</div></div><div style="text-align:left">'+(base===null?'<span class="danger">حقوق نامشخص</span>':'<div class="mini">پایه: '+base.toLocaleString("fa-IR")+'</div>'+(cut?'<div class="mini danger">کسر ورود: −'+cut.toLocaleString("fa-IR")+'</div>':'')+'<div class="mini">پس از ورود: '+pr.toLocaleString("fa-IR")+'</div>'+(adv?'<div class="mini danger">مساعده: −'+adv.toLocaleString("fa-IR")+'</div>':'')+'<div class="ok"><b>خالص: '+Number(net||0).toLocaleString("fa-IR")+' تومان</b></div>'+(uncovered?'<div class="mini danger">مانده مساعده: '+uncovered.toLocaleString("fa-IR")+'</div>':''))+'</div></div></div>';
+   }).join("")+'</div>';
+   wireCopyButtons(box);
  }catch(e){msg("پیش‌نمایش آبان ناموفق: "+e.message,true);}
 }
-
 async function loadBanking(){
  try{
    const d=await rpc("rvctl_private_people");
