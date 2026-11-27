@@ -1,12 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="ROYAL 1"
+        android:label="RV CONTROL"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round">
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.sahand_consortium.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:taskAffinity=""
