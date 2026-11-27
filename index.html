@@ -171,13 +171,14 @@ window.supabase={createClient:(base,key)=>{
 </section>
 <section id="view-bank" class="hide">
   <div class="card">
-    <div class="row"><h2 style="margin:0">شماره شبا پرسنل RV</h2><button id="refreshBank" class="outline action">به‌روزرسانی</button></div>
-    <p class="muted">فقط حساب‌های مربوط به رویال ویلیج رستوران. ثبت شبا هیچ انتقال بانکی ایجاد نمی‌کند.</p>
-    <div class="field"><label>پرسنل</label><select id="bankStaff"></select></div>
-    <div class="field"><label>شماره شبا</label><input id="shebaInput" dir="ltr" placeholder="IR000000000000000000000000"></div>
-    <button id="saveSheba" class="block">ثبت / اصلاح شبا برای بررسی</button>
+    <div class="row"><h2 style="margin:0">شماره شبا RV</h2><button id="refreshBank" class="outline action">به‌روزرسانی</button></div>
+    <p class="muted">شبا باید با IR شروع شود و ۲۴ رقم بعد از آن داشته باشد. سامانه کنترل استاندارد IBAN را انجام می‌دهد؛ شماره نامعتبر ذخیره نمی‌شود.</p>
+    <div id="bankOwnerPicker" class="field"><label>پرسنل</label><select id="bankStaff"></select></div>
+    <div class="field"><label>شماره شبا</label><input id="shebaInput" dir="ltr" maxlength="26" placeholder="IR000000000000000000000000" autocomplete="off"></div>
+    <button id="saveSheba" class="block">ثبت / اصلاح شبا</button>
+    <div class="info mini">ثبت شبا فقط برای پرونده همان شخص است و هیچ انتقال وجه یا پرداخت خودکاری انجام نمی‌دهد.</div>
   </div>
-  <div class="card"><h2>وضعیت شباها</h2><div id="bankList"></div></div>
+  <div class="card"><h2 id="bankListTitle">وضعیت شباها</h2><div id="bankList"></div></div>
 </section>
 <section id="view-contracts" class="hide">
   <div class="card">
@@ -304,7 +305,7 @@ async function prepare(){
   el("nav-payroll").classList.toggle("hide",!["owner","auditor","accountant"].includes(role));
   el("nav-shifts").classList.toggle("hide",!["owner","executive","manager"].includes(role));
   el("nav-finance").classList.toggle("hide",!["owner","executive","accountant","auditor"].includes(role));
-  el("nav-bank").classList.toggle("hide",role!=="owner");
+  el("nav-bank").classList.toggle("hide",role==="kiosk");
   el("nav-contracts").classList.toggle("hide",!["owner","executive","manager","accountant","auditor"].includes(role));
   el("nav-access").classList.toggle("hide",role!=="owner");
   const hash=location.hash;
@@ -525,30 +526,45 @@ async function loadAbanPreview(){
 }
 
 async function loadBanking(){
- if(role!=="owner"){msg("مدیریت شبا فقط برای مالک است.",true);return;}
  try{
    const d=await rpc("rvctl_private_people");
    bankPeople=(d.people||[]).filter(x=>x.unit==="RV");
-   el("bankStaff").innerHTML=bankPeople.map(x=>'<option value="'+safe(x.person_id)+'">'+safe(x.name)+' · '+safe(x.role_title)+'</option>').join("");
+   const owner=role==="owner";
+   el("bankOwnerPicker").classList.toggle("hide",!owner);
+   el("bankListTitle").textContent=owner?"وضعیت شباهای پرسنل":"شبای من";
+   if(owner){
+     el("bankStaff").innerHTML=bankPeople.map(x=>'<option value="'+safe(x.person_id)+'">'+safe(x.name)+' · '+safe(x.role_title)+'</option>').join("");
+   }else if(bankPeople.length===1){
+     el("bankStaff").innerHTML='<option value="'+safe(bankPeople[0].person_id)+'">'+safe(bankPeople[0].name)+'</option>';
+   }
    el("bankList").innerHTML=bankPeople.map(x=>{
-     const status=x.sheba_status==="verified"?"تأییدشده":x.sheba_status==="pending"?"در انتظار بررسی":x.sheba_status==="rejected"?"ردشده":"ثبت نشده";
-     const actions=x.sheba_status==="pending"?'<div style="margin-top:7px"><button class="action" data-sheba-review="'+safe(x.person_id)+'" data-action="verified">تأیید</button> <button class="outline action" data-sheba-review="'+safe(x.person_id)+'" data-action="rejected">رد</button></div>':'';
+     const status=x.sheba_status==="verified"?"تأییدشده":x.sheba_status==="pending"?"در انتظار تأیید مالک":x.sheba_status==="rejected"?"ردشده":"ثبت نشده";
+     const actions=owner&&x.sheba_status==="pending"?'<div style="margin-top:7px"><button class="action" data-sheba-review="'+safe(x.person_id)+'" data-action="verified">تأیید</button> <button class="outline action" data-sheba-review="'+safe(x.person_id)+'" data-action="rejected">رد</button></div>':'';
      return '<div class="row" style="align-items:flex-start"><div><b>'+safe(x.name)+'</b><div class="muted mini">'+safe(x.role_title)+' · '+safe(x.department)+'</div><div class="bank-value mini">'+safe(x.sheba||"—")+'</div></div><div><span class="tag">'+safe(status)+'</span>'+actions+'</div></div>';
-   }).join("")||'<p class="muted">پرسنلی موجود نیست.</p>';
-   document.querySelectorAll("[data-sheba-review]").forEach(b=>b.onclick=async()=>{
-     const id=b.getAttribute("data-sheba-review"),action=b.getAttribute("data-action");
-     const note=prompt(action==="verified"?"یادداشت تأیید شبا:":"دلیل رد شبا:","بررسی توسط مالک")||"";
-     if(note.trim().length<4){msg("یادداشت حداقل ۴ حرف لازم است.",true);return;}
-     try{await rpc("rvctl_sheba_review",{p_unit:"RV",p_person_id:id,p_action:action,p_note:note.trim()});msg("وضعیت شبا ثبت شد.");await loadBanking();}catch(e){msg("بررسی شبا ناموفق: "+e.message,true);}
-   });
+   }).join("")||'<p class="muted">پرونده بانکی برای این حساب پیدا نشد.</p>';
+   if(owner){
+     document.querySelectorAll("[data-sheba-review]").forEach(b=>b.onclick=async()=>{
+       const id=b.getAttribute("data-sheba-review"),action=b.getAttribute("data-action");
+       const note=prompt(action==="verified"?"یادداشت تأیید شبا:":"دلیل رد شبا:","بررسی توسط مالک")||"";
+       if(note.trim().length<4){msg("یادداشت حداقل ۴ حرف لازم است.",true);return;}
+       try{await rpc("rvctl_sheba_review",{p_unit:"RV",p_person_id:id,p_action:action,p_note:note.trim()});msg("وضعیت شبا ثبت شد.");await loadBanking();await loadControlBoard(false);}catch(e){msg("بررسی شبا ناموفق: "+e.message,true);}
+     });
+   }
  }catch(e){el("bankList").textContent="دریافت شباها ناموفق بود: "+e.message;}
 }
 
 async function saveSheba(){
- if(role!=="owner")return;
- const id=el("bankStaff").value,sheba=el("shebaInput").value.trim();
- if(!id||!sheba){msg("پرسنل و شماره شبا را کامل کن.",true);return;}
- try{await rpc("rvctl_sheba_submit",{p_unit:"RV",p_person_id:id,p_sheba:sheba});el("shebaInput").value="";msg("شبا ثبت شد و در انتظار تأیید مالک قرار گرفت.");await loadBanking();}catch(e){msg("ثبت شبا ناموفق: "+e.message,true);}
+ const owner=role==="owner";
+ const id=owner?el("bankStaff").value:(bankPeople[0]?.person_id||"");
+ let sheba=el("shebaInput").value.trim().toUpperCase().replace(/[\s-]/g,"");
+ if(!id||!sheba){msg("شماره شبا را کامل وارد کن.",true);return;}
+ if(!/^IR\d{24}$/.test(sheba)){msg("فرمت شبا درست نیست؛ باید IR و سپس دقیقاً ۲۴ رقم باشد.",true);return;}
+ try{
+   await rpc("rvctl_sheba_submit",{p_unit:"RV",p_person_id:id,p_sheba:sheba});
+   el("shebaInput").value="";
+   msg(owner?"شبا ثبت شد و برای تأیید نهایی آماده است.":"شبای شما ثبت شد و منتظر تأیید مالک است.");
+   await loadBanking();if(owner)await loadControlBoard(false);
+ }catch(e){msg("ثبت شبا ناموفق: "+e.message,true);}
 }
 
 async function loadContracts(){
