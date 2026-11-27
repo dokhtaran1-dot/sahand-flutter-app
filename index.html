@@ -237,7 +237,7 @@ const PROJECT="https://wtwbemwyntvocdilaukk.supabase.co";
 const KEY="sb_publishable_7bhOR_5xd4ByIpOWM0jrWg_VMHNVUkH";
 const el=id=>document.getElementById(id);
 let db=null,role=null,tab="dashboard",session=null,qrToken=null,qrTimer=null,requests=[],staff=[],controlData=null,controlRecords=[],bankPeople=[],accessUsers=[],contractRows=[];
-const roles={owner:"مالک",executive:"مدیر ارشد",manager:"مدیر اجرایی",chef:"سرآشپز",stock:"انبار",procurement:"خرید",cashier:"صندوق",accountant:"حسابدار",auditor:"حسابرس",staff:"کارمند",kiosk:"دستگاه QR"};
+const roles={owner:"مالک",executive:"مدیرعامل / دسترسی کلی",manager:"مدیر اجرایی",chef:"سرآشپز",stock:"انبار",procurement:"خرید",cashier:"صندوق",accountant:"حسابدار",auditor:"حسابرس",staff:"کارمند",kiosk:"دستگاه QR"};
 const statLabel={requested:"درخواست",stock_checked:"کنترل انبار",approved:"تأیید خرید",purchased:"خریداری شد",received:"تحویل انبار",accounted:"ثبت مالی",audited:"حسابرسی شد",rejected:"رد شد"};
 const stageNext={requested:"stock_checked",stock_checked:"approved",approved:"purchased",purchased:"received",received:"accounted",accounted:"audited"};
 const approver={stock_checked:["stock"],approved:["manager","executive"],purchased:["procurement"],received:["stock"],accounted:["accountant"],audited:["auditor"]};
@@ -317,12 +317,12 @@ async function prepare(){
   el("nav-people").classList.toggle("hide",role==="kiosk");
   el("nav-requests").classList.toggle("hide",role==="kiosk");
   el("nav-attendance").classList.toggle("hide",role==="kiosk");
-  el("nav-payroll").classList.toggle("hide",!["owner","auditor","accountant"].includes(role));
+  el("nav-payroll").classList.toggle("hide",!["owner","executive","auditor","accountant"].includes(role));
   el("nav-shifts").classList.toggle("hide",!["owner","executive","manager"].includes(role));
   el("nav-finance").classList.toggle("hide",!["owner","executive","accountant","auditor"].includes(role));
   el("nav-bank").classList.toggle("hide",role==="kiosk");
   el("nav-contracts").classList.toggle("hide",!["owner","executive","manager","accountant","auditor"].includes(role));
-  el("nav-access").classList.toggle("hide",role!=="owner");
+  el("nav-access").classList.toggle("hide",!["owner","executive"].includes(role));
   const hash=location.hash;
   if(hash.startsWith("#scan=")){qrToken=hash.slice(6);nav("attendance");el("scanNotice").textContent="QR اسکن شد. برای ثبت رویداد از دکمه زیر استفاده کن.";el("scanButton").disabled=false;}
   else nav(["owner","executive","manager","auditor"].includes(role)?"dashboard":role==="kiosk"?"kiosk":"attendance");
@@ -503,7 +503,7 @@ function displayInternalLogin(v){
 }
 
 async function loadPayroll(){
- if(!["owner","auditor","accountant"].includes(role)){msg("این بخش محرمانه است.",true);return;}
+ if(!["owner","executive","auditor","accountant"].includes(role)){msg("این بخش محرمانه است.",true);return;}
  el("payroll-list").textContent="در حال بارگذاری...";
  const d=await loadControlBoard(true);if(!d)return;
  const records=(d.records||[]).filter(x=>x.active||Number(x.advance_toman||0)>0);
@@ -528,7 +528,7 @@ async function loadPayroll(){
    const net=x.net_payable_toman===null||x.net_payable_toman===undefined?null:Number(x.net_payable_toman);
    const uncovered=Number(x.uncovered_advance_toman||0);
    const sheba=x.sheba?'<span dir="ltr" style="font-family:monospace">'+safe(x.sheba)+'</span> <button class="outline action" data-copy-sheba="'+safe(x.sheba)+'">کپی</button>':'<span class="danger">ثبت نشده</span>';
-   const edit=role==="owner"?'<button class="outline action" data-salary="'+safe(x.id)+'">ثبت/اصلاح حقوق</button>':'';
+   const edit=["owner","executive"].includes(role)?'<button class="outline action" data-salary="'+safe(x.id)+'">ثبت/اصلاح حقوق</button>':'';
    let calc='';
    if(salary!==null){
      calc+='<div class="mini">حقوق پایه: <b>'+salary.toLocaleString("fa-IR")+'</b> تومان</div>';
@@ -555,7 +555,7 @@ async function loadPayroll(){
  });
 }
 async function loadAbanPreview(){
- if(role!=="owner"){msg("پیش‌نمایش آبان فقط برای مالک است.",true);return;}
+ if(!["owner","executive"].includes(role)){msg("پیش‌نمایش آبان برای مدیریت ارشد است.",true);return;}
  try{
    const d=await rpc("rvctl_rv_aban1405_payroll_preview");
    const rows=d.records||[];
@@ -574,7 +574,7 @@ async function loadBanking(){
  try{
    const d=await rpc("rvctl_private_people");
    bankPeople=(d.people||[]).filter(x=>x.unit==="RV");
-   const owner=role==="owner";
+   const owner=["owner","executive"].includes(role);
    el("bankOwnerPicker").classList.toggle("hide",!owner);
    el("bankListTitle").textContent=owner?"وضعیت شباهای پرسنل":"شبای من";
    if(owner){
@@ -599,7 +599,7 @@ async function loadBanking(){
 }
 
 async function saveSheba(){
- const owner=role==="owner";
+ const owner=["owner","executive"].includes(role);
  const id=owner?el("bankStaff").value:(bankPeople[0]?.person_id||"");
  let sheba=el("shebaInput").value.trim().toUpperCase().replace(/[\s-]/g,"");
  if(!id||!sheba){msg("شماره شبا را کامل وارد کن.",true);return;}
@@ -618,13 +618,13 @@ async function loadContracts(){
    if(!controlRecords.length&&["owner","executive","accountant","auditor"].includes(role))await loadControlBoard(false);
    if(el("contractStaff"))el("contractStaff").innerHTML=(controlRecords.length?controlRecords.filter(x=>x.active):staff.filter(x=>x.active)).map(x=>'<option value="'+safe(x.id)+'">'+safe(x.name||x.full_name)+' · '+safe(x.job_title)+'</option>').join("");
    const d=await rpc("rvctl_contract_list");contractRows=d.records||[];
-   el("contractEditor").classList.toggle("hide",role!=="owner");
+   el("contractEditor").classList.toggle("hide",!["owner","executive"].includes(role));
    el("contractList").innerHTML=contractRows.map(x=>'<div class="row" style="align-items:flex-start"><div><b>'+safe(x.name)+'</b><div class="muted mini">'+safe(x.job_title)+' · '+safe(x.department)+'</div><div class="muted mini">'+safe(x.start_date)+' تا '+safe(x.end_date)+'</div><div class="muted mini">حقوق قرارداد: '+(x.monthly_toman===null?"—":Number(x.monthly_toman).toLocaleString("fa-IR")+" تومان")+' · تضمین: '+(x.guarantee_toman===null?"—":Number(x.guarantee_toman).toLocaleString("fa-IR")+" تومان")+'</div></div><span class="tag">'+safe(x.status==="active"?"فعال":x.status==="draft"?"پیش‌نویس":x.status==="ended"?"پایان‌یافته":"لغوشده")+'</span></div>').join("")||'<p class="muted">هنوز قراردادی در سامانه ثبت نشده است.</p>';
  }catch(e){el("contractList").textContent="دریافت قراردادها ناموفق بود: "+e.message;}
 }
 
 async function saveContract(){
- if(role!=="owner")return;
+ if(!["owner","executive"].includes(role))return;
  const staffId=el("contractStaff").value,start=el("contractStart").value.trim(),end=el("contractEnd").value.trim(),status=el("contractStatus").value;
  const salary=el("contractSalary").value.trim()?Number(el("contractSalary").value):null;
  const guarantee=el("contractGuarantee").value.trim()?Number(el("contractGuarantee").value):null;
@@ -635,7 +635,7 @@ async function saveContract(){
 }
 
 async function loadAccess(){
- if(role!=="owner")return;
+ if(!["owner","executive"].includes(role))return;
  try{
    if(!staff.length)await loadStaff();
    const d=await rpc("rvctl_access_board");
@@ -644,16 +644,19 @@ async function loadAccess(){
    el("accessList").innerHTML=accessUsers.map((u,i)=>{
      const own=u.login==="rv-owner@sahand-consortium.com";
      let controls="";
-     if(!own){
+     const protectedAccount=u.role==="owner"||(role==="executive"&&u.role==="executive");
+     const selfAccount=u.user_id===session?.user?.id;
+     if(!own&&!protectedAccount&&!selfAccount){
        if(!u.confirmed)controls+='<button class="action" data-confirm-user="'+safe(u.user_id)+'">تأیید حساب</button>';
-       controls+='<div class="input-row" style="margin-top:8px"><select id="accStaff'+i+'">'+staff.filter(s=>s.active).map(s=>'<option value="'+safe(s.id)+'" '+(u.staff_id===s.id?'selected':'')+'>'+safe(s.full_name)+'</option>').join("")+'</select><select id="accRole'+i+'">'+rolesOpt.map(r=>'<option value="'+r+'" '+(u.role===r?'selected':'')+'>'+safe(roles[r]||r)+'</option>').join("")+'</select></div><button class="outline action" data-assign-user="'+safe(u.user_id)+'" data-index="'+i+'">اتصال / تغییر نقش</button>';
+       const allowedRoles=role==="owner"?rolesOpt:rolesOpt.filter(r=>r!=="executive");
+       controls+='<div class="input-row" style="margin-top:8px"><select id="accStaff'+i+'">'+staff.filter(s=>s.active).map(s=>'<option value="'+safe(s.id)+'" '+(u.staff_id===s.id?'selected':'')+'>'+safe(s.full_name)+'</option>').join("")+'</select><select id="accRole'+i+'">'+allowedRoles.map(r=>'<option value="'+r+'" '+(u.role===r?'selected':'')+'>'+safe(roles[r]||r)+'</option>').join("")+'</select></div><button class="outline action" data-assign-user="'+safe(u.user_id)+'" data-index="'+i+'">اتصال / تغییر نقش</button>';
        if(u.role)controls+=' <button class="outline action" data-toggle-user="'+safe(u.user_id)+'" data-enabled="'+String(!u.enabled)+'">'+(u.enabled?'غیرفعال‌کردن':'فعال‌کردن')+'</button>';
      }
-     return '<div class="card"><div class="row"><div><b>'+safe(u.staff_name||displayInternalLogin(u.login))+'</b><div class="muted mini">'+safe(displayInternalLogin(u.login))+' · '+(u.confirmed?'تأییدشده':'تأییدنشده')+' · '+safe(u.role?roles[u.role]||u.role:"بدون نقش")+'</div></div><span class="tag">'+(u.enabled?'فعال':'غیرفعال')+'</span></div>'+controls+'</div>';
+     return '<div class="card"><div class="row"><div><b>'+safe(u.display_name||u.staff_name||displayInternalLogin(u.login))+'</b><div class="muted mini">'+safe(u.title||displayInternalLogin(u.login))+' · '+(u.confirmed?'تأییدشده':'تأییدنشده')+' · '+safe(u.role?roles[u.role]||u.role:"بدون نقش")+'</div></div><span class="tag">'+(u.enabled?'فعال':'غیرفعال')+'</span></div>'+controls+'</div>';
    }).join("")||'<p class="muted">حسابی برای مدیریت وجود ندارد.</p>';
    document.querySelectorAll("[data-confirm-user]").forEach(b=>b.onclick=async()=>{try{await rpc("rvctl_owner_confirm_user",{p_user_id:b.getAttribute("data-confirm-user")});msg("حساب داخلی تأیید شد.");await loadAccess();}catch(e){msg("تأیید حساب ناموفق: "+e.message,true);}});
    document.querySelectorAll("[data-assign-user]").forEach(b=>b.onclick=async()=>{
-     const i=b.getAttribute("data-index"),uid=b.getAttribute("data-assign-user"),sid=el("accStaff"+i).value,r=el("accRole"+i).value;
+     const i=b.getAttribute("data-index"),uid=b.getAttribute("data-assign-user"),r=el("accRole"+i).value,sid=r==="executive"?null:el("accStaff"+i).value;
      try{await rpc("rvctl_assign_existing_user",{p_user_id:uid,p_staff_id:sid,p_role:r});msg("حساب به پرونده پرسنلی متصل شد.");await loadAccess();await loadControlBoard(false);}catch(e){msg("اتصال حساب ناموفق: "+e.message,true);}
    });
    document.querySelectorAll("[data-toggle-user]").forEach(b=>b.onclick=async()=>{try{await rpc("rvctl_set_user_enabled",{p_user_id:b.getAttribute("data-toggle-user"),p_enabled:b.getAttribute("data-enabled")==="true"});msg("وضعیت دسترسی تغییر کرد.");await loadAccess();}catch(e){msg("تغییر دسترسی ناموفق: "+e.message,true);}});
