@@ -3,8 +3,7 @@
     <application
         android:label="RV CONTROL"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round">
+        android:icon="@mipmap/ic_launcher">
         <activity
             android:name="com.example.sahand_consortium.MainActivity"
             android:exported="true"
