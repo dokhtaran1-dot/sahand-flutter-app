@@ -84,15 +84,8 @@ class _RvControlHomeState extends State<RvControlHome> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) return;
-        final shouldPop = await _handleBack();
-        if (shouldPop && mounted) {
-          SystemNavigator.pop();
-        }
-      },
+    return WillPopScope(
+      onWillPop: _handleBack,
       child: Scaffold(
         body: SafeArea(
           child: Stack(
