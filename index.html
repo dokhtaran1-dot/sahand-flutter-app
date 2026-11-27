@@ -87,7 +87,7 @@ window.supabase={createClient:(base,key)=>{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" async></script>
 </head>
 <body>
-<header class="head"><div class="brand"><div class="mark">RV</div><div><div class="eng">RV CONTROL</div><div class="tiny">ROYAL MALL · SAHAND CONSORTIUM</div></div></div><div class="subtitle">سامانه خصوصی مدیریت و نظارت رویال ویلیج رستوران</div></header>
+<header class="head"><div class="brand"><div class="mark">RV</div><div><div class="eng">RV CONTROL</div><div class="tiny">ROYAL VILLAGE RESTAURANT · SAHAND CONSORTIUM</div></div></div><div class="subtitle">سامانه خصوصی مدیریت و نظارت رویال ویلیج رستوران</div></header>
 <main class="wrap">
 <div id="loading" class="card muted">در حال اتصال امن به سامانه…</div>
 <section id="auth" class="hide"><div class="card" style="max-width:450px;margin:25px auto"><h2>ورود اختصاصی</h2><p class="muted">برای مشاهده اطلاعات و ثبت حضور، حساب تأییدشده لازم است.</p><div class="field"><label>شماره موبایل یا ایمیل حساب</label><input id="email" type="text" inputmode="email" placeholder="09141159263 یا name@example.com" autocomplete="username" dir="ltr"></div><div class="field"><label>رمز عبور</label><input id="pass" type="password" autocomplete="current-password" placeholder="حداقل ۸ کاراکتر" dir="ltr"></div><div class="field"><label>کد فعال‌سازی مالک — فقط بار اول</label><input id="ownerCode" type="text" autocomplete="one-time-code" placeholder="برای کارکنان خالی بماند" dir="ltr"></div><button id="loginBtn" class="block">ورود به حساب</button><button id="signupBtn" class="outline block">ساخت حساب / فعال‌سازی اولیه</button><div id="authMsg" class="info hide"></div><p class="muted mini">مالک در اولین راه‌اندازی کد فعال‌سازی یک‌بارمصرف را وارد می‌کند. کارکنان پس از ساخت حساب باید توسط مدیریت مجاز شوند.</p></div></section>
@@ -103,9 +103,38 @@ window.supabase={createClient:(base,key)=>{
 <button data-tab="payroll" id="nav-payroll">حقوق</button>
 <button data-tab="shifts" id="nav-shifts">شیفت‌بندی</button>
 <button data-tab="finance" id="nav-finance">مالی</button>
+<button data-tab="bank" id="nav-bank">شبا</button>
+<button data-tab="contracts" id="nav-contracts">قرارداد</button>
+<button data-tab="access" id="nav-access">دسترسی</button>
 </div>
 <div id="flash" class="info hide"></div>
-<section id="view-dashboard" class="hide"><div class="card"><h2>داشبورد نظارت مالک</h2><div class="grid"><div class="stat"><span class="muted">پرسنل فعال</span><b id="c-active">—</b></div><div class="stat"><span class="muted">داخل شیفت</span><b id="c-shift">—</b></div><div class="stat"><span class="muted">درخواست باز</span><b id="c-requests">—</b></div><div class="stat"><span class="muted">حساب فعال‌شده</span><b id="c-accounts">—</b></div></div><p class="muted" style="margin-top:15px">بازخوانی خودکار هر ۲۰ ثانیه؛ ثبت‌ها با ساعت سرور انجام می‌شوند.</p></div><div class="card"><h2>آخرین ورود و خروج‌ها</h2><div id="events" class="muted">هنوز موردی ثبت نشده است.</div></div></section>
+<section id="view-dashboard" class="hide">
+  <div class="card">
+    <h2>داشبورد نظارت مالک</h2>
+    <div class="grid">
+      <div class="stat"><span class="muted">پرسنل فعال</span><b id="c-active">—</b></div>
+      <div class="stat"><span class="muted">داخل شیفت</span><b id="c-shift">—</b></div>
+      <div class="stat"><span class="muted">درخواست باز</span><b id="c-requests">—</b></div>
+      <div class="stat"><span class="muted">حساب فعال‌شده</span><b id="c-accounts">—</b></div>
+    </div>
+    <p class="muted" style="margin-top:15px">بازخوانی خودکار هر ۲۰ ثانیه؛ ثبت‌ها با ساعت سرور انجام می‌شوند.</p>
+  </div>
+  <div class="card">
+    <h2>وضعیت تکمیل RV CONTROL</h2>
+    <div class="grid">
+      <div class="stat"><span class="muted">کل پرونده‌ها</span><b id="setup-total">—</b></div>
+      <div class="stat"><span class="muted">غیرفعال</span><b id="setup-inactive">—</b></div>
+      <div class="stat"><span class="muted">حقوق نامشخص</span><b id="setup-missing-salary">—</b></div>
+      <div class="stat"><span class="muted">تاریخ شروع ثبت‌شده</span><b id="setup-start-dates">—</b></div>
+      <div class="stat"><span class="muted">شبا ثبت‌شده</span><b id="setup-sheba">—</b></div>
+      <div class="stat"><span class="muted">قرارداد باز</span><b id="setup-contracts">—</b></div>
+      <div class="stat"><span class="muted">حساب پرسنلی متصل</span><b id="setup-linked">—</b></div>
+      <div class="stat"><span class="muted">مساعده آبان</span><b id="setup-advances" style="font-size:19px">—</b></div>
+    </div>
+    <div id="setupMissingNames" class="info" style="margin-top:12px">در حال بررسی اطلاعات ناقص…</div>
+  </div>
+  <div class="card"><h2>آخرین ورود و خروج‌ها</h2><div id="events" class="muted">هنوز موردی ثبت نشده است.</div></div>
+</section>
 <section id="view-attendance" class="hide"><div class="card"><h2>حضور و غیاب QR</h2><p class="muted">با دوربین گوشی، QR زمان‌دار نصب‌شده در محل را اسکن کنید. کد فقط ۷۵ ثانیه اعتبار دارد.</p><div id="scanNotice" class="info">ابتدا با گوشی خود وارد حساب شوید و سپس QR دستگاه محل کار را اسکن کنید.</div><button id="scanButton" class="block" disabled>ثبت ورود یا خروج از QR</button><p id="scanResult" class="muted"></p></div><div id="presenceReview" class="card hide"><div class="row"><h2 style="margin:0">تأیید حضور کارکنان</h2><button id="refreshPresence" class="outline action">به‌روزرسانی</button></div><p class="muted mini">ثبت حاضر/خارج‌شده فقط با اسکن معتبر انجام می‌شود. «عدم مشاهده» نیازمند دلیل کتبی است.</p><div id="presenceList" style="margin-top:12px"></div></div></section>
 <section id="view-kiosk" class="hide"><div class="card"><h2>QR زمان‌دار حضور و غیاب</h2><p class="muted">این صفحه باید روی تبلت یا گوشی ثابتِ محل کار باز باشد. کارکنان با گوشی شخصی و حساب اختصاصی، QR را اسکن می‌کنند.</p><button id="newQR" class="block">ساخت کد جدید</button><div id="qrBox" class="qr-holder"><span style="color:#17382b">برای شروع دکمه بالا را بزنید</span></div><div id="qrExpiry" class="info"></div><p class="muted mini">QR ثابت یا عکس قدیمی پذیرفته نمی‌شود. این روش نیاز به ثبت GPS یا تصویر چهره ندارد.</p></div></section>
 <section id="view-requests" class="hide"><div class="card"><h2>درخواست کالا</h2><div class="field"><label>نام کالا</label><input id="item" maxlength="160" placeholder="مثلاً فیله مرغ"></div><div class="input-row"><div class="field"><label>مقدار</label><input id="qty" type="number" step="0.01" min="0.01" placeholder="۱۲"></div><div class="field"><label>واحد</label><select id="unit"><option>کیلوگرم</option><option>عدد</option><option>بسته</option><option>لیتر</option><option>کارتن</option></select></div></div><div class="field"><label>بخش</label><select id="department"><option>آشپزخانه</option><option>بار</option><option>VIP</option><option>سالن</option><option>خدمات</option></select></div><div class="field"><label>توضیحات</label><textarea id="note" rows="2" maxlength="600" placeholder="مشخصات و ضرورت کالا"></textarea></div><button id="makeRequest" class="block">ارسال درخواست</button></div><div class="card"><h2>گردش درخواست‌ها</h2><p class="muted mini">درخواست ← کنترل انبار ← تأیید مدیر ← خرید ← تحویل ← ثبت مالی ← حسابرسی</p><div id="requestList" style="margin-top:12px"></div></div></section>
@@ -125,17 +154,59 @@ window.supabase={createClient:(base,key)=>{
  </div>
 </section>
 <section id="view-payroll" class="hide">
-  <div class="card"><h2>حقوق ماهانه رستوران</h2>
-   <p class="muted">نمایش محرمانه ویژه مالک و واحدهای مالی مجاز. حقوق‌های تعیین‌نشده در محاسبه جمع لحاظ نشده‌اند.</p>
+  <div class="card">
+   <div class="row"><h2 style="margin:0">حقوق و مساعده RV</h2><button id="refreshPayroll" class="outline action">به‌روزرسانی</button></div>
+   <div class="field"><label>ماه محاسبه</label><input id="payrollMonth" value="1405/08" dir="ltr" placeholder="1405/08"></div>
+   <p class="muted">همه پرسنل فعال نمایش داده می‌شوند؛ مبلغ خالی به‌معنی «تعیین نشده» است و در جمع لحاظ نمی‌شود.</p>
    <div class="grid" style="margin-top:12px">
-    <div class="stat"><span class="muted">حقوق ثبت‌شده</span><b id="payroll-total" style="font-size:20px">—</b></div>
-    <div class="stat"><span class="muted">مبالغ نامشخص</span><b id="payroll-missing">—</b></div>
-    <div class="stat"><span class="muted">تعداد نفرات</span><b id="payroll-count">—</b></div>
-    <div class="stat"><span class="muted">مساعده آبان ۱۴۰۵</span><b id="payroll-advance-total" style="font-size:20px">—</b></div>
+    <div class="stat"><span class="muted">حقوق پایه ثبت‌شده</span><b id="payroll-total" style="font-size:20px">—</b></div>
+    <div class="stat"><span class="muted">حقوق نامشخص</span><b id="payroll-missing">—</b></div>
+    <div class="stat"><span class="muted">پرسنل فعال</span><b id="payroll-count">—</b></div>
+    <div class="stat"><span class="muted">مساعده ماه</span><b id="payroll-advance-total" style="font-size:20px">—</b></div>
    </div>
-   <p class="muted mini" style="margin-top:12px">واحد: تومان؛ پاداش مالک، مزایا و اضافه‌کاری جدا از حقوق ثابت هستند.</p>
+   <button id="abanPreview" class="outline block">پیش‌نمایش فیش آبان ۱۴۰۵</button>
+   <div id="abanPreviewBox" class="hide"></div>
   </div>
   <div class="card"><h2>فهرست تفکیکی حقوق</h2><div id="payroll-list"></div></div>
+</section>
+<section id="view-bank" class="hide">
+  <div class="card">
+    <div class="row"><h2 style="margin:0">شماره شبا پرسنل RV</h2><button id="refreshBank" class="outline action">به‌روزرسانی</button></div>
+    <p class="muted">فقط حساب‌های مربوط به رویال ویلیج رستوران. ثبت شبا هیچ انتقال بانکی ایجاد نمی‌کند.</p>
+    <div class="field"><label>پرسنل</label><select id="bankStaff"></select></div>
+    <div class="field"><label>شماره شبا</label><input id="shebaInput" dir="ltr" placeholder="IR000000000000000000000000"></div>
+    <button id="saveSheba" class="block">ثبت / اصلاح شبا برای بررسی</button>
+  </div>
+  <div class="card"><h2>وضعیت شباها</h2><div id="bankList"></div></div>
+</section>
+<section id="view-contracts" class="hide">
+  <div class="card">
+    <div class="row"><h2 style="margin:0">قراردادهای پرسنل</h2><button id="refreshContracts" class="outline action">به‌روزرسانی</button></div>
+    <p class="muted">ثبت این صفحه برای پیگیری اداری است؛ متن قرارداد امضاشده و الزامات قانونی بر آن مقدم است.</p>
+    <div id="contractEditor">
+      <div class="field"><label>پرسنل</label><select id="contractStaff"></select></div>
+      <div class="input-row">
+        <div class="field"><label>شروع قرارداد</label><input id="contractStart" dir="ltr" placeholder="1405/09/01"></div>
+        <div class="field"><label>پایان قرارداد</label><input id="contractEnd" dir="ltr" placeholder="1405/11/30"></div>
+      </div>
+      <div class="input-row">
+        <div class="field"><label>وضعیت</label><select id="contractStatus"><option value="draft">پیش‌نویس</option><option value="active">فعال</option><option value="ended">پایان‌یافته</option><option value="cancelled">لغوشده</option></select></div>
+        <div class="field"><label>حقوق ثبت‌شده در قرارداد (تومان)</label><input id="contractSalary" type="number" min="0" step="1000000"></div>
+      </div>
+      <div class="field"><label>مبلغ تضمین / سفته (تومان)</label><input id="contractGuarantee" type="number" min="0" step="1000000"></div>
+      <div class="field"><label>توضیح تضمین</label><input id="contractGuaranteeNote" maxlength="800" placeholder="مشخصات، موضوع و شرایط استرداد"></div>
+      <div class="field"><label>یادداشت قرارداد</label><textarea id="contractNote" rows="3" maxlength="1200"></textarea></div>
+      <button id="saveContract" class="block">ثبت / به‌روزرسانی قرارداد</button>
+    </div>
+  </div>
+  <div class="card"><h2>سوابق قرارداد</h2><div id="contractList"></div></div>
+</section>
+<section id="view-access" class="hide">
+  <div class="card">
+    <div class="row"><h2 style="margin:0">دسترسی کاربران</h2><button id="refreshAccess" class="outline action">به‌روزرسانی</button></div>
+    <p class="muted">کارمند ابتدا با شماره موبایل و رمز حساب می‌سازد؛ سپس مالک حساب داخلی را تأیید و به پرونده پرسنلی متصل می‌کند.</p>
+    <div id="accessList" style="margin-top:12px"></div>
+  </div>
 </section>
 <section id="view-shifts" class="hide">
  <div class="card"><h2>برنامه‌ریزی شیفت کارکنان</h2>
@@ -162,7 +233,7 @@ window.supabase={createClient:(base,key)=>{
 const PROJECT="https://wtwbemwyntvocdilaukk.supabase.co";
 const KEY="sb_publishable_7bhOR_5xd4ByIpOWM0jrWg_VMHNVUkH";
 const el=id=>document.getElementById(id);
-let db=null,role=null,tab="dashboard",session=null,qrToken=null,qrTimer=null,requests=[],staff=[];
+let db=null,role=null,tab="dashboard",session=null,qrToken=null,qrTimer=null,requests=[],staff=[],controlData=null,controlRecords=[],bankPeople=[],accessUsers=[],contractRows=[];
 const roles={owner:"مالک",executive:"مدیر ارشد",manager:"مدیر اجرایی",chef:"سرآشپز",stock:"انبار",procurement:"خرید",cashier:"صندوق",accountant:"حسابدار",auditor:"حسابرس",staff:"کارمند",kiosk:"دستگاه QR"};
 const statLabel={requested:"درخواست",stock_checked:"کنترل انبار",approved:"تأیید خرید",purchased:"خریداری شد",received:"تحویل انبار",accounted:"ثبت مالی",audited:"حسابرسی شد",rejected:"رد شد"};
 const stageNext={requested:"stock_checked",stock_checked:"approved",approved:"purchased",purchased:"received",received:"accounted",accounted:"audited"};
@@ -182,6 +253,10 @@ async function begin(){
  el("newQR").onclick=issueQR;el("scanButton").onclick=scanQR;el("makeRequest").onclick=createRequest;el("refreshPresence").onclick=loadPresenceBoard;
  el("staffSearch").oninput=renderStaff;el("staffStatus").onchange=renderStaff;
  el("saveShift").onclick=createShift;el("refreshShifts").onclick=loadShifts;
+ el("refreshPayroll").onclick=loadPayroll;el("payrollMonth").onchange=loadPayroll;el("abanPreview").onclick=loadAbanPreview;
+ el("refreshBank").onclick=loadBanking;el("saveSheba").onclick=saveSheba;
+ el("refreshContracts").onclick=loadContracts;el("saveContract").onclick=saveContract;
+ el("refreshAccess").onclick=loadAccess;
  const r=await db.auth.getSession();session=r.data.session;
  if(session)await prepare();else show("auth");
  setInterval(async()=>{if(session&&role&&["owner","executive","manager","auditor"].includes(role)&&tab==="dashboard")await loadDashboard(false);},20000);
@@ -194,15 +269,15 @@ async function auth(signup){
  const ownerLogin=digits==="09141159263"||digits==="9141159263";
  let email=digits;
  if(ownerLogin)email="rv-owner@sahand-consortium.com";
- else if(/^09\d{9}$/.test(digits))email="rv-98"+digits.slice(1)+"@example.com";
- else if(/^9\d{9}$/.test(digits))email="rv-98"+digits+"@example.com";
+ else if(/^09\d{9}$/.test(digits))email="rv-98"+digits.slice(1)+"@sahand-consortium.com";
+ else if(/^9\d{9}$/.test(digits))email="rv-98"+digits+"@sahand-consortium.com";
  if(!email.includes("@")||password.length<8){authMessage("شماره موبایل ۱۱ رقمی یا ایمیل حساب و رمز حداقل ۸ حرف وارد کن.",true);return;}
  if(signup&&ownerLogin&&!ownerCode){authMessage("برای فعال‌سازی اولیه حساب مالک، کد فعال‌سازی را وارد کن.",true);return;}
  el("loginBtn").disabled=true;el("signupBtn").disabled=true;
  try{
   const r=signup?await db.auth.signUp({email,password}):await db.auth.signInWithPassword({email,password});
   if(r.error)throw r.error;
-  if(signup&&!r.data.session){authMessage("ثبت اولیه انجام شد اما نشست ورود ایجاد نشد. دوباره وارد حساب شو.");return;}
+  if(signup&&!r.data.session){authMessage(ownerLogin?"حساب مالک ثبت شد؛ دوباره «ورود به حساب» را بزن.":"حساب اولیه ساخته شد. مالک باید آن را در بخش «دسترسی» تأیید و به پرونده شما متصل کند.");return;}
   session=r.data.session;
   if(signup&&ownerLogin){
     await rpc("rvctl_claim_owner",{p_code:ownerCode});
@@ -216,9 +291,10 @@ async function prepare(){
   role=await rpc("rvctl_current_role");
   if(!role){show("pending");return;}
   const u=await db.auth.getUser();const internalEmail=u.data.user?.email||"";
-  const phoneAlias=internalEmail.match(/^rv-98(\d{10})@example\.com$/i);
-  el("userName").textContent=phoneAlias?"0"+phoneAlias[1]:(internalEmail||"کاربر");
-  el("roleText").textContent="سطح دسترسی: "+(roles[role]||role);
+  const phoneAlias=internalEmail.match(/^rv-98(\d{10})@(example\.com|sahand-consortium\.com)$/i);
+  let ident=null;try{ident=await rpc("rvctl_my_display_identity");}catch(e){}
+  el("userName").textContent=ident?.display_name||(phoneAlias?"0"+phoneAlias[1]:(internalEmail==="rv-owner@sahand-consortium.com"?"مالک رویال ویلیج":internalEmail||"کاربر"));
+  el("roleText").textContent=(ident?.title?ident.title+" · ":"")+"سطح دسترسی: "+(roles[role]||role);
   show("app");
   el("nav-dashboard").classList.toggle("hide",!["owner","executive","manager","auditor"].includes(role));
   el("nav-kiosk").classList.toggle("hide",!["owner","executive","manager","kiosk"].includes(role));
@@ -228,6 +304,9 @@ async function prepare(){
   el("nav-payroll").classList.toggle("hide",!["owner","auditor","accountant"].includes(role));
   el("nav-shifts").classList.toggle("hide",!["owner","executive","manager"].includes(role));
   el("nav-finance").classList.toggle("hide",!["owner","executive","accountant","auditor"].includes(role));
+  el("nav-bank").classList.toggle("hide",role!=="owner");
+  el("nav-contracts").classList.toggle("hide",!["owner","executive","manager","accountant","auditor"].includes(role));
+  el("nav-access").classList.toggle("hide",role!=="owner");
   const hash=location.hash;
   if(hash.startsWith("#scan=")){qrToken=hash.slice(6);nav("attendance");el("scanNotice").textContent="QR اسکن شد. برای ثبت رویداد از دکمه زیر استفاده کن.";el("scanButton").disabled=false;}
   else nav(["owner","executive","manager","auditor"].includes(role)?"dashboard":role==="kiosk"?"kiosk":"attendance");
@@ -238,12 +317,15 @@ function nav(next){
  if(next==="finance"&&!["owner","executive","accountant","auditor"].includes(role)){msg("دسترسی به اطلاعات مالی برای این حساب مجاز نیست.",true);return;}
  tab=next;el("flash").classList.add("hide");
  document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===next));
- ["dashboard","attendance","kiosk","requests","people","payroll","shifts","finance"].forEach(t=>el("view-"+t).classList.toggle("hide",t!==next));
+ ["dashboard","attendance","kiosk","requests","people","payroll","shifts","finance","bank","contracts","access"].forEach(t=>el("view-"+t).classList.toggle("hide",t!==next));
  if(next==="dashboard")loadDashboard(true);
  if(next==="attendance"&&["owner","executive","manager"].includes(role)){el("presenceReview").classList.remove("hide");loadPresenceBoard();}else if(next==="attendance"){el("presenceReview").classList.add("hide");}
  if(next==="requests")loadRequests();
  if(next==="people")loadStaff();
  if(next==="payroll")loadPayroll();
+ if(next==="bank")loadBanking();
+ if(next==="contracts")loadContracts();
+ if(next==="access")loadAccess();
  if(next==="shifts"){loadStaff().then(()=>loadShifts());}
  if(next==="kiosk"&&!qrToken)issueQR();
 }
@@ -255,6 +337,7 @@ async function loadDashboard(noisy){
  el("c-requests").textContent=d.pending_requests;
  el("c-accounts").textContent=d.accounts_enabled;
  el("events").innerHTML=(d.last_events||[]).map(e=>'<div class="row"><span>'+safe(e.full_name)+'</span><span class="tag">'+(e.event_type==="in"?"ورود":"خروج")+' · '+safe(pretty(e.occurred_at))+'</span></div>').join("")||"هنوز ورود و خروج ثبت نشده است.";
+ await loadControlBoard(false);
  }catch(e){if(noisy)msg("خطا در دریافت داشبورد: "+e.message,true);}
 }
 async function issueQR(){
@@ -312,7 +395,16 @@ function renderStaff(){
  if(el("shiftStaff"))el("shiftStaff").innerHTML=staff.filter(s=>s.active).map(s=>'<option value="'+safe(s.id)+'">'+safe(s.full_name)+' · '+safe(s.job_title)+'</option>').join("");
  const query=el("staffSearch").value.trim();
  const status=el("staffStatus").value;
- el("staffList").innerHTML=staff.filter(s=>(status==="all"||(status==="active"&&s.active)||(status==="inactive"&&!s.active))&&(s.full_name+s.department+s.job_title).includes(query)).map(s=>'<div class="row"><div><b>'+safe(s.full_name)+'</b><div class="muted mini">'+safe(s.job_title)+' · '+safe(s.department)+'</div></div><span class="tag">'+(s.active?"فعال":"غیرفعال")+'</span></div>').join("")||'<div class="muted">موردی پیدا نشد.</div>';
+ const detailMap=new Map(controlRecords.map(x=>[x.id,x]));
+ el("staffList").innerHTML=staff.filter(s=>(status==="all"||(status==="active"&&s.active)||(status==="inactive"&&!s.active))&&(s.full_name+s.department+s.job_title).includes(query)).map(s=>{
+   const d=detailMap.get(s.id);
+   let extra="";
+   if(d){
+     extra='<div class="muted mini">شروع: '+safe(d.start_date||"ثبت نشده")+' · حقوق: '+(d.salary_toman===null||d.salary_toman===undefined?"تعیین نشده":Number(d.salary_toman).toLocaleString("fa-IR")+" تومان")+'</div>'+
+       '<div class="muted mini">حساب کاربری: '+(d.account_linked?"متصل":"متصل نشده")+' · شبا: '+safe(d.sheba_status==="verified"?"تأییدشده":d.sheba_status==="pending"?"در انتظار":"ثبت نشده")+' · قرارداد: '+safe(d.contract_status==="active"?"فعال":d.contract_status==="draft"?"پیش‌نویس":d.contract_status==="ended"?"پایان‌یافته":"ثبت نشده")+'</div>';
+   }
+   return '<div class="row"><div><b>'+safe(s.full_name)+'</b><div class="muted mini">'+safe(s.job_title)+' · '+safe(s.department)+'</div>'+extra+'</div><span class="tag">'+(s.active?"فعال":"غیرفعال")+'</span></div>';
+ }).join("")||'<div class="muted">موردی پیدا نشد.</div>';
 }
 async function loadPresenceBoard(){
  if(!["owner","executive","manager"].includes(role))return;
@@ -361,34 +453,151 @@ async function createShift(){
  }catch(e){msg("ثبت شیفت ناموفق بود: "+e.message,true);}
  finally{el("saveShift").disabled=false;}
 }
+async function loadControlBoard(noisy=true){
+ if(!["owner","executive","accountant","auditor"].includes(role))return null;
+ try{
+   const month=(el("payrollMonth")?.value||"1405/08").trim();
+   const d=await rpc("rvctl_rv_control_board",{p_jalali_month:month});
+   controlData=d;controlRecords=d.records||[];
+   const s=d.summary||{};
+   if(el("setup-total"))el("setup-total").textContent=s.total??"—";
+   if(el("setup-inactive"))el("setup-inactive").textContent=s.inactive??"—";
+   if(el("setup-missing-salary"))el("setup-missing-salary").textContent=s.missing_salary??"—";
+   if(el("setup-start-dates"))el("setup-start-dates").textContent=s.start_dates_recorded??"—";
+   if(el("setup-sheba"))el("setup-sheba").textContent=s.sheba_recorded??"—";
+   if(el("setup-contracts"))el("setup-contracts").textContent=s.contracts_open??"—";
+   if(el("setup-linked"))el("setup-linked").textContent=s.linked_accounts??"—";
+   if(el("setup-advances"))el("setup-advances").textContent=Number(s.advance_total_toman||0).toLocaleString("fa-IR")+" تومان";
+   if(el("setupMissingNames")){
+     const missing=controlRecords.filter(x=>x.active&&x.salary_toman===null).map(x=>x.name);
+     el("setupMissingNames").textContent=missing.length?"حقوق هنوز تعیین نشده: "+missing.join("، "):"حقوق پایه همه پرسنل فعال ثبت شده است.";
+   }
+   return d;
+ }catch(e){if(noisy)msg("دریافت وضعیت تکمیل ناموفق بود: "+e.message,true);return null;}
+}
+
+function displayInternalLogin(v){
+ const x=String(v||"");
+ if(x==="rv-owner@sahand-consortium.com")return "حساب مالک";
+ const m=x.match(/^rv-98(\d{10})@(example\.com|sahand-consortium\.com)$/i);
+ return m?"0"+m[1]:x;
+}
+
 async function loadPayroll(){
  if(!["owner","auditor","accountant"].includes(role)){msg("این بخش محرمانه است.",true);return;}
  el("payroll-list").textContent="در حال بارگذاری...";
- try{
-  const [r,a]=await Promise.all([
-   db.from("rvctl_payroll").select("staff_id,monthly_toman,bonus_owner_note,rvctl_staff(full_name,department,job_title,active)").order("monthly_toman",{ascending:false}),
-   db.from("rvctl_staff_advances").select("staff_id,jalali_month,amount_toman,source_note").order("recorded_at",{ascending:false})
-  ]);
-  if(r.error)throw r.error;if(a.error)throw a.error;
-  const records=(r.data||[]).filter(x=>x.rvctl_staff?.active===true);
-  const advances=(a.data||[]).filter(x=>x.jalali_month==="1405/08");
-  const advanceByStaff={};
-  advances.forEach(x=>advanceByStaff[x.staff_id]=(advanceByStaff[x.staff_id]||0)+Number(x.amount_toman||0));
-  const total=records.reduce((sum,x)=>sum+(x.monthly_toman===null?0:Number(x.monthly_toman)),0);
-  const advanceTotal=advances.reduce((sum,x)=>sum+Number(x.amount_toman||0),0);
-  const missing=records.filter(x=>x.monthly_toman===null).length;
-  el("payroll-total").textContent=total.toLocaleString("fa-IR")+" تومان";
-  el("payroll-advance-total").textContent=advanceTotal.toLocaleString("fa-IR")+" تومان";
-  el("payroll-count").textContent=String(records.length).replace(/[0-9]/g,n=>"۰۱۲۳۴۵۶۷۸۹"[Number(n)]);
-  el("payroll-missing").textContent=String(missing).replace(/[0-9]/g,n=>"۰۱۲۳۴۵۶۷۸۹"[Number(n)]);
-  el("payroll-list").innerHTML=records.map(x=>{
-    const salary=x.monthly_toman===null?null:Number(x.monthly_toman);
-    const adv=advanceByStaff[x.staff_id]||0;
-    const net=salary===null?null:Math.max(0,salary-adv);
-    return '<div class="row"><div><b>'+safe(x.rvctl_staff.full_name)+'</b><div class="muted mini">'+safe(x.rvctl_staff.job_title)+'</div>'+(adv?'<div class="muted mini">مساعده آبان: '+adv.toLocaleString("fa-IR")+' تومان</div>':'')+'</div><div style="text-align:left"><div style="color:var(--gold);font-size:13px;font-weight:bold">'+(salary===null?'حقوق: تعیین نشده':'حقوق پایه: '+salary.toLocaleString("fa-IR")+' تومان')+'</div>'+(net!==null&&adv?'<div class="mini ok">مانده پایه پس از مساعده: '+net.toLocaleString("fa-IR")+' تومان</div>':'')+'</div></div>';
-  }).join("")||'<p class="muted">اطلاعاتی وجود ندارد.</p>';
- }catch(e){el("payroll-list").textContent="دریافت حقوق و مساعده‌ها ناموفق بود: "+e.message;}
+ const d=await loadControlBoard(true);if(!d)return;
+ const records=(d.records||[]).filter(x=>x.active);
+ const known=records.filter(x=>x.salary_toman!==null&&x.salary_toman!==undefined);
+ const total=known.reduce((sum,x)=>sum+Number(x.salary_toman||0),0);
+ const advanceTotal=records.reduce((sum,x)=>sum+Number(x.advance_toman||0),0);
+ el("payroll-total").textContent=total.toLocaleString("fa-IR")+" تومان";
+ el("payroll-advance-total").textContent=advanceTotal.toLocaleString("fa-IR")+" تومان";
+ el("payroll-count").textContent=records.length.toLocaleString("fa-IR");
+ el("payroll-missing").textContent=(records.length-known.length).toLocaleString("fa-IR");
+ el("payroll-list").innerHTML=records.map(x=>{
+   const salary=x.salary_toman===null||x.salary_toman===undefined?null:Number(x.salary_toman);
+   const adv=Number(x.advance_toman||0);
+   const net=salary===null?null:Math.max(0,salary-adv);
+   const edit=role==="owner"?'<button class="outline action" data-salary="'+safe(x.id)+'">ثبت/اصلاح حقوق</button>':'';
+   return '<div class="row" style="align-items:flex-start"><div><b>'+safe(x.name)+'</b><div class="muted mini">'+safe(x.job_title)+' · '+safe(x.department)+'</div><div class="muted mini">شروع همکاری: '+safe(x.start_date||"ثبت نشده")+'</div>'+(adv?'<div class="muted mini">مساعده '+safe(d.month)+': '+adv.toLocaleString("fa-IR")+' تومان</div>':'')+'</div><div style="text-align:left"><div style="color:var(--gold);font-size:13px;font-weight:bold">'+(salary===null?'حقوق: تعیین نشده':'حقوق پایه: '+salary.toLocaleString("fa-IR")+' تومان')+'</div>'+(net!==null&&adv?'<div class="mini ok">پایه پس از مساعده: '+net.toLocaleString("fa-IR")+' تومان</div>':'')+'<div style="margin-top:7px">'+edit+'</div></div></div>';
+ }).join("")||'<p class="muted">اطلاعاتی وجود ندارد.</p>';
+ document.querySelectorAll("[data-salary]").forEach(b=>b.onclick=async()=>{
+   const id=b.getAttribute("data-salary"),rec=records.find(x=>x.id===id);if(!rec)return;
+   const amount=prompt("حقوق پایه ماهانه "+rec.name+" به تومان:",rec.salary_toman??"");
+   if(amount===null)return;const n=Number(String(amount).replace(/[,،\s]/g,""));
+   if(!(n>0)){msg("مبلغ حقوق معتبر نیست.",true);return;}
+   const reason=prompt("دلیل ثبت/اصلاح حقوق (حداقل ۸ حرف):","تأیید مستقیم مالک");
+   if(!reason||reason.trim().length<8){msg("دلیل حداقل ۸ حرف لازم است.",true);return;}
+   try{await rpc("rvctl_owner_salary_set",{p_staff_id:id,p_monthly_toman:n,p_reason:reason.trim()});msg("حقوق "+rec.name+" ثبت شد.");await loadPayroll();}catch(e){msg("ثبت حقوق ناموفق: "+e.message,true);}
+ });
 }
+
+async function loadAbanPreview(){
+ if(role!=="owner"){msg("پیش‌نمایش آبان فقط برای مالک است.",true);return;}
+ try{
+   const d=await rpc("rvctl_rv_aban1405_payroll_preview");
+   const rows=d.records||[];
+   const box=el("abanPreviewBox");box.classList.remove("hide");
+   box.innerHTML='<div class="card"><h3>پیش‌نمایش آبان ۱۴۰۵ — بدون صدور پرداخت</h3>'+rows.map(x=>'<div class="row"><div><b>'+safe(x.staff)+'</b><div class="muted mini">شروع: '+safe(x.start_date||"—")+' · کارکرد آزمایشی: '+safe(x.worked_days)+'</div></div><div style="text-align:left">'+(x.net_after_advance_toman===null?'<span class="danger">حقوق نامشخص</span>':'<b>'+Number(x.net_after_advance_toman).toLocaleString("fa-IR")+' تومان</b>')+'</div></div>').join("")+'</div>';
+ }catch(e){msg("پیش‌نمایش آبان ناموفق: "+e.message,true);}
+}
+
+async function loadBanking(){
+ if(role!=="owner"){msg("مدیریت شبا فقط برای مالک است.",true);return;}
+ try{
+   const d=await rpc("rvctl_private_people");
+   bankPeople=(d.people||[]).filter(x=>x.unit==="RV");
+   el("bankStaff").innerHTML=bankPeople.map(x=>'<option value="'+safe(x.person_id)+'">'+safe(x.name)+' · '+safe(x.role_title)+'</option>').join("");
+   el("bankList").innerHTML=bankPeople.map(x=>{
+     const status=x.sheba_status==="verified"?"تأییدشده":x.sheba_status==="pending"?"در انتظار بررسی":x.sheba_status==="rejected"?"ردشده":"ثبت نشده";
+     const actions=x.sheba_status==="pending"?'<div style="margin-top:7px"><button class="action" data-sheba-review="'+safe(x.person_id)+'" data-action="verified">تأیید</button> <button class="outline action" data-sheba-review="'+safe(x.person_id)+'" data-action="rejected">رد</button></div>':'';
+     return '<div class="row" style="align-items:flex-start"><div><b>'+safe(x.name)+'</b><div class="muted mini">'+safe(x.role_title)+' · '+safe(x.department)+'</div><div class="bank-value mini">'+safe(x.sheba||"—")+'</div></div><div><span class="tag">'+safe(status)+'</span>'+actions+'</div></div>';
+   }).join("")||'<p class="muted">پرسنلی موجود نیست.</p>';
+   document.querySelectorAll("[data-sheba-review]").forEach(b=>b.onclick=async()=>{
+     const id=b.getAttribute("data-sheba-review"),action=b.getAttribute("data-action");
+     const note=prompt(action==="verified"?"یادداشت تأیید شبا:":"دلیل رد شبا:","بررسی توسط مالک")||"";
+     if(note.trim().length<4){msg("یادداشت حداقل ۴ حرف لازم است.",true);return;}
+     try{await rpc("rvctl_sheba_review",{p_unit:"RV",p_person_id:id,p_action:action,p_note:note.trim()});msg("وضعیت شبا ثبت شد.");await loadBanking();}catch(e){msg("بررسی شبا ناموفق: "+e.message,true);}
+   });
+ }catch(e){el("bankList").textContent="دریافت شباها ناموفق بود: "+e.message;}
+}
+
+async function saveSheba(){
+ if(role!=="owner")return;
+ const id=el("bankStaff").value,sheba=el("shebaInput").value.trim();
+ if(!id||!sheba){msg("پرسنل و شماره شبا را کامل کن.",true);return;}
+ try{await rpc("rvctl_sheba_submit",{p_unit:"RV",p_person_id:id,p_sheba:sheba});el("shebaInput").value="";msg("شبا ثبت شد و در انتظار تأیید مالک قرار گرفت.");await loadBanking();}catch(e){msg("ثبت شبا ناموفق: "+e.message,true);}
+}
+
+async function loadContracts(){
+ if(!["owner","executive","manager","accountant","auditor"].includes(role))return;
+ try{
+   if(!controlRecords.length&&["owner","executive","accountant","auditor"].includes(role))await loadControlBoard(false);
+   if(el("contractStaff"))el("contractStaff").innerHTML=(controlRecords.length?controlRecords.filter(x=>x.active):staff.filter(x=>x.active)).map(x=>'<option value="'+safe(x.id)+'">'+safe(x.name||x.full_name)+' · '+safe(x.job_title)+'</option>').join("");
+   const d=await rpc("rvctl_contract_list");contractRows=d.records||[];
+   el("contractEditor").classList.toggle("hide",role!=="owner");
+   el("contractList").innerHTML=contractRows.map(x=>'<div class="row" style="align-items:flex-start"><div><b>'+safe(x.name)+'</b><div class="muted mini">'+safe(x.job_title)+' · '+safe(x.department)+'</div><div class="muted mini">'+safe(x.start_date)+' تا '+safe(x.end_date)+'</div><div class="muted mini">حقوق قرارداد: '+(x.monthly_toman===null?"—":Number(x.monthly_toman).toLocaleString("fa-IR")+" تومان")+' · تضمین: '+(x.guarantee_toman===null?"—":Number(x.guarantee_toman).toLocaleString("fa-IR")+" تومان")+'</div></div><span class="tag">'+safe(x.status==="active"?"فعال":x.status==="draft"?"پیش‌نویس":x.status==="ended"?"پایان‌یافته":"لغوشده")+'</span></div>').join("")||'<p class="muted">هنوز قراردادی در سامانه ثبت نشده است.</p>';
+ }catch(e){el("contractList").textContent="دریافت قراردادها ناموفق بود: "+e.message;}
+}
+
+async function saveContract(){
+ if(role!=="owner")return;
+ const staffId=el("contractStaff").value,start=el("contractStart").value.trim(),end=el("contractEnd").value.trim(),status=el("contractStatus").value;
+ const salary=el("contractSalary").value.trim()?Number(el("contractSalary").value):null;
+ const guarantee=el("contractGuarantee").value.trim()?Number(el("contractGuarantee").value):null;
+ try{
+   await rpc("rvctl_contract_save",{p_staff_id:staffId,p_start:start,p_end:end,p_status:status,p_monthly_toman:salary,p_guarantee_toman:guarantee,p_guarantee_note:el("contractGuaranteeNote").value.trim(),p_note:el("contractNote").value.trim()});
+   msg("قرارداد در سامانه ثبت شد.");await loadContracts();await loadControlBoard(false);
+ }catch(e){msg("ثبت قرارداد ناموفق: "+e.message,true);}
+}
+
+async function loadAccess(){
+ if(role!=="owner")return;
+ try{
+   if(!staff.length)await loadStaff();
+   const d=await rpc("rvctl_access_board");
+   accessUsers=(d.users||[]).filter(u=>!(u.role==="owner"&&u.login!=="rv-owner@sahand-consortium.com"));
+   const rolesOpt=["staff","manager","chef","stock","procurement","cashier","accountant","auditor","executive"];
+   el("accessList").innerHTML=accessUsers.map((u,i)=>{
+     const own=u.login==="rv-owner@sahand-consortium.com";
+     let controls="";
+     if(!own){
+       if(!u.confirmed)controls+='<button class="action" data-confirm-user="'+safe(u.user_id)+'">تأیید حساب</button>';
+       controls+='<div class="input-row" style="margin-top:8px"><select id="accStaff'+i+'">'+staff.filter(s=>s.active).map(s=>'<option value="'+safe(s.id)+'" '+(u.staff_id===s.id?'selected':'')+'>'+safe(s.full_name)+'</option>').join("")+'</select><select id="accRole'+i+'">'+rolesOpt.map(r=>'<option value="'+r+'" '+(u.role===r?'selected':'')+'>'+safe(roles[r]||r)+'</option>').join("")+'</select></div><button class="outline action" data-assign-user="'+safe(u.user_id)+'" data-index="'+i+'">اتصال / تغییر نقش</button>';
+       if(u.role)controls+=' <button class="outline action" data-toggle-user="'+safe(u.user_id)+'" data-enabled="'+String(!u.enabled)+'">'+(u.enabled?'غیرفعال‌کردن':'فعال‌کردن')+'</button>';
+     }
+     return '<div class="card"><div class="row"><div><b>'+safe(u.staff_name||displayInternalLogin(u.login))+'</b><div class="muted mini">'+safe(displayInternalLogin(u.login))+' · '+(u.confirmed?'تأییدشده':'تأییدنشده')+' · '+safe(u.role?roles[u.role]||u.role:"بدون نقش")+'</div></div><span class="tag">'+(u.enabled?'فعال':'غیرفعال')+'</span></div>'+controls+'</div>';
+   }).join("")||'<p class="muted">حسابی برای مدیریت وجود ندارد.</p>';
+   document.querySelectorAll("[data-confirm-user]").forEach(b=>b.onclick=async()=>{try{await rpc("rvctl_owner_confirm_user",{p_user_id:b.getAttribute("data-confirm-user")});msg("حساب داخلی تأیید شد.");await loadAccess();}catch(e){msg("تأیید حساب ناموفق: "+e.message,true);}});
+   document.querySelectorAll("[data-assign-user]").forEach(b=>b.onclick=async()=>{
+     const i=b.getAttribute("data-index"),uid=b.getAttribute("data-assign-user"),sid=el("accStaff"+i).value,r=el("accRole"+i).value;
+     try{await rpc("rvctl_assign_existing_user",{p_user_id:uid,p_staff_id:sid,p_role:r});msg("حساب به پرونده پرسنلی متصل شد.");await loadAccess();await loadControlBoard(false);}catch(e){msg("اتصال حساب ناموفق: "+e.message,true);}
+   });
+   document.querySelectorAll("[data-toggle-user]").forEach(b=>b.onclick=async()=>{try{await rpc("rvctl_set_user_enabled",{p_user_id:b.getAttribute("data-toggle-user"),p_enabled:b.getAttribute("data-enabled")==="true"});msg("وضعیت دسترسی تغییر کرد.");await loadAccess();}catch(e){msg("تغییر دسترسی ناموفق: "+e.message,true);}});
+ }catch(e){el("accessList").textContent="دریافت حساب‌ها ناموفق بود: "+e.message;}
+}
+
 
 window.addEventListener("load",begin);
 })();
