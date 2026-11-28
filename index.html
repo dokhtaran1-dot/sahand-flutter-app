@@ -335,7 +335,7 @@ function nav(next){
  document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===next));
  ["dashboard","attendance","kiosk","requests","people","payroll","shifts","finance","bank","contracts","access"].forEach(t=>el("view-"+t).classList.toggle("hide",t!==next));
  if(next==="dashboard")loadDashboard(true);
- if(next==="attendance"&&["owner","executive","manager"].includes(role)){el("presenceReview").classList.remove("hide");loadPresenceBoard();loadDailyTimeAccounting();}else if(next==="attendance"){el("presenceReview").classList.add("hide");}
+ if(next==="attendance"&&["owner","executive","manager"].includes(role)){el("presenceReview").classList.remove("hide");loadPresenceBoard();loadDailyTimeAccounting();}else if(next==="attendance"){el("presenceReview").classList.add("hide");if(["accountant","auditor"].includes(role))loadDailyTimeAccounting();}
  if(next==="requests")loadRequests();
  if(next==="people")loadStaff();
  if(next==="payroll")loadPayroll();
