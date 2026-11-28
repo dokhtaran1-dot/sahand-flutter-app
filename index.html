@@ -335,7 +335,7 @@ function nav(next){
  document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===next));
  ["dashboard","attendance","kiosk","requests","people","payroll","shifts","finance","bank","contracts","access"].forEach(t=>el("view-"+t).classList.toggle("hide",t!==next));
  if(next==="dashboard")loadDashboard(true);
- if(next==="attendance"&&["owner","executive","manager"].includes(role)){el("presenceReview").classList.remove("hide");loadPresenceBoard();}else if(next==="attendance"){el("presenceReview").classList.add("hide");}
+ if(next==="attendance"&&["owner","executive","manager"].includes(role)){el("presenceReview").classList.remove("hide");loadPresenceBoard();loadDailyTimeAccounting();}else if(next==="attendance"){el("presenceReview").classList.add("hide");}
  if(next==="requests")loadRequests();
  if(next==="people")loadStaff();
  if(next==="payroll")loadPayroll();
@@ -442,6 +442,19 @@ function openStaffProfile(id){
  fields.forEach(([label,value])=>{const row=document.createElement("div");row.className="row";const k=document.createElement("span");k.textContent=label;const v=document.createElement("b");v.textContent=value===null||value===undefined||value===""?"تکمیل نشده":String(value);v.style.cssText="direction:auto;overflow-wrap:anywhere;text-align:left";row.append(k,v);panel.appendChild(row);});
  const note=document.createElement("p");note.className="muted";note.textContent="اطلاعات موجود در سامانه نمایش داده می‌شود؛ مساعده و خالص حقوق مربوط به ماه انتخاب‌شده است؛ ثبت پرداخت واقعی یا تأیید حضور از این صفحه انجام نمی‌شود.";panel.appendChild(note);
  const close=document.createElement("button");close.className="block";close.textContent="بستن پرونده";close.onclick=()=>overlay.remove();panel.appendChild(close);overlay.appendChild(panel);overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.remove()});document.body.appendChild(overlay);
+}
+async function loadDailyTimeAccounting(){
+ if(!["owner","executive","manager","accountant","auditor"].includes(role))return;
+ let box=el("dailyTimeAccounting");
+ if(!box){box=document.createElement("div");box.id="dailyTimeAccounting";box.className="card";el("view-attendance").appendChild(box);}
+ box.textContent="در حال محاسبه تأخیر و کارکرد روز...";
+ try{
+ const d=await rpc("rvctl_daily_time_accounting");
+ const title=document.createElement("h2");title.textContent="محاسبه خودکار کارکرد و تأخیر — "+d.day;
+ box.replaceChildren(title);
+ const note=document.createElement("p");note.className="muted";note.textContent="مقادیر به دقیقه هستند. کسری حقوق یا اضافه‌کار مالی بدون تأیید مدیریت اعمال نمی‌شود.";box.appendChild(note);
+ (d.records||[]).forEach(x=>{const row=document.createElement("div");row.className="row";const name=document.createElement("b");name.textContent=x.name;const val=document.createElement("span");val.className="mini";val.textContent="تأخیر: "+(x.late_minutes??"نامشخص")+" | خروج زودتر: "+(x.early_exit_minutes??"نامشخص")+" | حضور: "+(x.presence_minutes??"نامشخص")+" | اضافه‌کار احتمالی: "+(x.extra_minutes_unapproved??"نامشخص");row.append(name,val);box.appendChild(row);});
+ }catch(e){box.textContent="خطا در محاسبه کارکرد: "+e.message;}
 }
 async function loadPresenceBoard(){
  if(!["owner","executive","manager"].includes(role))return;
