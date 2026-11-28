@@ -211,7 +211,7 @@ class RoyalVillageEntryPage extends StatelessWidget {
   static const _photos = ['Salon_lumiere.png', 'Salon_noir.png', 'salon_jardin.png', 'Salon_prive.png', 'rv_lounge_imperial_classique.png', 'salon_dore.png', 'salon_ame_du_poete.png', 'Salon_royal.png'];
 
   static const _realPhotos = ['rv_real_lumiere.jpg', 'rv_real_noir.jpg', 'rv_real_jardin.jpg', 'rv_real_prive.png', 'rv_real_imperial.jpg', 'rv_real_dore.jpg', 'rv_real_poete.jpg', 'rv_real_royal.jpg'];
-  static const _grand = 'assets/image/rv_real_grand.png';
+  static const _grand = 'assets/image/RV_grand_salon_header.png';
 
   static String _fallback(String name) {
     final i = _salons.indexOf(name);
@@ -262,9 +262,8 @@ class RoyalVillageEntryPage extends StatelessWidget {
       const Padding(padding: EdgeInsets.only(top: 18), child: Text('THE ROYAL SALON COLLECTION', textAlign: TextAlign.center, style: TextStyle(color: _gold, letterSpacing: 2, fontSize: 15))),
       Padding(padding: const EdgeInsets.all(20), child: LayoutBuilder(builder: (context, constraints) => Wrap(spacing: 12, runSpacing: 16, children: [
         for (var i = 0; i < _salons.length; i++) SizedBox(width: (constraints.maxWidth - 12) / 2, child: _SalonCard(name: _salons[i], image: 'assets/image/${_realPhotos[i]}', onTap: () => _showFullPhoto(context, _salons[i], 'assets/image/${_realPhotos[i]}'))),
-        SizedBox(width: constraints.maxWidth, child: _SalonCard(name: 'Grand Salon', image: 'assets/image/rv_real_grand.png', onTap: () => _showFullPhoto(context, 'Grand Salon', 'assets/image/rv_real_grand.png'))),
+        SizedBox(width: constraints.maxWidth, child: _SalonCard(name: 'Grand Salon', image: 'assets/image/RV_grand_salon_header.png', onTap: () => _showFullPhoto(context, 'Grand Salon', 'assets/image/RV_grand_salon_header.png'))),
       ]))),
-      Padding(padding: const EdgeInsets.all(20), child: OutlinedButton.icon(onPressed: () => _openGallery(context), icon: const Icon(Icons.photo_library_outlined), label: const Text('مشاهدهٔ گالری'))),
       const Padding(padding: EdgeInsets.only(bottom: 32), child: Text('POWERED BY SAHAND CONSORTIUM', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, letterSpacing: 2, color: _gold))),
     ]),
   );
