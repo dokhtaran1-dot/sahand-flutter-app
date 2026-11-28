@@ -450,10 +450,13 @@ async function loadDailyTimeAccounting(){
  box.textContent="در حال محاسبه تأخیر و کارکرد روز...";
  try{
  const d=await rpc("rvctl_daily_time_accounting");
+ let financialPreview=null;
+ if(["owner","executive","accountant","auditor"].includes(role)){try{financialPreview=await rpc("rvctl_lateness_deduction_preview");}catch(_e){}}
+ const proposedMap=new Map((financialPreview?.records||[]).map(x=>[x.staff_id,x]));
  const title=document.createElement("h2");title.textContent="محاسبه خودکار کارکرد و تأخیر — "+d.day;
  box.replaceChildren(title);
- const note=document.createElement("p");note.className="muted";note.textContent="مقادیر به دقیقه هستند. کسری حقوق یا اضافه‌کار مالی بدون تأیید مدیریت اعمال نمی‌شود.";box.appendChild(note);
- (d.records||[]).forEach(x=>{const row=document.createElement("div");row.className="row";const name=document.createElement("b");name.textContent=x.name;const val=document.createElement("span");val.className="mini";val.textContent="تأخیر: "+(x.late_minutes??"نامشخص")+" | خروج زودتر: "+(x.early_exit_minutes??"نامشخص")+" | حضور: "+(x.presence_minutes??"نامشخص")+" | اضافه‌کار احتمالی: "+(x.extra_minutes_unapproved??"نامشخص");row.append(name,val);box.appendChild(row);});
+ const note=document.createElement("p");note.className="muted";note.textContent="مقادیر به دقیقه هستند. کسر پیشنهادی برآورد اولیه است؛ محاسبه نهایی باید مطابق قرارداد، برنامه واقعی و قانون تأیید شود. هیچ کسری بدون تأیید مدیریت اعمال نمی‌شود.";box.appendChild(note);
+ (d.records||[]).forEach(x=>{const row=document.createElement("div");row.className="row";const name=document.createElement("b");name.textContent=x.name;const val=document.createElement("span");val.className="mini";val.textContent="تأخیر: "+(x.late_minutes??"نامشخص")+" | خروج زودتر: "+(x.early_exit_minutes??"نامشخص")+" | حضور: "+(x.presence_minutes??"نامشخص")+" | اضافه‌کار احتمالی: "+(x.extra_minutes_unapproved??"نامشخص")+(proposedMap.has(x.staff_id)?" | کسر پیشنهادی (تأییدنشده): "+(proposedMap.get(x.staff_id).proposed_deduction_toman==null?"نیازمند بررسی":Number(proposedMap.get(x.staff_id).proposed_deduction_toman).toLocaleString("fa-IR")+" تومان"):"");row.append(name,val);box.appendChild(row);});
  }catch(e){box.textContent="خطا در محاسبه کارکرد: "+e.message;}
 }
 async function loadPresenceBoard(){
