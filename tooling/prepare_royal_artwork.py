@@ -33,8 +33,8 @@ for path in [home, *rooms]:
         # byte-for-byte originals for fullscreen inspection and zoom.
         if path == home:
             mobile = resized(3840)
-            mobile.save(path, format='PNG', compress_level=4)
-            report[-1]['runtime_pixels'] = mobile.size
+            mobile.save(out / 'HOME_4K_UPSCALED.png', format='PNG', compress_level=4)
+            report[-1]['runtime_pixels'] = original
         else:
             assert path.read_bytes() == raw
 (out / 'quality_manifest.json').write_text(json.dumps(report, indent=2))

@@ -21,7 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   static const art = 'assets/image/ROYAL_ONE_HOME_APPROVED_FINAL.png';
-  static const width = 972.0, height = 1428.0;
+  static const width = 941.0, height = 1666.0;
   String language = 'FA';
   final pages = const <Widget>[
     RoyalMallPage(), RoyalClubGamePage(), RoyalVillagePage(),
@@ -72,22 +72,23 @@ class _HomePageState extends State<HomePage> {
           fit: BoxFit.fill, filterQuality: FilterQuality.high, excludeFromSemantics: true)),
         // Move SC globe artwork across its OWN VERTICAL AXIS (22 seconds).
         // All other spheres remain the owner's approved high-quality artwork.
-        const _VerticalSpinningSc(left: 375, top: 599, size: 222),
-        _OrbPortal(label: 'RM', left: 79, top: 330, size: 249, phase: 0.0, onTap: () => open(0)),
-        _OrbPortal(label: 'RC', left: 347, top: 274, size: 283, phase: 0.14, onTap: () => open(1)),
-        _OrbPortal(label: 'RV', left: 659, top: 333, size: 250, phase: 0.28, onTap: () => open(2)),
-        _OrbPortal(label: 'SC', left: 372, top: 597, size: 226, phase: 0.42, onTap: () => open(6)),
-        _OrbPortal(label: 'RE', left: 152, top: 912, size: 188, phase: 0.56, onTap: () => open(3)),
-        _OrbPortal(label: 'RS', left: 398, top: 912, size: 188, phase: 0.70, onTap: () => open(4)),
-        _OrbPortal(label: 'RH', left: 648, top: 912, size: 188, phase: 0.84, onTap: () => open(5)),
+        // Keep the approved SC artwork untouched; animate a subtle rim glint only.
+        const _ApprovedScGlint(left: 322, top: 725, size: 290),
+        _OrbPortal(label: 'RM', left: 28, top: 420, size: 278, phase: 0.0, onTap: () => open(0)),
+        _OrbPortal(label: 'RC', left: 300, top: 370, size: 350, phase: 0.14, onTap: () => open(1)),
+        _OrbPortal(label: 'RV', left: 635, top: 420, size: 278, phase: 0.28, onTap: () => open(2)),
+        _OrbPortal(label: 'SC', left: 322, top: 725, size: 290, phase: 0.42, onTap: () => open(6)),
+        _OrbPortal(label: 'RE', left: 48, top: 1030, size: 270, phase: 0.56, onTap: () => open(3)),
+        _OrbPortal(label: 'RS', left: 332, top: 1030, size: 270, phase: 0.70, onTap: () => open(4)),
+        _OrbPortal(label: 'RH', left: 618, top: 1030, size: 270, phase: 0.84, onTap: () => open(5)),
         // Transparent controls only: preserve all existing typography in photo.
-        zone(693, 0, 172, 75, 'FA / EN / AR', languages),
-        zone(867, 0, 86, 81, 'Menu', menu),
-        zone(68, 1228, 174, 155, 'Home', () {}),
-        zone(246, 1228, 166, 155, 'Explore', () => open(6)),
-        zone(413, 1228, 165, 155, 'Royal Club', () => open(1)),
-        zone(581, 1228, 162, 155, 'Reservations', () => open(2)),
-        zone(745, 1228, 165, 155, 'Profile', () => Navigator.of(context).push(
+        zone(670, 12, 188, 60, 'FA / EN / AR', languages),
+        zone(865, 8, 65, 70, 'Menu', menu),
+        zone(47, 1400, 164, 174, 'Home', () {}),
+        zone(213, 1400, 166, 174, 'Explore', () => open(6)),
+        zone(380, 1400, 176, 174, 'Royal Club', () => open(1)),
+        zone(557, 1400, 175, 174, 'Reservations', () => open(2)),
+        zone(733, 1400, 164, 174, 'Profile', () => Navigator.of(context).push(
           MaterialPageRoute<void>(builder: (_) => const RoyalClubProfilePage()))),
       ])),
     )))),
@@ -349,4 +350,37 @@ class _VerticalScSpherePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _VerticalScSpherePainter old) =>
       old.turn != turn || old.texture != texture || old.front != front;
+}
+
+class _ApprovedScGlint extends StatefulWidget {
+  final double left, top, size;
+  const _ApprovedScGlint({required this.left, required this.top, required this.size});
+  @override
+  State<_ApprovedScGlint> createState() => _ApprovedScGlintState();
+}
+class _ApprovedScGlintState extends State<_ApprovedScGlint> with SingleTickerProviderStateMixin {
+  late final AnimationController turn = AnimationController(vsync: this, duration: const Duration(seconds: 22));
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.of(context).disableAnimations) { turn.stop(); }
+    else if (!turn.isAnimating) { turn.repeat(); }
+  }
+  @override
+  void dispose() { turn.dispose(); super.dispose(); }
+  @override
+  Widget build(BuildContext context) => Positioned(left: widget.left, top: widget.top, width: widget.size, height: widget.size,
+    child: IgnorePointer(child: AnimatedBuilder(animation: turn, builder: (_, __) => CustomPaint(
+      painter: _ApprovedScGlintPainter(turn.value * 2 * math.pi), child: const SizedBox.expand()))));
+}
+class _ApprovedScGlintPainter extends CustomPainter {
+  final double angle;
+  const _ApprovedScGlintPainter(this.angle);
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Rect.fromCircle(center: size.center(Offset.zero), radius: size.shortestSide * .475);
+    canvas.drawArc(rect, angle, .20, false, Paint()..color = const Color(0x99FFF0AC)..style = PaintingStyle.stroke..strokeWidth = 2..strokeCap = StrokeCap.round);
+  }
+  @override
+  bool shouldRepaint(covariant _ApprovedScGlintPainter old) => old.angle != angle;
 }
