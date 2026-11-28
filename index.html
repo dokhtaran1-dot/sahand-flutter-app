@@ -441,6 +441,11 @@ function openStaffProfile(id){
  const heading=document.createElement("h2");heading.textContent="پرونده پرسنلی — "+s.full_name;panel.appendChild(heading);
  fields.forEach(([label,value])=>{const row=document.createElement("div");row.className="row";const k=document.createElement("span");k.textContent=label;const v=document.createElement("b");v.textContent=value===null||value===undefined||value===""?"تکمیل نشده":String(value);v.style.cssText="direction:auto;overflow-wrap:anywhere;text-align:left";row.append(k,v);panel.appendChild(row);});
  const note=document.createElement("p");note.className="muted";note.textContent="اطلاعات موجود در سامانه نمایش داده می‌شود؛ مساعده و خالص حقوق مربوط به ماه انتخاب‌شده است؛ ثبت پرداخت واقعی یا تأیید حضور از این صفحه انجام نمی‌شود.";panel.appendChild(note);
+ if(["owner","executive"].includes(role)){
+ const toggle=document.createElement("button");toggle.className="block";toggle.style.marginBottom="10px";toggle.textContent=s.active?"غیرفعال کردن پرسنل":"فعال کردن پرسنل";
+ toggle.onclick=async()=>{const target=!s.active;if(!confirm("آیا از "+(target?"فعال‌سازی":"غیرفعال‌سازی")+" "+s.full_name+" اطمینان دارید؟ سوابق حذف نخواهد شد."))return;toggle.disabled=true;try{await rpc("rvctl_set_staff_active",{p_staff_id:s.id,p_active:target});overlay.remove();await loadStaff();msg("وضعیت "+s.full_name+" با موفقیت تغییر کرد.");}catch(e){msg("تغییر وضعیت انجام نشد: "+e.message,true);toggle.disabled=false;}};
+ panel.appendChild(toggle);
+ }
  const close=document.createElement("button");close.className="block";close.textContent="بستن پرونده";close.onclick=()=>overlay.remove();panel.appendChild(close);overlay.appendChild(panel);overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.remove()});document.body.appendChild(overlay);
 }
 async function loadDailyTimeAccounting(){
