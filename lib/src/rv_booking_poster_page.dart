@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'reservation_page.dart';
+import 'imperial_black_diamond_page.dart';
 
 /// Approved full-screen artwork; invisible hit zones preserve the poster exactly.
 class RvBookingPosterPage extends StatefulWidget {
@@ -151,7 +152,7 @@ class _RvBookingPosterPageState extends State<RvBookingPosterPage> {
     )));
   }
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => widget.salonName == imperialSalonName ? const ImperialBlackDiamondPage() : Scaffold(
     backgroundColor: Colors.black,
     body: LayoutBuilder(builder: (context, c) {
       final sx = c.maxWidth / 864;

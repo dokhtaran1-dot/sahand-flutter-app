@@ -42,8 +42,9 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
     final s = normalizedPhone;
     if (!s.startsWith('+')) return false;
     final digits = s.substring(1);
-    return RegExp(r'^[0-9]{7,15}$').hasMatch(digits);
+    return RegExp(r'^989[0-9]{9}$').hasMatch(digits);
   }
+
   @override
   void initState() {
     super.initState();
@@ -67,7 +68,7 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
         !validPhone ||
         !consent) {
       setState(() {
-        error = 'نام، شماره موبایل معتبر و پذیرش قوانین را بررسی کنید.';
+        error = 'نام، شماره موبایل ایران (۰۹...) و پذیرش قوانین را بررسی کنید.';
       });
       return false;
     }
@@ -144,14 +145,23 @@ class _RoyalClubMembershipPageState extends State<RoyalClubMembershipPage> {
         token: otp.text.trim(),
         type: OtpType.sms,
       );
-      if (result.user == null) throw StateError('No verified user');
+      if (result.user == null || result.session == null) {
+        throw StateError('SMS verification did not create a session');
+      }
 
-      await db.from('royal_club_members').upsert({
+      try {
+        await db.from('royal_club_members').upsert({
         'user_id': result.user!.id,
         'full_name': name.text.trim(),
         'phone': normalizedPhone,
         'accepted_terms_at': DateTime.now().toUtc().toIso8601String(),
-      }, onConflict: 'user_id');
+        }, onConflict: 'user_id');
+      } catch (profileError) {
+        if (mounted) {
+          setState(() => error = 'شماره تأیید شد و ورود موفق بود، اما ثبت عضویت تکمیل نشد: $profileError');
+        }
+        return;
+      }
 
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(

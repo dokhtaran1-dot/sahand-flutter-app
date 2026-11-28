@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'reservation_store.dart';
+import 'imperial_black_diamond_page.dart';
 
 class ReservationPage extends StatefulWidget {
   final String salonName;
@@ -169,6 +170,7 @@ class _ReservationPageState extends State<ReservationPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.salonName == imperialSalonName) return const ImperialBlackDiamondPage();
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(

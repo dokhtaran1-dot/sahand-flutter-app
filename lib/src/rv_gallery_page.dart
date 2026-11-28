@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'salon_detail_page.dart';
+import 'imperial_black_diamond_page.dart';
 
 class RvGalleryPage extends StatelessWidget {
   const RvGalleryPage({super.key});
@@ -9,20 +10,20 @@ class RvGalleryPage extends StatelessWidget {
   static const Color _gold = Color(0xFFD6B15E);
 
   static const List<_SalonItem> _salons = [
-    _SalonItem('RV Lounge Impérial Classique', 'assets/image/rv_lounge_imperial_classique.png'),
-    _SalonItem('Salon Jardin', 'assets/image/salon_jardin.png'),
-    _SalonItem('Salon Lumière', 'assets/image/salon_lumiere.png'),
-    _SalonItem('Salon Doré', 'assets/image/salon_dore.png'),
-    _SalonItem('Grand Salon', 'assets/image/Rv_page2.png'),
-    _SalonItem('Salon Royal', 'assets/image/salon_royal.png'),
-    _SalonItem('Salon Privé', 'assets/image/salon_prive.png'),
-    _SalonItem('Salon Noir', 'assets/image/salon_noir.png'),
-    _SalonItem('Salon Âme du Poète', 'assets/image/salon_ame_du_poete.png'),
+    _SalonItem('RV Lounge Impérial Classique', 'assets/image/rv_real_imperial.jpg', 'assets/image/rv_lounge_imperial_classique.png'),
+    _SalonItem('Salon Jardin', 'assets/image/rv_real_jardin.jpg', 'assets/image/salon_jardin.png'),
+    _SalonItem('Salon Lumière', 'assets/image/rv_real_lumiere.jpg', 'assets/image/Salon_lumiere.png'),
+    _SalonItem('Salon Doré', 'assets/image/rv_real_dore.jpg', 'assets/image/salon_dore.png'),
+    _SalonItem('Grand Salon', 'assets/image/rv_real_grand.png', 'assets/image/Rv_page2.png'),
+    _SalonItem('Salon Royal', 'assets/image/rv_real_royal.jpg', 'assets/image/Salon_royal.png'),
+    _SalonItem('Salon Privé', 'assets/image/rv_real_prive.png', 'assets/image/Salon_prive.png'),
+    _SalonItem('Salon Noir', 'assets/image/rv_real_noir.jpg', 'assets/image/Salon_noir.png'),
+    _SalonItem('Salon Âme du Poète', 'assets/image/rv_real_poete.jpg', 'assets/image/salon_ame_du_poete.png'),
   ];
 
   void _open(BuildContext context, String name) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => SalonDetailPage(salonName: name)),
+      MaterialPageRoute(builder: (_) => name == imperialSalonName ? const ImperialBlackDiamondPage() : SalonDetailPage(salonName: name)),
     );
   }
 
@@ -83,12 +84,13 @@ class RvGalleryPage extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if (item.name == imperialSalonName) const Positioned(top: 10, right: 10, child: CircleAvatar(backgroundColor: Color(0xDD031C15), child: Icon(Icons.lock_outline, color: _gold))),
                   Positioned(
                     left: 10,
                     right: 10,
                     bottom: 10,
                     child: Text(
-                      item.name,
+                      item.name == imperialSalonName ? 'BLACK DIAMOND • RV IMPÉRIAL' : item.name,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Colors.white,
@@ -111,5 +113,6 @@ class RvGalleryPage extends StatelessWidget {
 class _SalonItem {
   final String name;
   final String image;
-  const _SalonItem(this.name, this.image);
+  final String fallback;
+  const _SalonItem(this.name, this.image, this.fallback);
 }

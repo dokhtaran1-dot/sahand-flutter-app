@@ -1,0 +1,57 @@
+name: RC offline Android APK (free)
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'lib/rc/**'
+      - 'lib/main_rc_staging.dart'
+      - 'lib/main_rc_offline.dart'
+      - 'supabase/**'
+      - 'test/rc_rules_test.dart'
+      - '.github/workflows/rc-staging-apk.yml'
+permissions:
+  contents: read
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.7'
+          channel: stable
+          cache: true
+      - name: Dependencies
+        run: |
+          flutter config --jdk-dir="$JAVA_HOME"
+          flutter pub get
+      - name: Protect approved original design
+        run: |
+          git fetch origin main --depth=1
+          if git diff --name-only origin/main...HEAD -- lib/main.dart assets/ | grep -q .; then
+            echo "Original Royal One design or assets changed; refusing RC preview build."
+            exit 1
+          fi
+          echo "Approved main app and assets remain untouched."
+      - name: RC rules tests
+        run: flutter test test/rc_rules_test.dart
+      - name: Analyze connected RC staging entry point
+        run: flutter analyze --no-fatal-infos lib/main_rc_staging.dart lib/rc/rc_deal_staging_page.dart
+      - name: Repair missing Android launcher foreground in staging checkout
+        run: |
+          mkdir -p android/app/src/main/res/mipmap-anydpi-v26
+          sed -i 's|@mipmap/ic_launcher_foreground|@mipmap/ic_launcher|g' android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+      - name: Build isolated offline debug APK (no secrets needed)
+        run: |
+          flutter build apk --debug --target lib/main_rc_offline.dart
+          cp build/app/outputs/flutter-apk/app-debug.apk royal-one-rc-test.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: royal-one-rc-test-apk
+          path: royal-one-rc-test.apk
+          retention-days: 7

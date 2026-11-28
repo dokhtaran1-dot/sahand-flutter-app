@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - main
+      - feature/rc-ticket-deal-foundation
 
 permissions:
   contents: read
@@ -22,7 +23,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.event_name == 'pull_request' && 'pr-checks' || 'github-pages' }}
+      name: ${{ github.ref == 'refs/heads/main' && 'github-pages' || 'pr-checks' }}
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
@@ -121,8 +122,31 @@ jobs:
           test -s assets/image/booking_posters/prive.png
           test -s assets/image/booking_posters/lumiere.png
 
+      - name: Prepare 4K runtime home and 8K artwork exports
+        run: |
+          python -m pip install Pillow
+          python tooling/prepare_royal_artwork.py
+
+      - name: Upload 8K artwork exports (upscaled, originals preserved)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ROYAL1-8K-UPSCALED-ARTWORK
+          path: build/royal_artwork_8k/
+
       - name: Get packages
         run: flutter pub get
+
+      - name: Verify all seven Royal One portals and navigation
+        run: flutter test test/royal_navigation_test.dart
+
+      - name: Capture actual Flutter SC animation frames
+        run: flutter test test/royal_sc_visual_review_test.dart
+
+      - name: Upload animation review
+        uses: actions/upload-artifact@v4
+        with:
+          name: ROYAL1-SC-VISUAL-REVIEW
+          path: build/royal_visual_review/
 
       - name: Work around app_links 6.4.1 Android compile SDK bug
         run: |
@@ -136,28 +160,34 @@ jobs:
           printf 'ROYAL_CLUB_DART_DEFINES=--dart-define=SUPABASE_URL=https://jwddfcsikkialxzbrhle.supabase.co --dart-define=SUPABASE_ANON_KEY=sb_publishable_VYZ6sC5mRndjvlcKijTSsQ_65nyHEve --dart-define=ROYAL_CLUB_BACKEND_READY=true\\n' >> "$GITHUB_ENV"
 
       - name: Build APK
-        run: flutter build apk --debug --build-name 1.0.18 --build-number 20 $ROYAL_CLUB_DART_DEFINES
+        env:
+          ROYAL_ONE_PREVIEW: ${{ github.ref != 'refs/heads/main' }}
+          RV_IMPERIAL_WHATSAPP: ${{ secrets.RV_IMPERIAL_WHATSAPP }}
+        run: flutter build apk --release --target-platform android-arm64 --build-name 1.0.25 --build-number 27 $ROYAL_CLUB_DART_DEFINES --dart-define=RV_IMPERIAL_WHATSAPP="$RV_IMPERIAL_WHATSAPP"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ROYAL1-v1.0.18-UPDATED-APK
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: ROYAL1-v1.0.25-ARM64-RELEASE-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
 
       - name: Build Web
+        if: github.ref == 'refs/heads/main'
         run: flutter build web --release --base-href /sahand-flutter-app/ $ROYAL_CLUB_DART_DEFINES
 
       - name: Setup Pages
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main'
         uses: actions/configure-pages@v5
 
       - name: Upload Web
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: build/web
 
       - name: Deploy Web
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         id: deployment
         uses: actions/deploy-pages@v4
+
+# Preview build trigger: restore and verify the seven Royal One portals.
