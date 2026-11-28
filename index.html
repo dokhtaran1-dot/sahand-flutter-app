@@ -404,7 +404,7 @@ function renderRequests(){
 }
 async function loadStaff(){
  try{const r=await db.from("rvctl_staff").select("id,full_name,department,job_title,active").order("department");
- if(r.error)throw r.error;staff=r.data||[];el("staffActiveCount").textContent=staff.filter(s=>s.active).length;el("staffInactiveCount").textContent=staff.filter(s=>!s.active).length;el("staffTotalCount").textContent=staff.length;renderStaff();
+ if(r.error)throw r.error;staff=r.data||[];el("staffActiveCount").textContent=staff.filter(s=>s.active).length;el("staffInactiveCount").textContent=staff.filter(s=>!s.active).length;el("staffTotalCount").textContent=staff.length;if(["owner","executive","accountant","auditor"].includes(role))await loadControlBoard(false);renderStaff();
  }catch(e){el("staffList").textContent="خطا در دریافت فهرست: "+e.message;}
 }
 function renderStaff(){
@@ -432,15 +432,15 @@ function openStaffProfile(id){
  const financial=["owner","executive","accountant","auditor"].includes(role);
  const fields=[
  ["نام",s.full_name],["سمت",s.job_title],["بخش",s.department],["وضعیت",s.active?"فعال":"غیرفعال"],
- ["تاریخ شروع",d.start_date],["حساب کاربری",d.account_linked?"متصل":"متصل نشده"],
- ["وضعیت قرارداد",d.contract_status==="active"?"فعال":d.contract_status==="draft"?"پیش‌نویس":d.contract_status==="ended"?"پایان‌یافته":"ثبت نشده"]
+ ["تاریخ شروع",d.start_date],["ساعت شروع شیفت",d.regular_start],["ساعت پایان شیفت",d.regular_end],["حساب کاربری",d.account_linked?"متصل":"متصل نشده"],
+ ["تاریخ شروع قرارداد",d.contract_start],["تاریخ پایان قرارداد",d.contract_end],["وضعیت قرارداد",d.contract_status==="active"?"فعال":d.contract_status==="draft"?"پیش‌نویس":d.contract_status==="ended"?"پایان‌یافته":"ثبت نشده"]
  ];
- if(financial){fields.push(["حقوق پایه",d.salary_toman==null?"تکمیل نشده":Number(d.salary_toman).toLocaleString("fa-IR")+" تومان"],["شماره شبا",d.sheba],["وضعیت شبا",d.sheba_status==="verified"?"تأییدشده":d.sheba_status==="pending"?"در انتظار":"ثبت نشده"]);}
+ if(financial){fields.push(["حقوق پایه",d.salary_toman==null?"تعیین نشده":Number(d.salary_toman).toLocaleString("fa-IR")+" تومان"],["مساعده ماه انتخاب‌شده",Number(d.advance_toman||0).toLocaleString("fa-IR")+" تومان"],["کسری بابت تاریخ شروع",d.start_deduction_toman==null?"تعیین نشده":Number(d.start_deduction_toman).toLocaleString("fa-IR")+" تومان"],["خالص پس از مساعده",d.net_payable_toman==null?"تعیین نشده":Number(d.net_payable_toman).toLocaleString("fa-IR")+" تومان"],["شماره شبا",d.sheba],["وضعیت شبا",d.sheba_status==="verified"?"تأییدشده":d.sheba_status==="pending"?"در انتظار":"ثبت نشده"]);}
  const overlay=document.createElement("div");overlay.style.cssText="position:fixed;inset:0;z-index:9999;background:#000b;display:flex;align-items:center;justify-content:center;padding:14px";
  const panel=document.createElement("div");panel.style.cssText="width:min(550px,100%);max-height:90vh;overflow:auto;background:#102b21;border:1px solid #d7b777;border-radius:18px;padding:18px";
  const heading=document.createElement("h2");heading.textContent="پرونده پرسنلی — "+s.full_name;panel.appendChild(heading);
  fields.forEach(([label,value])=>{const row=document.createElement("div");row.className="row";const k=document.createElement("span");k.textContent=label;const v=document.createElement("b");v.textContent=value===null||value===undefined||value===""?"تکمیل نشده":String(value);v.style.cssText="direction:auto;overflow-wrap:anywhere;text-align:left";row.append(k,v);panel.appendChild(row);});
- const note=document.createElement("p");note.className="muted";note.textContent="اطلاعات موجود در سامانه نمایش داده می‌شود؛ سوابق پرداخت، مساعده، حضور و قرارداد تفصیلی فقط پس از اتصال امن منابع مربوط نمایش داده خواهند شد.";panel.appendChild(note);
+ const note=document.createElement("p");note.className="muted";note.textContent="اطلاعات موجود در سامانه نمایش داده می‌شود؛ مساعده و خالص حقوق مربوط به ماه انتخاب‌شده است؛ ثبت پرداخت واقعی یا تأیید حضور از این صفحه انجام نمی‌شود.";panel.appendChild(note);
  const close=document.createElement("button");close.className="block";close.textContent="بستن پرونده";close.onclick=()=>overlay.remove();panel.appendChild(close);overlay.appendChild(panel);overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.remove()});document.body.appendChild(overlay);
 }
 async function loadPresenceBoard(){
