@@ -421,9 +421,27 @@ function renderStaff(){
        '<div class="muted mini">شبا: '+sheba+'</div>'+
        '<div class="muted mini">حساب کاربری: '+(d.account_linked?"متصل":"متصل نشده")+' · وضعیت شبا: '+safe(d.sheba_status==="verified"?"تأییدشده":d.sheba_status==="pending"?"در انتظار":"ثبت نشده")+' · قرارداد: '+safe(d.contract_status==="active"?"فعال":d.contract_status==="draft"?"پیش‌نویس":d.contract_status==="ended"?"پایان‌یافته":"ثبت نشده")+'</div>';
    }
-   return '<div class="row"><div><b>'+safe(s.full_name)+'</b><div class="muted mini">'+safe(s.job_title)+' · '+safe(s.department)+'</div>'+extra+'</div><span class="tag">'+(s.active?"فعال":"غیرفعال")+'</span></div>';
+   return '<div class="row"><div><button type="button" class="outline action" data-staff-profile="'+safe(s.id)+'" style="text-align:right;font-size:15px;color:var(--gold)">'+safe(s.full_name)+'</button><div class="muted mini">'+safe(s.job_title)+' · '+safe(s.department)+'</div>'+extra+'</div><span class="tag">'+(s.active?"فعال":"غیرفعال")+'</span></div>';
  }).join("")||'<div class="muted">موردی پیدا نشد.</div>';
  wireCopyButtons(el("staffList"));
+ el("staffList").querySelectorAll("[data-staff-profile]").forEach(b=>b.addEventListener("click",()=>openStaffProfile(b.dataset.staffProfile)));
+}
+function openStaffProfile(id){
+ const s=staff.find(x=>x.id===id);if(!s)return;
+ const d=controlRecords.find(x=>x.id===id)||{};
+ const financial=["owner","executive","accountant","auditor"].includes(role);
+ const fields=[
+ ["نام",s.full_name],["سمت",s.job_title],["بخش",s.department],["وضعیت",s.active?"فعال":"غیرفعال"],
+ ["تاریخ شروع",d.start_date],["حساب کاربری",d.account_linked?"متصل":"متصل نشده"],
+ ["وضعیت قرارداد",d.contract_status==="active"?"فعال":d.contract_status==="draft"?"پیش‌نویس":d.contract_status==="ended"?"پایان‌یافته":"ثبت نشده"]
+ ];
+ if(financial){fields.push(["حقوق پایه",d.salary_toman==null?"تکمیل نشده":Number(d.salary_toman).toLocaleString("fa-IR")+" تومان"],["شماره شبا",d.sheba],["وضعیت شبا",d.sheba_status==="verified"?"تأییدشده":d.sheba_status==="pending"?"در انتظار":"ثبت نشده"]);}
+ const overlay=document.createElement("div");overlay.style.cssText="position:fixed;inset:0;z-index:9999;background:#000b;display:flex;align-items:center;justify-content:center;padding:14px";
+ const panel=document.createElement("div");panel.style.cssText="width:min(550px,100%);max-height:90vh;overflow:auto;background:#102b21;border:1px solid #d7b777;border-radius:18px;padding:18px";
+ const heading=document.createElement("h2");heading.textContent="پرونده پرسنلی — "+s.full_name;panel.appendChild(heading);
+ fields.forEach(([label,value])=>{const row=document.createElement("div");row.className="row";const k=document.createElement("span");k.textContent=label;const v=document.createElement("b");v.textContent=value===null||value===undefined||value===""?"تکمیل نشده":String(value);v.style.cssText="direction:auto;overflow-wrap:anywhere;text-align:left";row.append(k,v);panel.appendChild(row);});
+ const note=document.createElement("p");note.className="muted";note.textContent="اطلاعات موجود در سامانه نمایش داده می‌شود؛ سوابق پرداخت، مساعده، حضور و قرارداد تفصیلی فقط پس از اتصال امن منابع مربوط نمایش داده خواهند شد.";panel.appendChild(note);
+ const close=document.createElement("button");close.className="block";close.textContent="بستن پرونده";close.onclick=()=>overlay.remove();panel.appendChild(close);overlay.appendChild(panel);overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.remove()});document.body.appendChild(overlay);
 }
 async function loadPresenceBoard(){
  if(!["owner","executive","manager"].includes(role))return;
