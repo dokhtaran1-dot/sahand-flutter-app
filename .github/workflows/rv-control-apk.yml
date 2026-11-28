@@ -1,0 +1,64 @@
+name: Build RV CONTROL APK
+on:
+  push:
+    branches: [rv-control-pages]
+    paths: ['.github/workflows/rv-control-apk.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Generate standalone RV CONTROL Android wrapper
+        run: |
+          flutter create --platforms=android --project-name rv_control --org com.sahandconsortium rv_control_android
+          cd rv_control_android
+          flutter pub add webview_flutter
+          mkdir -p assets
+          cp ../index.html assets/rv_control.html
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('pubspec.yaml')
+          s=p.read_text().replace('  uses-material-design: true','  uses-material-design: true\n  assets:\n    - assets/rv_control.html')
+          p.write_text(s)
+          p=Path('android/app/src/main/AndroidManifest.xml')
+          s=p.read_text().replace('<application','<uses-permission android:name="android.permission.INTERNET"/>\n    <application',1).replace('android:label="rv_control"','android:label="RV CONTROL"')
+          p.write_text(s)
+          Path('lib/main.dart').write_text("""import 'package:flutter/material.dart';
+          import 'package:webview_flutter/webview_flutter.dart';
+          void main() { WidgetsFlutterBinding.ensureInitialized(); runApp(const RVApp()); }
+          class RVApp extends StatefulWidget { const RVApp({super.key}); @override State<RVApp> createState()=>_RVAppState(); }
+          class _RVAppState extends State<RVApp> {
+            late final WebViewController controller;
+            @override void initState(){super.initState(); controller=WebViewController()
+              ..setJavaScriptMode(JavaScriptMode.unrestricted)
+              ..setBackgroundColor(const Color(0xFF071913))
+              ..loadFlutterAsset('assets/rv_control.html');}
+            @override Widget build(BuildContext context)=>MaterialApp(
+              debugShowCheckedModeBanner:false,
+              home:Scaffold(backgroundColor:const Color(0xFF071913),
+                body:SafeArea(child:WebViewWidget(controller:controller))));}
+          """)
+          PY
+          flutter pub get
+      - name: Build independent Android APK
+        run: |
+          cd rv_control_android
+          flutter build apk --release
+          test -s build/app/outputs/flutter-apk/app-release.apk
+          cp build/app/outputs/flutter-apk/app-release.apk ../RV_CONTROL_android.apk
+          sha256sum ../RV_CONTROL_android.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RV-CONTROL-Android-APK
+          path: RV_CONTROL_android.apk
+          retention-days: 30
