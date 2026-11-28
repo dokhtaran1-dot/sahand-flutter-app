@@ -245,15 +245,10 @@ class RoyalVillageEntryPage extends StatelessWidget {
       title: const Text('LE ROYAL VILLAGE CAFÉ', style: TextStyle(fontFamily: 'serif', fontSize: 17)),
       actions: [IconButton(tooltip: 'گالری', icon: const Icon(Icons.photo_library_outlined), onPressed: () => _openGallery(context))]),
     body: ListView(children: [
-      AspectRatio(aspectRatio: 1.65, child: Stack(fit: StackFit.expand, children: [
-        Image.asset('assets/image/rv_real_grand.png', fit: BoxFit.cover, alignment: Alignment.topCenter),
-        const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Color(0xFF061710)]))),
-        const Positioned(left: 20, right: 20, bottom: 16, child: Column(children: [
-          Text('RV', style: TextStyle(fontFamily: 'serif', fontSize: 50, color: _gold)),
-          Text('رویال ویلیج کافه', textDirection: TextDirection.rtl, style: TextStyle(fontSize: 25, color: Colors.white)),
-          Text('کافه و رستوران · سالن‌های اختصاصی', textDirection: TextDirection.rtl, style: TextStyle(fontSize: 14, color: Color(0xFFF4DFAF))),
-        ])),
-      ])),
+      AspectRatio(aspectRatio: 4 / 3, child: Image.asset(
+        'assets/image/RV_grand_salon_header.png',
+        fit: BoxFit.contain, filterQuality: FilterQuality.high,
+      )),
       Padding(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8), child: Row(children: [
         Expanded(child: FilledButton.icon(style: FilledButton.styleFrom(backgroundColor: _gold, foregroundColor: const Color(0xFF061710)), onPressed: () => _openReservation(context), icon: const Icon(Icons.calendar_month), label: const Text('رزرو میز و سالن'))),
         const SizedBox(width: 12),
